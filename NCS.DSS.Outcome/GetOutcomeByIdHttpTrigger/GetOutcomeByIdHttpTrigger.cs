@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -12,7 +13,8 @@ namespace NCS.DSS.Outcome.GetOutcomeByIdHttpTrigger
     public static class GetOutcomeByIdHttpTrigger
     {
         [FunctionName("GetById")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId:guid}/Interactions/{interactionId:guid}/ActionPlans/{actionplanId:guid}/Outcomes/{outcomeId:guid}")]HttpRequestMessage req, TraceWriter log, string outcomeId)
+        [Display(Name = "Get", Description = "Ability to retrieve an individual outcome record.")]
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes/{outcomeId}")]HttpRequestMessage req, TraceWriter log, string customerId, string interactionId, string actionplanId, string outcomeId)
         {
             log.Info("Get Outcome By Id C# HTTP trigger function  processed a request.");
 

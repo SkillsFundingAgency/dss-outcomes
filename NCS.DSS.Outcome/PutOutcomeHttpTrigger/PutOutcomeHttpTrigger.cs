@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http;
 using Microsoft.Azure.WebJobs;
@@ -10,8 +11,10 @@ namespace NCS.DSS.Outcome.PutOutcomeHttpTrigger
 {
     public static class PutOutcomeHttpTrigger
     {
+        [Disable]
         [FunctionName("Put")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "Customers/{customerId:guid}/Interactions/{interactionId:guid}/ActionPlans/{actionplanId:guid}/Outcomes/{outcomeId:guid}")]HttpRequestMessage req, TraceWriter log, string outcomeId)
+        [Display(Name = "Put", Description = "Ability to replace an entire outcome record.")]
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes/{outcomeId}")]HttpRequestMessage req, TraceWriter log, string customerId, string interactionId, string actionplanId, string outcomeId)
         {
             log.Info("Put Outcome C# HTTP trigger function processed a request.");
 

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -11,7 +12,8 @@ namespace NCS.DSS.Outcome.GetOutcomeHttpTrigger
     public static class GetOutcomeHttpTrigger
     {
         [FunctionName("Get")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId:guid}/Interactions/{interactionId:guid}/ActionPlans/{actionplanId:guid}/Outcomes/")]HttpRequestMessage req, TraceWriter log)
+        [Display(Name = "Get", Description = "Ability to return all outcome records for an individual customer.")]
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes/")]HttpRequestMessage req, TraceWriter log, string customerId, string interactionId, string actionplanId)
         {
             log.Info("Get Outcomes C# HTTP trigger function processed a request.");
 

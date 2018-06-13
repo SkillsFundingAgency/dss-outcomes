@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http;
 using Microsoft.Azure.WebJobs;
@@ -11,7 +12,8 @@ namespace NCS.DSS.Outcome.DeleteOutcomeHttpTrigger
     public static class DeleteOutcomeHttpTrigger
     {
         [FunctionName("Delete")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "Customers/{customerId:guid}/Interactions/{interactionId:guid}/ActionPlans/{actionplanId:guid}/Outcomes/{outcomeId:guid}")]HttpRequestMessage req, TraceWriter log, string outcomeId)
+        [Display(Name = "Get", Description = "Ability to delete a outcome record.")]
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes/{outcomeId}")]HttpRequestMessage req, TraceWriter log, string customerId, string interactionId, string actionplanId, string outcomeId)
         {
             log.Info("Delete Outcome C# HTTP trigger function processed a request.");
 
