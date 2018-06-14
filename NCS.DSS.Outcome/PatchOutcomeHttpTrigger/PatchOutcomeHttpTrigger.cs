@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http;
+using System.Web.Http.Description;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -12,6 +13,7 @@ namespace NCS.DSS.Outcome.PatchOutcomeHttpTrigger
     public static class PatchOutcomeHttpTrigger
     {
         [FunctionName("Patch")]
+        [ResponseType(typeof(Models.Outcome))]
         [Display(Name = "Patch", Description = "Ability to modify/update an outcome record.")]
         public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes/{outcomeId}")]HttpRequestMessage req, TraceWriter log, string customerId, string interactionId, string actionplanId, string outcomeId)
         {

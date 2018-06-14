@@ -135,6 +135,8 @@ namespace NCS.DSS.Outcome.APIDefinition
                     operation.description = GetFunctionDescription(methodInfo, functionAttr.Name);
 
                     operation.responses = GenerateResponseParameterSignature(methodInfo, doc);
+                    operation.tags = new[] { APITitle };
+
                     dynamic keyQuery = new ExpandoObject();
                     keyQuery.apikeyQuery = new string[0];
                     operation.security = new ExpandoObject[] { keyQuery };

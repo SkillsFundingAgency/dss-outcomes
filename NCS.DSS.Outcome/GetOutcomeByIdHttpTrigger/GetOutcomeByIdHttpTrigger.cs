@@ -7,12 +7,14 @@ using Newtonsoft.Json;
 using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
+using System.Web.Http.Description;
 
 namespace NCS.DSS.Outcome.GetOutcomeByIdHttpTrigger
 {
     public static class GetOutcomeByIdHttpTrigger
     {
         [FunctionName("GetById")]
+        [ResponseType(typeof(Models.Outcome))]
         [Display(Name = "Get", Description = "Ability to retrieve an individual outcome record.")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes/{outcomeId}")]HttpRequestMessage req, TraceWriter log, string customerId, string interactionId, string actionplanId, string outcomeId)
         {
