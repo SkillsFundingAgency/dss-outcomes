@@ -6,6 +6,7 @@ using System.Web.Http.Description;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using NCS.DSS.Outcome.Annotations;
 using Newtonsoft.Json;
 
 namespace NCS.DSS.Outcome.PatchOutcomeHttpTrigger
@@ -14,6 +15,8 @@ namespace NCS.DSS.Outcome.PatchOutcomeHttpTrigger
     {
         [FunctionName("Patch")]
         [ResponseType(typeof(Models.Outcome))]
+        [OutcomeResponse(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Outcome updated", ShowSchema = true)]
+        [OutcomeResponse(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Supplied Outcome Id does not exist", ShowSchema = false)]
         [Display(Name = "Patch", Description = "Ability to modify/update an outcome record.")]
         public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes/{outcomeId}")]HttpRequestMessage req, TraceWriter log, string customerId, string interactionId, string actionplanId, string outcomeId)
         {

@@ -6,6 +6,7 @@ using System.Web.Http.Description;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using NCS.DSS.Outcome.Annotations;
 
 namespace NCS.DSS.Outcome.PostOutcomeHttpTrigger
 {
@@ -13,6 +14,9 @@ namespace NCS.DSS.Outcome.PostOutcomeHttpTrigger
     {
         [FunctionName("Post")]
         [ResponseType(typeof(Models.Outcome))]
+        [OutcomeResponse(HttpStatusCode = (int)HttpStatusCode.Created, Description = "Outcome created", ShowSchema = true)]
+        [OutcomeResponse(HttpStatusCode = (int)HttpStatusCode.BadRequest, Description = "Unable to create Outcome", ShowSchema = false)]
+        [OutcomeResponse(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Forbidden", ShowSchema = false)]
         [Display(Name = "Post", Description = "Ability to create a new outcome resource.")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes/")]HttpRequestMessage req, TraceWriter log, string customerId, string interactionId, string actionplanId)
         {

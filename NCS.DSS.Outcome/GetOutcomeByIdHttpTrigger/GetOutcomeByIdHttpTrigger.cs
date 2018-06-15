@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http.Description;
+using NCS.DSS.Outcome.Annotations;
 
 namespace NCS.DSS.Outcome.GetOutcomeByIdHttpTrigger
 {
@@ -15,6 +16,8 @@ namespace NCS.DSS.Outcome.GetOutcomeByIdHttpTrigger
     {
         [FunctionName("GetById")]
         [ResponseType(typeof(Models.Outcome))]
+        [OutcomeResponse(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Outcome found", ShowSchema = true)]
+        [OutcomeResponse(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Supplied Outcome Id does not exist", ShowSchema = false)]
         [Display(Name = "Get", Description = "Ability to retrieve an individual outcome record.")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes/{outcomeId}")]HttpRequestMessage req, TraceWriter log, string customerId, string interactionId, string actionplanId, string outcomeId)
         {

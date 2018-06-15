@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http.Description;
+using NCS.DSS.Outcome.Annotations;
 
 namespace NCS.DSS.Outcome.GetOutcomeHttpTrigger
 {
@@ -14,6 +15,7 @@ namespace NCS.DSS.Outcome.GetOutcomeHttpTrigger
     {
         [FunctionName("Get")]
         [ResponseType(typeof(Models.Outcome))]
+        [OutcomeResponse(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Outcomes found", ShowSchema = true)]
         [Display(Name = "Get", Description = "Ability to return all outcome records for an individual customer.")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes/")]HttpRequestMessage req, TraceWriter log, string customerId, string interactionId, string actionplanId)
         {
