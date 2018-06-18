@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using NCS.DSS.Outcome.ReferenceData;
 
 namespace NCS.DSS.Outcome.Models
 {
@@ -14,7 +15,7 @@ namespace NCS.DSS.Outcome.Models
 
         [Required]
         [Display(Description = "Outcome type reference data")]
-        public int OutcomeTypeId { get; set; }
+        public OutcomeType OutcomeType { get; set; }
 
         [DataType(DataType.DateTime)]
         [Display(Description = "Date that an outcome was claimed by the prime contractor.")]

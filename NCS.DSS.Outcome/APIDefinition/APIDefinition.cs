@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.Tracing;
 using System.Dynamic;
 using System.Globalization;
 using System.Linq;
@@ -125,7 +125,7 @@ namespace NCS.DSS.Outcome.APIDefinition
                 foreach (string verb in verbs)
                 {
                     dynamic operation = new ExpandoObject();
-                    operation.operationId = ToTitleCase(functionAttr.Name) + ToTitleCase(verb);
+                    operation.operationId = ToTitleCase(functionAttr.Name);
                     operation.produces = new[] { "application/json" };
                     operation.consumes = new[] { "application/json" };
                     operation.parameters = GenerateFunctionParametersSignature(methodInfo, route, doc);
@@ -458,7 +458,22 @@ namespace NCS.DSS.Outcome.APIDefinition
             else if (inputType.IsEnum)
             {
                 opParam.type = "string";
-                opParam.@enum = Enum.GetNames(inputType);
+
+                var enumValues = new List<string>();
+
+                foreach (var item in Enum.GetValues(inputType))
+                {
+                    var memInfo = inputType.GetMember(inputType.GetEnumName(item));
+                    var descriptionAttributes = memInfo[0].GetCustomAttributes(typeof(DescriptionAttribute), false);
+                    if (descriptionAttributes.Length <= 0)
+                        continue;
+
+                    var description = ((DescriptionAttribute)descriptionAttributes[0]).Description;
+                    enumValues.Add(Convert.ToInt32(item) + " - " + description);
+                }
+
+                opParam.@enum = enumValues.ToArray();
+
             }
             else if (definitions != null)
             {

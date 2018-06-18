@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using NCS.DSS.Outcome.ReferenceData;
 
 namespace NCS.DSS.Outcome.GetOutcomeByIdHttpTrigger
 {
@@ -22,7 +23,7 @@ namespace NCS.DSS.Outcome.GetOutcomeByIdHttpTrigger
                 {
                     OutcomeId = Guid.Parse("187de7d1-292f-43e8-b936-f28f65857c24"),
                     ActionPlanId = Guid.NewGuid(),
-                    OutcomeTypeId = 1,
+                    OutcomeType = OutcomeType.CareersManagementOutcome,
                     OutcomeClaimedDate = DateTime.Today,
                     OutcomeEffectiveDate = DateTime.Today.AddYears(1),
                     TouchpointId = Guid.NewGuid(),
@@ -33,7 +34,7 @@ namespace NCS.DSS.Outcome.GetOutcomeByIdHttpTrigger
                 {
                     OutcomeId = Guid.Parse("cc8cf9f0-68e5-489b-91a2-7b9978fc0605"),
                     ActionPlanId = Guid.NewGuid(),
-                    OutcomeTypeId = 2,
+                    OutcomeType = OutcomeType.CustomerSatisfactionOutcome,
                     OutcomeClaimedDate = DateTime.Today,
                     OutcomeEffectiveDate = DateTime.Today.AddYears(2),
                     TouchpointId = Guid.NewGuid(),
@@ -44,7 +45,7 @@ namespace NCS.DSS.Outcome.GetOutcomeByIdHttpTrigger
                 {
                     OutcomeId = Guid.Parse("2ee14c94-5a4a-425a-85d5-a579591b29d8"),
                     ActionPlanId = Guid.NewGuid(),
-                    OutcomeTypeId = 3,
+                    OutcomeType = OutcomeType.JobOutcome,
                     OutcomeClaimedDate = DateTime.Today,
                     OutcomeEffectiveDate = DateTime.Today.AddYears(3),
                     TouchpointId = Guid.NewGuid(),
