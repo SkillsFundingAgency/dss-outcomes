@@ -466,10 +466,15 @@ namespace NCS.DSS.Outcome.APIDefinition
                 {
                     var memInfo = inputType.GetMember(inputType.GetEnumName(item));
                     var descriptionAttributes = memInfo[0].GetCustomAttributes(typeof(DescriptionAttribute), false);
-                    if (descriptionAttributes.Length <= 0)
-                        continue;
 
-                    var description = ((DescriptionAttribute)descriptionAttributes[0]).Description;
+                    var description = string.Empty;
+
+                    if (descriptionAttributes.Length > 0)
+                        description = ((DescriptionAttribute)descriptionAttributes[0]).Description;
+
+                    if (string.IsNullOrEmpty(description))
+                        description = item.ToString();
+
                     enumValues.Add(Convert.ToInt32(item) + " - " + description);
                 }
 
