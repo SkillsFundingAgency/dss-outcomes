@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using NCS.DSS.Outcome.Annotations;
 using NCS.DSS.Outcome.ReferenceData;
-using NCS.DSS.WebChat.Annotations;
 
 namespace NCS.DSS.Outcome.Models
 {

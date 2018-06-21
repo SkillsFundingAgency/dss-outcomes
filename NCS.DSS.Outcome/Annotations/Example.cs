@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NCS.DSS.WebChat.Annotations
+namespace NCS.DSS.Outcome.Annotations
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
     public class Example : Attribute
