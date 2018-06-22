@@ -3,7 +3,7 @@
 namespace NCS.DSS.Outcome.Annotations
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
-    public class OutcomeResponse : Attribute
+    public class Response : Attribute
     {
         public int HttpStatusCode { get; set; }
         public string Description { get; set; }

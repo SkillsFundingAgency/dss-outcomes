@@ -14,9 +14,12 @@ namespace NCS.DSS.Outcome.PostOutcomeHttpTrigger
     {
         [FunctionName("Post")]
         [ResponseType(typeof(Models.Outcome))]
-        [OutcomeResponse(HttpStatusCode = (int)HttpStatusCode.Created, Description = "Outcome created", ShowSchema = true)]
-        [OutcomeResponse(HttpStatusCode = (int)HttpStatusCode.BadRequest, Description = "Unable to create Outcome", ShowSchema = false)]
-        [OutcomeResponse(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Forbidden", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.Created, Description = "Outcome Created", ShowSchema = true)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Outcome does not exist", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.BadRequest, Description = "Request was malformed", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
+        [Response(HttpStatusCode = 422, Description = "Outcome validation error(s)", ShowSchema = false)]
         [Display(Name = "Post", Description = "Ability to create a new outcome resource.")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes/")]HttpRequestMessage req, TraceWriter log, string customerId, string interactionId, string actionplanId)
         {
