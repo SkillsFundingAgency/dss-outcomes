@@ -12,6 +12,11 @@ namespace NCS.DSS.Outcome.Models
         public Guid OutcomeId { get; set; }
 
         [Required]
+        [Display(Description = "Unique identifier of a customer.")]
+        [Example(Description = "2730af9c-fc34-4c2b-a905-c4b584b0f379")]
+        public Guid CustomerId { get; set; }
+
+        [Required]
         [Display(Description = "Unique identifier of a action plan.")]
         [Example(Description = "2730af9c-fc34-4c2b-a905-c4b584b0f379")]
         public Guid ActionPlanId { get; set; }
