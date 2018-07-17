@@ -32,7 +32,9 @@
       "name": "[parameters('functionAppName')]",
       "type": "Microsoft.Web/sites",
       "apiVersion": "2016-08-01",
-      "dependsOn": [ "[variables('appInsightsName')]" ],
+      "dependsOn": [
+        "[variables('appInsightsName')]"
+      ],
       "location": "[resourceGroup().location]",
       "kind": "functionapp",
       "properties": {
@@ -67,8 +69,31 @@
             {
               "name": "Key",
               "value": "[parameters('cosmosDbKey')]"
+            },
+            {
+              "name": "CustomerCollectionId",
+              "value": "customers"
+            },
+            {
+              "name": "CustomerDatabaseId",
+              "value": "customers"
+            },
+            {
+              "name": "InteractionCollectionId",
+              "value": "interactions"
+            },
+            {
+              "name": "InteractionDatabaseId",
+              "value": "interactions"
+            },
+            {
+              "name": "ActionPlanCollectionId",
+              "value": "actionplans"
+            },
+            {
+              "name": "ActionPlanDatabaseId",
+              "value": "actionplans"
             }
-
           ]
         }
       }
