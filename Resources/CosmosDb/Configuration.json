@@ -1,10 +1,10 @@
 {
   "Databases": [
     {
-      "DatabaseName": "outcomes",
+      "DatabaseName": "actionplans",
       "Collections": [
         {
-          "CollectionName": "outcomes",
+          "CollectionName": "actionplans",
           "OfferThroughput": 1000,
           "StoredProcedures": []
         }
