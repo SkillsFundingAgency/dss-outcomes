@@ -13,6 +13,11 @@ namespace NCS.DSS.Outcomes.Helpers
 
         #region Ok(200)
 
+        public static HttpResponseMessage Ok()
+        {
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }
+
         public static HttpResponseMessage Ok(Guid id)
         {
             return new HttpResponseMessage(HttpStatusCode.OK)
@@ -102,7 +107,7 @@ namespace NCS.DSS.Outcomes.Helpers
             };
         }
 
-        public static HttpResponseMessage UnprocessableEntity(JsonSerializationException requestException)
+        public static HttpResponseMessage UnprocessableEntity(JsonException requestException)
         {
             return new HttpResponseMessage((HttpStatusCode)422)
             {
@@ -110,7 +115,6 @@ namespace NCS.DSS.Outcomes.Helpers
                     Encoding.UTF8, "application/json")
             };
         }
-
 
         #endregion
 

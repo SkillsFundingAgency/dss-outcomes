@@ -8,30 +8,30 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
 {
     public class PatchOutcomesHttpTriggerService : IPatchOutcomesHttpTriggerService
     {
-        public async Task<Models.Outcomes> UpdateAsync(Models.Outcomes Outcomes, OutcomesPatch OutcomesPatch)
+        public async Task<Models.Outcomes> UpdateAsync(Models.Outcomes outcomes, OutcomesPatch outcomesPatch)
         {
-            if (Outcomes == null)
+            if (outcomes == null)
                 return null;
 
-            if (!OutcomesPatch.LastModifiedDate.HasValue)
-                OutcomesPatch.LastModifiedDate = DateTime.Now;
+            if (!outcomesPatch.LastModifiedDate.HasValue)
+                outcomesPatch.LastModifiedDate = DateTime.Now;
 
-            Outcomes.Patch(OutcomesPatch);
+            outcomes.Patch(outcomesPatch);
 
             var documentDbProvider = new DocumentDBProvider();
-            var response = await documentDbProvider.UpdateOutcomesAsync(Outcomes);
+            var response = await documentDbProvider.UpdateOutcomesAsync(outcomes);
 
             var responseStatusCode = response.StatusCode;
 
-            return responseStatusCode == HttpStatusCode.OK ? Outcomes : null;
+            return responseStatusCode == HttpStatusCode.OK ? outcomes : null;
         }
 
-        public async Task<Models.Outcomes> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionplanId, Guid OutcomesId)
+        public async Task<Models.Outcomes> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionplanId, Guid outcomesId)
         {
             var documentDbProvider = new DocumentDBProvider();
-            var Outcomes = await documentDbProvider.GetOutcomesForCustomerAsync(customerId, interactionsId, actionplanId, OutcomesId);
+            var outcomes = await documentDbProvider.GetOutcomesForCustomerAsync(customerId, interactionsId, actionplanId, outcomesId);
 
-            return Outcomes;
+            return outcomes;
         }
     }
 }

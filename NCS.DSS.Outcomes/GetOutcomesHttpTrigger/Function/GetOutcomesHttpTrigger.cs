@@ -28,23 +28,42 @@ namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Function
         [Display(Name = "Get", Description = "Ability to return all action plans for the given Outcomes.")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Interactions/{interactionId}/actionplans/{actionplanId}/Outcomes")]HttpRequestMessage req, ILogger log, string customerId, string interactionId, string actionplanId,
             [Inject]IResourceHelper resourceHelper,
-            [Inject]IGetOutcomesHttpTriggerService OutcomesGetService)
+            [Inject]IGetOutcomesHttpTriggerService outcomesGetService)
         {
             log.LogInformation("Get Outcomes C# HTTP trigger function processed a request.");
 
             if (!Guid.TryParse(customerId, out var customerGuid))
                 return HttpResponseMessageHelper.BadRequest(customerGuid);
 
+            if (!Guid.TryParse(interactionId, out var interactionGuid))
+                return HttpResponseMessageHelper.BadRequest(interactionGuid);
+
+            if (!Guid.TryParse(actionplanId, out var actionPlansGuid))
+                return HttpResponseMessageHelper.BadRequest(actionPlansGuid);
+
+            //Check customer
             var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
                 return HttpResponseMessageHelper.NoContent(customerGuid);
 
-            var Outcomes = await OutcomesGetService.GetOutcomesAsync(customerGuid);
+            //Check interactions
+            var doesInteractionExist = resourceHelper.DoesInteractionExist(interactionGuid);
 
-            return Outcomes == null ?
+            if (!doesInteractionExist)
+                return HttpResponseMessageHelper.NoContent(interactionGuid);
+
+            //Check actionplans
+            var doesActionPlanExist = resourceHelper.DoesActionPlanExist(actionPlansGuid);
+
+            if (!doesActionPlanExist)
+                return HttpResponseMessageHelper.NoContent(actionPlansGuid);
+
+            var outcomes = await outcomesGetService.GetOutcomesAsync(customerGuid);
+
+            return outcomes == null ?
                 HttpResponseMessageHelper.NoContent(customerGuid) :
-                HttpResponseMessageHelper.Ok(Outcomes);
+                HttpResponseMessageHelper.Ok(outcomes);
 
         }
     }

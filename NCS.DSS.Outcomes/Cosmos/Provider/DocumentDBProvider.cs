@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
@@ -69,42 +70,42 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
             if (client == null)
                 return null;
 
-            var OutcomesQuery = client.CreateDocumentQuery<Models.Outcomes>(collectionUri)
+            var outcomesQuery = client.CreateDocumentQuery<Models.Outcomes>(collectionUri)
                 .Where(so => so.CustomerId == customerId).AsDocumentQuery();
 
-            var Outcomes = new List<Models.Outcomes>();
+            var outcomes = new List<Models.Outcomes>();
 
-            while (OutcomesQuery.HasMoreResults)
+            while (outcomesQuery.HasMoreResults)
             {
-                var response = await OutcomesQuery.ExecuteNextAsync<Models.Outcomes>();
-                Outcomes.AddRange(response);
+                var response = await outcomesQuery.ExecuteNextAsync<Models.Outcomes>();
+                outcomes.AddRange(response);
             }
 
-            return Outcomes.Any() ? Outcomes : null;
+            return outcomes.Any() ? outcomes : null;
         }
 
-        public async Task<Models.Outcomes> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionplanId, Guid OutcomesId)
+        public async Task<Models.Outcomes> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionplanId, Guid outcomesId)
         {
             var collectionUri = _documentDbHelper.CreateDocumentCollectionUri();
 
             var client = _databaseClient.CreateDocumentClient();
 
-            var OutcomesForCustomerQuery = client
+            var outcomesForCustomerQuery = client
                 ?.CreateDocumentQuery<Models.Outcomes>(collectionUri, new FeedOptions { MaxItemCount = 1 })
                 .Where(x => x.CustomerId == customerId && 
                         x.ActionPlanId == actionplanId && 
-                        x.OutcomesId == OutcomesId)
+                        x.OutcomesId == outcomesId)
                 .AsDocumentQuery();
 
-            if (OutcomesForCustomerQuery == null)
+            if (outcomesForCustomerQuery == null)
                 return null;
 
-            var Outcomes = await OutcomesForCustomerQuery.ExecuteNextAsync<Models.Outcomes>();
+            var outcomes = await outcomesForCustomerQuery.ExecuteNextAsync<Models.Outcomes>();
 
-            return Outcomes?.FirstOrDefault();
+            return outcomes?.FirstOrDefault();
         }
 
-        public async Task<ResourceResponse<Document>> CreateOutcomesAsync(Models.Outcomes Outcomes)
+        public async Task<ResourceResponse<Document>> CreateOutcomesAsync(Models.Outcomes outcomes)
         {
 
             var collectionUri = _documentDbHelper.CreateDocumentCollectionUri();
@@ -114,24 +115,38 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
             if (client == null)
                 return null;
 
-            var response = await client.CreateDocumentAsync(collectionUri, Outcomes);
+            var response = await client.CreateDocumentAsync(collectionUri, outcomes);
 
             return response;
 
         }
 
-        public async Task<ResourceResponse<Document>> UpdateOutcomesAsync(Models.Outcomes Outcomes)
+        public async Task<ResourceResponse<Document>> UpdateOutcomesAsync(Models.Outcomes outcomes)
         {
-            var documentUri = _documentDbHelper.CreateDocumentUri(Outcomes.OutcomesId.GetValueOrDefault());
+            var documentUri = _documentDbHelper.CreateDocumentUri(outcomes.OutcomesId.GetValueOrDefault());
 
             var client = _databaseClient.CreateDocumentClient();
 
             if (client == null)
                 return null;
 
-            var response = await client.ReplaceDocumentAsync(documentUri, Outcomes);
+            var response = await client.ReplaceDocumentAsync(documentUri, outcomes);
 
             return response;
+        }
+
+        public async Task<bool> DeleteAsync(Guid outcomesId)
+        {
+            var documentUri = _documentDbHelper.CreateDocumentUri(outcomesId);
+
+            var client = _databaseClient.CreateDocumentClient();
+
+            if (client == null)
+                return false;
+
+            var response = await client.DeleteDocumentAsync(documentUri);
+
+            return response.StatusCode == HttpStatusCode.OK;
         }
     }
 }

@@ -34,7 +34,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             [Inject]IResourceHelper resourceHelper,
             [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
             [Inject]IValidate validate,
-            [Inject]IPostOutcomesHttpTriggerService OutcomesPostService)
+            [Inject]IPostOutcomesHttpTriggerService outcomesPostService)
         {
             log.LogInformation("Post Action Plan C# HTTP trigger function processed a request.");
 
@@ -47,21 +47,21 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             if (!Guid.TryParse(actionplanId, out var actionplanGuid))
                 return HttpResponseMessageHelper.BadRequest(actionplanGuid);
 
-            Models.Outcomes OutcomesRequest;
+            Models.Outcomes outcomesRequest;
 
             try
             {
-                OutcomesRequest = await httpRequestMessageHelper.GetOutcomesFromRequest<Models.Outcomes>(req);
+                outcomesRequest = await httpRequestMessageHelper.GetOutcomesFromRequest<Models.Outcomes>(req);
             }
-            catch (JsonSerializationException ex)
+            catch (JsonException ex)
             {
                 return HttpResponseMessageHelper.UnprocessableEntity(ex);
             }
 
-            if (OutcomesRequest == null)
+            if (outcomesRequest == null)
                 return HttpResponseMessageHelper.UnprocessableEntity(req);
 
-            var errors = validate.ValidateResource(OutcomesRequest);
+            var errors = validate.ValidateResource(outcomesRequest);
 
             if (errors != null && errors.Any())
                 return HttpResponseMessageHelper.UnprocessableEntity(errors);
@@ -81,11 +81,11 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             if (!doesActionPlanExist)
                 return HttpResponseMessageHelper.NoContent(actionplanGuid);
 
-            var Outcomes = await OutcomesPostService.CreateAsync(OutcomesRequest);
+            var outcomes = await outcomesPostService.CreateAsync(outcomesRequest);
 
-            return Outcomes == null
+            return outcomes == null
                 ? HttpResponseMessageHelper.BadRequest(customerGuid)
-                : HttpResponseMessageHelper.Created(Outcomes);
+                : HttpResponseMessageHelper.Created(outcomes);
 
         }
     }

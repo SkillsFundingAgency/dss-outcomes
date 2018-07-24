@@ -34,7 +34,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             [Inject]IResourceHelper resourceHelper, 
             [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
             [Inject]IValidate validate,
-            [Inject]IPatchOutcomesHttpTriggerService OutcomesPatchService)
+            [Inject]IPatchOutcomesHttpTriggerService outcomesPatchService)
         {
             log.LogInformation("Patch Action Plan C# HTTP trigger function processed a request.");
 
@@ -47,24 +47,24 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             if (!Guid.TryParse(actionplanId, out var actionplanGuid))
                 return HttpResponseMessageHelper.BadRequest(actionplanGuid);
 
-            if (!Guid.TryParse(OutcomesId, out var OutcomesGuid))
-                return HttpResponseMessageHelper.BadRequest(OutcomesGuid);
+            if (!Guid.TryParse(OutcomesId, out var outcomesGuid))
+                return HttpResponseMessageHelper.BadRequest(outcomesGuid);
 
-            Models.OutcomesPatch  OutcomesPatchRequest;
+            Models.OutcomesPatch  outcomesPatchRequest;
 
             try
             {
-                OutcomesPatchRequest = await httpRequestMessageHelper.GetOutcomesFromRequest<Models.OutcomesPatch>(req);
+                outcomesPatchRequest = await httpRequestMessageHelper.GetOutcomesFromRequest<Models.OutcomesPatch>(req);
             }
-            catch (JsonSerializationException ex)
+            catch (JsonException ex)
             {
                 return HttpResponseMessageHelper.UnprocessableEntity(ex);
             }
 
-            if (OutcomesPatchRequest == null)
+            if (outcomesPatchRequest == null)
                 return HttpResponseMessageHelper.UnprocessableEntity(req);
 
-            var errors = validate.ValidateResource(OutcomesPatchRequest);
+            var errors = validate.ValidateResource(outcomesPatchRequest);
 
             if (errors != null && errors.Any())
                 return HttpResponseMessageHelper.UnprocessableEntity(errors);
@@ -84,15 +84,15 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             if (!doesActionPlanExist)
                 return HttpResponseMessageHelper.NoContent(actionplanGuid);
 
-            var Outcomes = await OutcomesPatchService.GetOutcomesForCustomerAsync(customerGuid, interactionGuid, actionplanGuid, OutcomesGuid);
+            var outcomes = await outcomesPatchService.GetOutcomesForCustomerAsync(customerGuid, interactionGuid, actionplanGuid, outcomesGuid);
 
-            if (Outcomes == null)
-                return HttpResponseMessageHelper.NoContent(OutcomesGuid);
+            if (outcomes == null)
+                return HttpResponseMessageHelper.NoContent(outcomesGuid);
 
-            var updatedOutcomes = await OutcomesPatchService.UpdateAsync(Outcomes, OutcomesPatchRequest);
+            var updatedOutcomes = await outcomesPatchService.UpdateAsync(outcomes, outcomesPatchRequest);
 
             return updatedOutcomes == null ?
-                HttpResponseMessageHelper.BadRequest(OutcomesGuid) :
+                HttpResponseMessageHelper.BadRequest(outcomesGuid) :
                 HttpResponseMessageHelper.Ok(updatedOutcomes);
 
         }
