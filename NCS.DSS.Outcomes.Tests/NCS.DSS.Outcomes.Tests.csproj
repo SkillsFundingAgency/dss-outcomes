@@ -8,8 +8,8 @@
     <ProjectGuid>{FF3132CB-BA35-416C-A572-E0DD69EBCB33}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NCS.DSS.ActionPlan.Tests</RootNamespace>
-    <AssemblyName>NCS.DSS.ActionPlan.Tests</AssemblyName>
+    <RootNamespace>NCS.DSS.Outcomes.Tests</RootNamespace>
+    <AssemblyName>NCS.DSS.Outcomes.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -52,6 +52,10 @@
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\MSTest.TestFramework.1.3.2\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\.nuget\packages\newtonsoft.json\9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="NSubstitute, Version=3.1.0.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
       <HintPath>..\packages\NSubstitute.3.1.0\lib\net46\NSubstitute.dll</HintPath>
     </Reference>
@@ -80,6 +84,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GetOutcomesByIdHttpTriggerTests.cs" />
+    <Compile Include="GetOutcomesHttpTriggerTest.cs" />
+    <Compile Include="DeleteOutcomesHttpTriggerTests.cs" />
+    <Compile Include="PatchOutcomesHttpTriggerTests.cs" />
+    <Compile Include="PostOutcomesHttpTriggerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -89,7 +98,7 @@
   <ItemGroup>
     <ProjectReference Include="..\NCS.DSS.Outcomes\NCS.DSS.Outcomes.csproj">
       <Project>{7e947d23-7d97-427d-9d8f-9f49dfcd6495}</Project>
-      <Name>NCS.DSS.ActionPlan</Name>
+      <Name>NCS.DSS.Outcomes</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
