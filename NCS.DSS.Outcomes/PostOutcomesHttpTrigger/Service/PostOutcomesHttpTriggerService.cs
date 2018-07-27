@@ -12,11 +12,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service
             if (Outcomes == null)
                 return null;
 
-            var OutcomesId = Guid.NewGuid();
-            Outcomes.OutcomesId = OutcomesId;
-
-            if (!Outcomes.LastModifiedDate.HasValue)
-                Outcomes.LastModifiedDate = DateTime.Now;
+            Outcomes.SetDefaultValues();
 
             var documentDbProvider = new DocumentDBProvider();
 

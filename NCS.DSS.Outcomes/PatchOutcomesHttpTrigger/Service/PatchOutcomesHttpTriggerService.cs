@@ -13,8 +13,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
             if (outcomes == null)
                 return null;
 
-            if (!outcomesPatch.LastModifiedDate.HasValue)
-                outcomesPatch.LastModifiedDate = DateTime.Now;
+            outcomesPatch.SetDefaultValues();
 
             outcomes.Patch(outcomesPatch);
 

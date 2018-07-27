@@ -5,7 +5,7 @@ using NCS.DSS.Outcomes.ReferenceData;
 
 namespace NCS.DSS.Outcomes.Models
 {
-    public class Outcomes
+    public class Outcomes : IOutcomes
     {
         [Display(Description = "Unique identifier of the Outcomes record.")]
         [Example(Description = "b8592ff8-af97-49ad-9fb2-e5c3c717fd85")]
@@ -51,7 +51,13 @@ namespace NCS.DSS.Outcomes.Models
         [Example(Description = "d1307d77-af23-4cb4-b600-a60e04f8c3df")]
         public Guid? LastModifiedTouchpointId { get; set; }
 
+        public void SetDefaultValues()
+        {
+            OutcomesId = Guid.NewGuid();
 
+            if (!LastModifiedDate.HasValue)
+                LastModifiedDate = DateTime.Now;
+        }
 
         public void Patch(OutcomesPatch outcomesPatch)
         {
