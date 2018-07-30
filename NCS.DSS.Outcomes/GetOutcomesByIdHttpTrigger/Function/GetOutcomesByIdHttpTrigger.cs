@@ -28,9 +28,17 @@ namespace NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Function
         [Display(Name = "Get", Description = "Ability to retrieve an individual action plan for the given customer")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Interactions/{interactionId}/actionplans/{actionplanId}/Outcomes/{OutcomesId}")]HttpRequestMessage req, ILogger log, string customerId, string interactionId, string actionplanId, string OutcomesId,
             [Inject]IResourceHelper resourceHelper,
+            [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
             [Inject]IGetOutcomesByIdHttpTriggerService outcomesGetService)
         {
-            log.LogInformation("Get Outcomes By Id C# HTTP trigger function  processed a request.");
+            var touchpointId = httpRequestMessageHelper.GetTouchpointId(req);
+            if (touchpointId == null)
+            {
+                log.LogInformation("Unable to locate 'APIM-TouchpointId' in request header.");
+                return HttpResponseMessageHelper.BadRequest();
+            }
+
+            log.LogInformation("Get Outcomes By Id C# HTTP trigger function  processed a request. " + touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
                 return HttpResponseMessageHelper.BadRequest(customerGuid);

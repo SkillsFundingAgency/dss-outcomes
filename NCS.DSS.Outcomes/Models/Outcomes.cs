@@ -56,7 +56,7 @@ namespace NCS.DSS.Outcomes.Models
             OutcomesId = Guid.NewGuid();
 
             if (!LastModifiedDate.HasValue)
-                LastModifiedDate = DateTime.Now;
+                LastModifiedDate = DateTime.UtcNow;
         }
 
         public void Patch(OutcomesPatch outcomesPatch)
