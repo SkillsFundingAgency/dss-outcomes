@@ -71,6 +71,8 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             if (outcomesPatchRequest == null)
                 return HttpResponseMessageHelper.UnprocessableEntity(req);
 
+            outcomesPatchRequest.LastModifiedTouchpointId = touchpointId;
+
             var errors = validate.ValidateResource(outcomesPatchRequest);
 
             if (errors != null && errors.Any())
