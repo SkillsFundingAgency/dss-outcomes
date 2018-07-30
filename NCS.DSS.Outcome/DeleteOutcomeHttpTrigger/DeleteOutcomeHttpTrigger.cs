@@ -12,6 +12,7 @@ namespace NCS.DSS.Outcome.DeleteOutcomeHttpTrigger
 {
     public static class DeleteOutcomeHttpTrigger
     {
+        [Disable]
         [FunctionName("Delete")]
         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Outcome Deleted", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Outcome does not exist", ShowSchema = false)]
