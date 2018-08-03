@@ -102,7 +102,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
 
             return updatedOutcomes == null ?
                 HttpResponseMessageHelper.BadRequest(outcomesGuid) :
-                HttpResponseMessageHelper.Ok(updatedOutcomes);
+                HttpResponseMessageHelper.Ok(JsonHelper.SerializeObject(updatedOutcomes));
 
         }
     }

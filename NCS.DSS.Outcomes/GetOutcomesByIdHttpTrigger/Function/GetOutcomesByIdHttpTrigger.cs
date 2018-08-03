@@ -74,7 +74,7 @@ namespace NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Function
 
             return outcomes == null ?
                 HttpResponseMessageHelper.NoContent(outcomesGuid) :
-                HttpResponseMessageHelper.Ok(outcomes);
+                HttpResponseMessageHelper.Ok(JsonHelper.SerializeObject(outcomes));
 
         }
     }

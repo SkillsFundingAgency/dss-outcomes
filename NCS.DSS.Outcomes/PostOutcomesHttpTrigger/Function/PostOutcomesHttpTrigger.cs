@@ -94,7 +94,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
 
             return outcomes == null
                 ? HttpResponseMessageHelper.BadRequest(customerGuid)
-                : HttpResponseMessageHelper.Created(outcomes);
+                : HttpResponseMessageHelper.Created(JsonHelper.SerializeObject(outcomes));
 
         }
     }
