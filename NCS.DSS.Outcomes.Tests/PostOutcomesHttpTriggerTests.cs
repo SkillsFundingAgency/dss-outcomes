@@ -50,13 +50,13 @@ namespace NCS.DSS.Outcomes.Tests
             _httpRequestMessageHelper = Substitute.For<IHttpRequestMessageHelper>();
             _validate = Substitute.For<IValidate>();
             _postOutcomesHttpTriggerService = Substitute.For<IPostOutcomesHttpTriggerService>();
-            _httpRequestMessageHelper.GetTouchpointId(_request).Returns(new Guid());
+            _httpRequestMessageHelper.GetTouchpointId(_request).Returns("0000000001");
         }
 
         [Test]
         public async Task PostOutcomesHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
         {
-            _httpRequestMessageHelper.GetTouchpointId(_request).Returns((Guid?)null);
+            _httpRequestMessageHelper.GetTouchpointId(_request).Returns((string)null);
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);

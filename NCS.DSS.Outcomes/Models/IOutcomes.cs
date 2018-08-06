@@ -13,7 +13,7 @@ namespace NCS.DSS.Outcomes.Models
         DateTime? OutcomeEffectiveDate { get; set; }
         Guid? TouchpointId { get; set; }
         DateTime? LastModifiedDate { get; set; }
-        Guid? LastModifiedTouchpointId { get; set; }
+        string LastModifiedTouchpointId { get; set; }
 
         void SetDefaultValues();
     }

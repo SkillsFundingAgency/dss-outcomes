@@ -250,13 +250,13 @@ namespace NCS.DSS.Outcomes.APIDefinition
 
             foreach (var response in responseCodes)
             {
-                var OutcomesResponse = (Response) response;
+                var outcomesResponse = (Response) response;
 
-                if (!OutcomesResponse.ShowSchema)
+                if (!outcomesResponse.ShowSchema)
                     responseDef = new ExpandoObject();
 
-                responseDef.description = OutcomesResponse.Description;
-                AddToExpando(responses, OutcomesResponse.HttpStatusCode.ToString(), responseDef);
+                responseDef.description = outcomesResponse.Description;
+                AddToExpando(responses, outcomesResponse.HttpStatusCode.ToString(), responseDef);
             }
 
             return responses;
@@ -265,6 +265,14 @@ namespace NCS.DSS.Outcomes.APIDefinition
         private static List<object> GenerateFunctionParametersSignature(MethodInfo methodInfo, string route, dynamic doc)
         {
             var parameterSignatures = new List<object>();
+
+            dynamic opHeaderParam = new ExpandoObject();
+            opHeaderParam.name = "TouchpointId";
+            opHeaderParam.@in = "header";
+            opHeaderParam.required = true;
+            opHeaderParam.type = "string";
+            parameterSignatures.Add(opHeaderParam);
+
             foreach (ParameterInfo parameter in methodInfo.GetParameters())
             {
                 if (parameter.ParameterType == typeof(HttpRequestMessage)) continue;
