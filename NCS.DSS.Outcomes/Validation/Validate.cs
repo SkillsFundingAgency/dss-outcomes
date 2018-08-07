@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using NCS.DSS.Outcomes.Models;
+using NCS.DSS.Outcomes.ReferenceData;
 
 namespace NCS.DSS.Outcomes.Validation
 {
@@ -31,7 +32,10 @@ namespace NCS.DSS.Outcomes.Validation
 
             if (outcomesResource.LastModifiedDate.HasValue && outcomesResource.LastModifiedDate.Value > DateTime.UtcNow)
                 results.Add(new ValidationResult("Last Modified Date must be less the current date/time", new[] { "LastModifiedDate" }));
-   
+            
+            if (outcomesResource.OutcomeType.HasValue && !Enum.IsDefined(typeof(OutcomeType), outcomesResource.OutcomeType.Value))
+                results.Add(new ValidationResult("Please supply a valid OutcomeType", new[] { "OutcomeType" }));
+
         }
 
     }

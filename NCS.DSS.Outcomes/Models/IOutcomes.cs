@@ -8,7 +8,7 @@ namespace NCS.DSS.Outcomes.Models
         Guid? OutcomesId { get; set; }
         Guid? CustomerId { get; set; }
         Guid? ActionPlanId { get; set; }
-        OutcomeType OutcomeType { get; set; }
+        OutcomeType? OutcomeType { get; set; }
         DateTime? OutcomeClaimedDate { get; set; }
         DateTime? OutcomeEffectiveDate { get; set; }
         Guid? TouchpointId { get; set; }

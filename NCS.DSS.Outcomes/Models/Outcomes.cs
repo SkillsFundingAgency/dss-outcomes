@@ -24,7 +24,7 @@ namespace NCS.DSS.Outcomes.Models
 
         [Display(Description = "Must be a valid Outcome Type reference data value.")]
         [Example(Description = "1")]
-        public OutcomeType OutcomeType { get; set; }
+        public OutcomeType? OutcomeType { get; set; }
 
         [Required]
         [DataType(DataType.DateTime)]
@@ -65,7 +65,7 @@ namespace NCS.DSS.Outcomes.Models
             if (outcomesPatch == null)
                 return;
 
-            if(outcomesPatch.OutcomeType != 0)
+            if(outcomesPatch.OutcomeType.HasValue)
                 OutcomeType = outcomesPatch.OutcomeType;
             
             if (outcomesPatch.OutcomeClaimedDate.HasValue)

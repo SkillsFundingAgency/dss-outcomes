@@ -22,7 +22,7 @@ namespace NCS.DSS.Outcomes.Models
 
         [Display(Description = "Must be a valid Outcome Type reference data value.")]
         [Example(Description = "1")]
-        public OutcomeType OutcomeType { get; set; }
+        public OutcomeType? OutcomeType { get; set; }
 
         [DataType(DataType.DateTime)]
         [Display(Description = "Date that an outcome was claimed by the prime contractor.  Only one Outcome of each type is allowed within a 12 month period")]
