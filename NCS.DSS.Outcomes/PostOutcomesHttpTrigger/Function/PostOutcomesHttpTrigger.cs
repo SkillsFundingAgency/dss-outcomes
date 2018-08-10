@@ -68,7 +68,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             if (outcomesRequest == null)
                 return HttpResponseMessageHelper.UnprocessableEntity(req);
 
-            outcomesRequest.LastModifiedTouchpointId = touchpointId;
+            outcomesRequest.SetIds(customerGuid, actionplanGuid, touchpointId);
 
             var errors = validate.ValidateResource(outcomesRequest);
 

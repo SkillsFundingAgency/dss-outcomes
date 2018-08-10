@@ -12,12 +12,10 @@ namespace NCS.DSS.Outcomes.Models
         [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
         public Guid? OutcomesId { get; set; }
 
-        [Required]
         [Display(Description = "Unique identifier of a customer.")]
         [Example(Description = "2730af9c-fc34-4c2b-a905-c4b584b0f379")]
         public Guid? CustomerId { get; set; }
 
-        [Required]
         [Display(Description = "Unique identifier to the related action plan resource.")]
         [Example(Description = "2730af9c-fc34-4c2b-a905-c4b584b0f379")]
         public Guid? ActionPlanId { get; set; }
@@ -54,10 +52,17 @@ namespace NCS.DSS.Outcomes.Models
 
         public void SetDefaultValues()
         {
-            OutcomesId = Guid.NewGuid();
 
             if (!LastModifiedDate.HasValue)
                 LastModifiedDate = DateTime.UtcNow;
+        }
+
+        public void SetIds(Guid customerId, Guid actionPlanId, string touchpointId)
+        {
+            OutcomesId = Guid.NewGuid();
+            CustomerId = customerId;
+            ActionPlanId = actionPlanId;
+            LastModifiedTouchpointId = touchpointId;
         }
 
         public void Patch(OutcomesPatch outcomesPatch)
