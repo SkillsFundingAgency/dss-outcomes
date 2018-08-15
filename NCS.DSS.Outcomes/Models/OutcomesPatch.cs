@@ -34,9 +34,10 @@ namespace NCS.DSS.Outcomes.Models
         [Example(Description = "2018-06-20T21:45:00")]
         public DateTime? OutcomeEffectiveDate { get; set; }
 
+        [StringLength(10, MinimumLength = 10)]
         [Display(Description = "Identifier of the touchpoint claiming the outcome.")]
-        [Example(Description = "d1307d77-af23-4cb4-b600-a60e04f8c3df")]
-        public Guid? TouchpointId { get; set; }
+        [Example(Description = "0000000001")]
+        public string TouchpointId { get; set; }
 
         [DataType(DataType.DateTime)]
         [Display(Description = "Date and time of the last modification to the record.")]
