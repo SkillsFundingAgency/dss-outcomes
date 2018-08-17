@@ -2,23 +2,29 @@
 using System.Net;
 using System.Threading.Tasks;
 using NCS.DSS.Outcomes.Cosmos.Provider;
+using NCS.DSS.Outcomes.ServiceBus;
 
 namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service
 {
     public class PostOutcomesHttpTriggerService : IPostOutcomesHttpTriggerService
     {
-        public async Task<Models.Outcomes> CreateAsync(Models.Outcomes Outcomes)
+        public async Task<Models.Outcomes> CreateAsync(Models.Outcomes outcomes)
         {
-            if (Outcomes == null)
+            if (outcomes == null)
                 return null;
 
-            Outcomes.SetDefaultValues();
+            outcomes.SetDefaultValues();
 
             var documentDbProvider = new DocumentDBProvider();
 
-            var response = await documentDbProvider.CreateOutcomesAsync(Outcomes);
+            var response = await documentDbProvider.CreateOutcomesAsync(outcomes);
 
             return response.StatusCode == HttpStatusCode.Created ? (dynamic)response.Resource : null;
+        }
+
+        public async Task SendToServiceBusQueueAsync(Models.Outcomes outcomes, string reqUrl)
+        {
+            await ServiceBusClient.SendPostMessageAsync(outcomes, reqUrl);
         }
     }
 }

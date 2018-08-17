@@ -92,6 +92,9 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
 
             var outcomes = await outcomesPostService.CreateAsync(outcomesRequest);
 
+            if (outcomes != null)
+                await outcomesPostService.SendToServiceBusQueueAsync(outcomes, req.RequestUri.AbsoluteUri);
+
             return outcomes == null
                 ? HttpResponseMessageHelper.BadRequest(customerGuid)
                 : HttpResponseMessageHelper.Created(JsonHelper.SerializeObject(outcomes));

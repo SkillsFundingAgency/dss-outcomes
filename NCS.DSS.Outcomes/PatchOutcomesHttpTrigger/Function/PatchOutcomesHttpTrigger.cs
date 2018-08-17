@@ -100,6 +100,9 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
 
             var updatedOutcomes = await outcomesPatchService.UpdateAsync(outcomes, outcomesPatchRequest);
 
+            if (updatedOutcomes != null)
+                await outcomesPatchService.SendToServiceBusQueueAsync(updatedOutcomes,customerGuid, req.RequestUri.AbsoluteUri);
+
             return updatedOutcomes == null ?
                 HttpResponseMessageHelper.BadRequest(outcomesGuid) :
                 HttpResponseMessageHelper.Ok(JsonHelper.SerializeObject(updatedOutcomes));

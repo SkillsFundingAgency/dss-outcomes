@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using NCS.DSS.Outcomes.Cosmos.Provider;
 using NCS.DSS.Outcomes.Models;
+using NCS.DSS.Outcomes.ServiceBus;
 
 namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
 {
@@ -31,6 +32,11 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
             var outcomes = await documentDbProvider.GetOutcomesForCustomerAsync(customerId, interactionsId, actionplanId, outcomesId);
 
             return outcomes;
+        }
+
+        public async Task SendToServiceBusQueueAsync(Models.Outcomes outcomes, Guid customerId, string reqUrl)
+        {
+            await ServiceBusClient.SendPatchMessageAsync(outcomes, customerId, reqUrl);
         }
     }
 }
