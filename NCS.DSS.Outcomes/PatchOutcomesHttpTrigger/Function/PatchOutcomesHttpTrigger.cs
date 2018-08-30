@@ -83,6 +83,11 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             if (!doesCustomerExist)
                 return HttpResponseMessageHelper.NoContent(customerGuid);
 
+            var isCustomerReadOnly = await resourceHelper.IsCustomerReadOnly(customerGuid);
+
+            if (isCustomerReadOnly)
+                return HttpResponseMessageHelper.Forbidden(customerGuid);
+
             var doesInteractionExist = resourceHelper.DoesInteractionExist(interactionGuid);
 
             if (!doesInteractionExist)
