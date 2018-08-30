@@ -20,7 +20,12 @@ namespace NCS.DSS.Outcomes.Models
         [Example(Description = "2730af9c-fc34-4c2b-a905-c4b584b0f379")]
         public Guid? ActionPlanId { get; set; }
 
-        [Display(Description = "Must be a valid Outcome Type reference data value.")]
+        [Display(Description = "Outcome Type reference data value   :   " +
+                                "1 - Customer Satisfaction,   " + 
+                                "2 - Career Management,    " +
+                                "3 - Sustainable Employment,    " +
+                                "4 - Accredited Learning,    " +
+                                "5 - Career Progression")]
         [Example(Description = "1")]
         public OutcomeType? OutcomeType { get; set; }
 
