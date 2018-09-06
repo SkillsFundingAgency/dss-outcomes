@@ -8,5 +8,6 @@ namespace NCS.DSS.Outcomes.Helpers
     {
         Task<T> GetOutcomesFromRequest<T>(HttpRequestMessage req);
         string GetTouchpointId(HttpRequestMessage req);
+        string GetApimURL(HttpRequestMessage req);
     }
 }

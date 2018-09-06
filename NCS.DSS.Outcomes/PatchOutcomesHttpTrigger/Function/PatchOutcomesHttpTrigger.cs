@@ -43,6 +43,13 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                 return HttpResponseMessageHelper.BadRequest();
             }
 
+            var ApimURL = httpRequestMessageHelper.GetApimURL(req);
+            if (string.IsNullOrEmpty(ApimURL))
+            {
+                log.LogInformation("Unable to locate 'apimurl' in request header");
+                return HttpResponseMessageHelper.BadRequest();
+            }
+
             log.LogInformation("Patch Action Plan C# HTTP trigger function processed a request. " + touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
@@ -106,7 +113,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             var updatedOutcomes = await outcomesPatchService.UpdateAsync(outcomes, outcomesPatchRequest);
 
             if (updatedOutcomes != null)
-                await outcomesPatchService.SendToServiceBusQueueAsync(updatedOutcomes,customerGuid, req.RequestUri.AbsoluteUri);
+                await outcomesPatchService.SendToServiceBusQueueAsync(updatedOutcomes,customerGuid, ApimURL);
 
             return updatedOutcomes == null ?
                 HttpResponseMessageHelper.BadRequest(outcomesGuid) :
