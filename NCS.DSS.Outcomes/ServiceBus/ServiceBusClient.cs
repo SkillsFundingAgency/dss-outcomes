@@ -27,7 +27,7 @@ namespace NCS.DSS.Outcomes.ServiceBus
                 TitleMessage = "New Outcome record {" + outcomes.OutcomesId + "} added at " + DateTime.UtcNow,
                 CustomerGuid = outcomes.CustomerId,
                 LastModifiedDate = outcomes.LastModifiedDate,
-                URL = reqUrl + outcomes.OutcomesId,
+                URL = reqUrl + "/" + outcomes.OutcomesId,
                 IsNewCustomer = false,
                 TouchpointId = outcomes.LastModifiedTouchpointId
             };
