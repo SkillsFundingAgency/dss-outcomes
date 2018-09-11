@@ -62,7 +62,7 @@ namespace NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Function
             if (outcome == null)
                 return HttpResponseMessageHelper.NoContent(outcomesGuid);
 
-            var outcomeDeleted = await outcomesDeleteService.DeleteAsync(outcome.OutcomesId.GetValueOrDefault());
+            var outcomeDeleted = await outcomesDeleteService.DeleteAsync(outcome.OutcomeId.GetValueOrDefault());
 
             return !outcomeDeleted ?
                 HttpResponseMessageHelper.BadRequest(outcomesGuid) :

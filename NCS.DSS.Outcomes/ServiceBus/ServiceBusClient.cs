@@ -24,10 +24,10 @@ namespace NCS.DSS.Outcomes.ServiceBus
 
             var messageModel = new MessageModel()
             {
-                TitleMessage = "New Outcome record {" + outcomes.OutcomesId + "} added at " + DateTime.UtcNow,
+                TitleMessage = "New Outcome record {" + outcomes.OutcomeId + "} added at " + DateTime.UtcNow,
                 CustomerGuid = outcomes.CustomerId,
                 LastModifiedDate = outcomes.LastModifiedDate,
-                URL = reqUrl + "/" + outcomes.OutcomesId,
+                URL = reqUrl + "/" + outcomes.OutcomeId,
                 IsNewCustomer = false,
                 TouchpointId = outcomes.LastModifiedTouchpointId
             };

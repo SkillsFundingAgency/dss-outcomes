@@ -10,7 +10,7 @@ namespace NCS.DSS.Outcomes.Models
         [Display(Description = "Unique identifier of the Outcomes record.")]
         [Example(Description = "b8592ff8-af97-49ad-9fb2-e5c3c717fd85")]
         [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
-        public Guid? OutcomesId { get; set; }
+        public Guid? OutcomeId { get; set; }
 
         [Display(Description = "Unique identifier of a customer.")]
         [Example(Description = "2730af9c-fc34-4c2b-a905-c4b584b0f379")]

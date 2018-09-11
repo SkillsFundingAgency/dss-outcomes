@@ -120,7 +120,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
                 ?.CreateDocumentQuery<Models.Outcomes>(collectionUri, new FeedOptions { MaxItemCount = 1 })
                 .Where(x => x.CustomerId == customerId && 
                         x.ActionPlanId == actionplanId && 
-                        x.OutcomesId == outcomesId)
+                        x.OutcomeId == outcomesId)
                 .AsDocumentQuery();
 
             if (outcomesForCustomerQuery == null)
@@ -149,7 +149,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
 
         public async Task<ResourceResponse<Document>> UpdateOutcomesAsync(Models.Outcomes outcomes)
         {
-            var documentUri = _documentDbHelper.CreateDocumentUri(outcomes.OutcomesId.GetValueOrDefault());
+            var documentUri = _documentDbHelper.CreateDocumentUri(outcomes.OutcomeId.GetValueOrDefault());
 
             var client = _databaseClient.CreateDocumentClient();
 

@@ -5,7 +5,7 @@ namespace NCS.DSS.Outcomes.Models
 {
     public interface IOutcomes
     {
-        Guid? OutcomesId { get; set; }
+        Guid? OutcomeId { get; set; }
         Guid? CustomerId { get; set; }
         Guid? ActionPlanId { get; set; }
         OutcomeType? OutcomeType { get; set; }
