@@ -26,7 +26,7 @@ namespace NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Display(Name = "Get", Description = "Ability to retrieve an individual action plan for the given customer")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Interactions/{interactionId}/actionplans/{actionplanId}/Outcomes/{OutcomesId}")]HttpRequestMessage req, ILogger log, string customerId, string interactionId, string actionplanId, string OutcomesId,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Interactions/{interactionId}/actionplans/{actionplanId}/Outcomes/{OutcomeId}")]HttpRequestMessage req, ILogger log, string customerId, string interactionId, string actionplanId, string OutcomeId,
             [Inject]IResourceHelper resourceHelper,
             [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
             [Inject]IGetOutcomesByIdHttpTriggerService outcomesGetService)
@@ -49,7 +49,7 @@ namespace NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Function
             if (!Guid.TryParse(actionplanId, out var actionPlansGuid))
                 return HttpResponseMessageHelper.BadRequest(actionPlansGuid);
 
-            if (!Guid.TryParse(OutcomesId, out var outcomesGuid))
+            if (!Guid.TryParse(OutcomeId, out var outcomesGuid))
                 return HttpResponseMessageHelper.BadRequest(outcomesGuid);
 
             //Check customer

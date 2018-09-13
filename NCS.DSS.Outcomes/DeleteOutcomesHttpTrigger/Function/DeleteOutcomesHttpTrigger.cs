@@ -24,7 +24,7 @@ namespace NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Display(Name = "Delete", Description = "Ability to remove a customers Outcome record.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "Customers/{customerId}/Interactions/{interactionId}/actionplans/{actionplanId}/Outcomes/{outcomesId}")]HttpRequestMessage req, ILogger log, string customerId, string interactionId, string actionplanId, string outcomesId,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "Customers/{customerId}/Interactions/{interactionId}/actionplans/{actionplanId}/Outcomes/{outcomeId}")]HttpRequestMessage req, ILogger log, string customerId, string interactionId, string actionplanId, string outcomeId,
         [Inject]IResourceHelper resourceHelper,
         [Inject]IDeleteOutcomesHttpTriggerService outcomesDeleteService)
         {
@@ -39,7 +39,7 @@ namespace NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Function
             if (!Guid.TryParse(actionplanId, out var actionplanGuid))
                 return HttpResponseMessageHelper.BadRequest(actionplanGuid);
 
-            if (!Guid.TryParse(outcomesId, out var outcomesGuid))
+            if (!Guid.TryParse(outcomeId, out var outcomesGuid))
                 return HttpResponseMessageHelper.BadRequest(outcomesGuid);
 
             var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);

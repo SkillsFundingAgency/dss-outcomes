@@ -30,7 +30,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Action Plan validation error(s)", ShowSchema = false)]
         [Display(Name = "Patch", Description = "Ability to modify/update a customers action plan record.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Interactions/{interactionId}/actionplans/{actionplanId}/Outcomes/{OutcomesId}")]HttpRequestMessage req, ILogger log, string customerId, string interactionId, string actionplanId, string OutcomesId,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Interactions/{interactionId}/actionplans/{actionplanId}/Outcomes/{OutcomeId}")]HttpRequestMessage req, ILogger log, string customerId, string interactionId, string actionplanId, string OutcomeId,
             [Inject]IResourceHelper resourceHelper, 
             [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
             [Inject]IValidate validate,
@@ -61,7 +61,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             if (!Guid.TryParse(actionplanId, out var actionplanGuid))
                 return HttpResponseMessageHelper.BadRequest(actionplanGuid);
 
-            if (!Guid.TryParse(OutcomesId, out var outcomesGuid))
+            if (!Guid.TryParse(OutcomeId, out var outcomesGuid))
                 return HttpResponseMessageHelper.BadRequest(outcomesGuid);
 
             Models.OutcomesPatch  outcomesPatchRequest;
