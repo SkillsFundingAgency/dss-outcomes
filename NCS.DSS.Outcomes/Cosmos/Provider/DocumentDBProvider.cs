@@ -110,7 +110,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
             return outcomes.Any() ? outcomes : null;
         }
 
-        public async Task<Models.Outcomes> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionplanId, Guid outcomesId)
+        public async Task<Models.Outcomes> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionplanId, Guid OutcomeId)
         {
             var collectionUri = _documentDbHelper.CreateDocumentCollectionUri();
 
@@ -120,7 +120,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
                 ?.CreateDocumentQuery<Models.Outcomes>(collectionUri, new FeedOptions { MaxItemCount = 1 })
                 .Where(x => x.CustomerId == customerId && 
                         x.ActionPlanId == actionplanId && 
-                        x.OutcomeId == outcomesId)
+                        x.OutcomeId == OutcomeId)
                 .AsDocumentQuery();
 
             if (outcomesForCustomerQuery == null)
@@ -161,9 +161,9 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
             return response;
         }
 
-        public async Task<bool> DeleteAsync(Guid outcomesId)
+        public async Task<bool> DeleteAsync(Guid OutcomeId)
         {
-            var documentUri = _documentDbHelper.CreateDocumentUri(outcomesId);
+            var documentUri = _documentDbHelper.CreateDocumentUri(OutcomeId);
 
             var client = _databaseClient.CreateDocumentClient();
 

@@ -12,15 +12,15 @@ namespace NCS.DSS.Outcomes.PutOutcomesHttpTrigger
     {
         [Disable]
         [FunctionName("Put")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "Customers/{customerId}/Interactions/{interactionId}/Outcomes/{OutcomesId}")]HttpRequestMessage req, TraceWriter log, string OutcomesId)
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "Customers/{customerId}/Interactions/{interactionId}/Outcomes/{OutcomeId}")]HttpRequestMessage req, TraceWriter log, string OutcomeId)
         {
             log.Info("Put Action Plan C# HTTP trigger function processed a request.");
 
-            if (!Guid.TryParse(OutcomesId, out var OutcomesGuid))
+            if (!Guid.TryParse(OutcomeId, out var OutcomesGuid))
             {
                 return new HttpResponseMessage(HttpStatusCode.BadRequest)
                 {
-                    Content = new StringContent(JsonConvert.SerializeObject(OutcomesId),
+                    Content = new StringContent(JsonConvert.SerializeObject(OutcomeId),
                         System.Text.Encoding.UTF8, "application/json")
                 };
             }

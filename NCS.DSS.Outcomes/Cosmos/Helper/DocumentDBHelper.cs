@@ -36,12 +36,12 @@ namespace NCS.DSS.Outcomes.Cosmos.Helper
             return _documentCollectionUri;
         }
         
-        public Uri CreateDocumentUri(Guid OutcomesId)
+        public Uri CreateDocumentUri(Guid OutcomeId)
         {
             if (_documentUri != null)
                 return _documentUri;
 
-            _documentUri = UriFactory.CreateDocumentUri(_databaseId, _collectionId, OutcomesId.ToString());
+            _documentUri = UriFactory.CreateDocumentUri(_databaseId, _collectionId, OutcomeId.ToString());
 
             return _documentUri;
 

@@ -26,10 +26,10 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
             return responseStatusCode == HttpStatusCode.OK ? outcomes : null;
         }
 
-        public async Task<Models.Outcomes> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionplanId, Guid outcomesId)
+        public async Task<Models.Outcomes> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionplanId, Guid OutcomeId)
         {
             var documentDbProvider = new DocumentDBProvider();
-            var outcomes = await documentDbProvider.GetOutcomesForCustomerAsync(customerId, interactionsId, actionplanId, outcomesId);
+            var outcomes = await documentDbProvider.GetOutcomesForCustomerAsync(customerId, interactionsId, actionplanId, OutcomeId);
 
             return outcomes;
         }

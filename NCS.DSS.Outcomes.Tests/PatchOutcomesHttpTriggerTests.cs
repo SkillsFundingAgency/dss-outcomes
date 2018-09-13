@@ -23,7 +23,7 @@ namespace NCS.DSS.Outcomes.Tests
         private const string ValidCustomerId = "7E467BDB-213F-407A-B86A-1954053D3C24";
         private const string ValidInteractionId = "1e1a555c-9633-4e12-ab28-09ed60d51cb3";
         private const string ValidActionPlanId = "cff8080e-1da2-42bd-9b63-8f235aad9d86";
-        private const string ValidOutcomesId = "d5369b9a-6959-4bd3-92fc-1583e72b7e51";
+        private const string ValidOutcomeId = "d5369b9a-6959-4bd3-92fc-1583e72b7e51";
         private const string InValidId = "1111111-2222-3333-4444-555555555555";
         private ILogger _log;
         private HttpRequestMessage _request;
@@ -62,7 +62,7 @@ namespace NCS.DSS.Outcomes.Tests
             _httpRequestMessageHelper.GetTouchpointId(_request).Returns((string)null);
 
             // Act
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomesId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -73,7 +73,7 @@ namespace NCS.DSS.Outcomes.Tests
         public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeBadRequest_WhenCustomerIdIsInvalid()
         {
             // Act
-            var result = await RunFunction(InValidId, ValidInteractionId, ValidActionPlanId, ValidOutcomesId);
+            var result = await RunFunction(InValidId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -84,7 +84,7 @@ namespace NCS.DSS.Outcomes.Tests
         public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeBadRequest_WhenInteractionIdIsInvalid()
         {
             // Act
-            var result = await RunFunction(ValidCustomerId, InValidId, ValidActionPlanId, ValidOutcomesId);
+            var result = await RunFunction(ValidCustomerId, InValidId, ValidActionPlanId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -95,7 +95,7 @@ namespace NCS.DSS.Outcomes.Tests
         public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeBadRequest_WhenAcionPlanIdIsInvalid()
         {
             // Act
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, InValidId, ValidOutcomesId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, InValidId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -103,7 +103,7 @@ namespace NCS.DSS.Outcomes.Tests
         }
 
         [Test]
-        public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeBadRequest_WhenOutcomesIdIsInvalid()
+        public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeBadRequest_WhenOutcomeIdIsInvalid()
         {
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, InValidId);
@@ -121,7 +121,7 @@ namespace NCS.DSS.Outcomes.Tests
             var validationResults = new List<ValidationResult> { new ValidationResult("interaction Id is Required") };
             _validate.ValidateResource(Arg.Any<OutcomesPatch>()).Returns(validationResults);
 
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomesId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -133,7 +133,7 @@ namespace NCS.DSS.Outcomes.Tests
         {
             _httpRequestMessageHelper.GetOutcomesFromRequest<Models.Outcomes>(_request).Throws(new JsonException());
 
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomesId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -147,7 +147,7 @@ namespace NCS.DSS.Outcomes.Tests
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(false);
 
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomesId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -164,7 +164,7 @@ namespace NCS.DSS.Outcomes.Tests
             _resourceHelper.DoesInteractionExist(Arg.Any<Guid>()).Returns(false);
 
             // Act
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomesId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -183,7 +183,7 @@ namespace NCS.DSS.Outcomes.Tests
             _patchOutcomesHttpTriggerService.GetOutcomesForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult<Models.Outcomes>(null).Result);
 
             // Act
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomesId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -203,7 +203,7 @@ namespace NCS.DSS.Outcomes.Tests
             _patchOutcomesHttpTriggerService.GetOutcomesForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult<Models.Outcomes>(null).Result);
 
             // Act
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomesId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -223,7 +223,7 @@ namespace NCS.DSS.Outcomes.Tests
 
             _patchOutcomesHttpTriggerService.UpdateAsync(Arg.Any<Models.Outcomes>(), Arg.Any<OutcomesPatch>()).Returns(Task.FromResult<Models.Outcomes>(null).Result);
 
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomesId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -243,7 +243,7 @@ namespace NCS.DSS.Outcomes.Tests
 
             _patchOutcomesHttpTriggerService.UpdateAsync(Arg.Any<Models.Outcomes>(), Arg.Any<OutcomesPatch>()).Returns(Task.FromResult<Models.Outcomes>(null).Result);
 
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomesId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -263,7 +263,7 @@ namespace NCS.DSS.Outcomes.Tests
 
             _patchOutcomesHttpTriggerService.UpdateAsync(Arg.Any<Models.Outcomes>(), Arg.Any<OutcomesPatch>()).Returns(Task.FromResult(_outcome).Result);
 
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomesId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);

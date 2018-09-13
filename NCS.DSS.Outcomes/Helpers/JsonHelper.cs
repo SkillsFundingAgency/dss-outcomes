@@ -7,7 +7,7 @@ namespace NCS.DSS.Outcomes.Helpers
 {
     public class JsonHelper
     {
-        private const string ResourceIdName = "OutcomesId";
+        private const string ResourceIdName = "OutcomeId";
 
         public static string SerializeObject<T>(T resource)
         {
