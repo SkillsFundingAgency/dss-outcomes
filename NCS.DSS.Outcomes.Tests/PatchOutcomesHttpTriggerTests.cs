@@ -54,6 +54,7 @@ namespace NCS.DSS.Outcomes.Tests
             _httpRequestMessageHelper = Substitute.For<IHttpRequestMessageHelper>();
             _patchOutcomesHttpTriggerService = Substitute.For<IPatchOutcomesHttpTriggerService>();
             _httpRequestMessageHelper.GetTouchpointId(_request).Returns("0000000001");
+            _httpRequestMessageHelper.GetApimURL(_request).Returns("http://localhost:7071/");
         }
 
         [Test]
