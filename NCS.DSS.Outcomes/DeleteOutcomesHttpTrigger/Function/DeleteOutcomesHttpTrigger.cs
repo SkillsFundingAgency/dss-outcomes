@@ -42,17 +42,17 @@ namespace NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Function
             if (!Guid.TryParse(outcomeId, out var outcomesGuid))
                 return HttpResponseMessageHelper.BadRequest(outcomesGuid);
 
-            var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
+            var doesCustomerExist = await resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
                 return HttpResponseMessageHelper.NoContent(customerGuid);
 
-            var doesInteractionExist = resourceHelper.DoesInteractionExist(interactionGuid);
+            var doesInteractionExist = await resourceHelper.DoesInteractionExist(interactionGuid);
 
             if (!doesInteractionExist)
                 return HttpResponseMessageHelper.NoContent(interactionGuid);
 
-            var doesActionPlanExist = resourceHelper.DoesActionPlanExist(actionplanGuid);
+            var doesActionPlanExist = await resourceHelper.DoesActionPlanExist(actionplanGuid);
 
             if (!doesActionPlanExist)
                 return HttpResponseMessageHelper.NoContent(actionplanGuid);

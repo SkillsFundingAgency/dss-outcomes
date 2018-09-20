@@ -53,19 +53,19 @@ namespace NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Function
                 return HttpResponseMessageHelper.BadRequest(outcomesGuid);
 
             //Check customer
-            var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
+            var doesCustomerExist = await resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
                 return HttpResponseMessageHelper.NoContent(customerGuid);
 
             //Check interactions
-                var doesInteractionExist = resourceHelper.DoesInteractionExist(interactionGuid);
+                var doesInteractionExist = await resourceHelper.DoesInteractionExist(interactionGuid);
 
             if (!doesInteractionExist)
                 return HttpResponseMessageHelper.NoContent(interactionGuid);
 
             //Check actionplans
-                var doesActionPlanExist = resourceHelper.DoesActionPlanExist(actionPlansGuid);
+                var doesActionPlanExist = await resourceHelper.DoesActionPlanExist(actionPlansGuid);
 
             if (!doesActionPlanExist)
                 return HttpResponseMessageHelper.NoContent(actionPlansGuid);
