@@ -46,8 +46,8 @@ namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Function
             if (!Guid.TryParse(interactionId, out var interactionGuid))
                 return HttpResponseMessageHelper.BadRequest(interactionGuid);
 
-            if (!Guid.TryParse(actionplanId, out var actionPlansGuid))
-                return HttpResponseMessageHelper.BadRequest(actionPlansGuid);
+            if (!Guid.TryParse(actionplanId, out var actionPlanGuid))
+                return HttpResponseMessageHelper.BadRequest(actionPlanGuid);
 
             //Check customer
             var doesCustomerExist = await resourceHelper.DoesCustomerExist(customerGuid);
@@ -56,16 +56,15 @@ namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Function
                 return HttpResponseMessageHelper.NoContent(customerGuid);
 
             //Check interactions
-            var doesInteractionExist = await resourceHelper.DoesInteractionExist(interactionGuid);
+            var doesInteractionExist = resourceHelper.DoesInteractionResourceExistAndBelongToCustomer(interactionGuid, customerGuid);
 
             if (!doesInteractionExist)
                 return HttpResponseMessageHelper.NoContent(interactionGuid);
 
-            //Check actionplans
-            var doesActionPlanExist = await resourceHelper.DoesActionPlanExist(actionPlansGuid);
+            var doesActionPlanExist = resourceHelper.DoesActionPlanResourceExistAndBelongToCustomer(actionPlanGuid, interactionGuid, customerGuid);
 
             if (!doesActionPlanExist)
-                return HttpResponseMessageHelper.NoContent(actionPlansGuid);
+                return HttpResponseMessageHelper.NoContent(actionPlanGuid);
 
             var outcomes = await outcomesGetService.GetOutcomesAsync(customerGuid);
 

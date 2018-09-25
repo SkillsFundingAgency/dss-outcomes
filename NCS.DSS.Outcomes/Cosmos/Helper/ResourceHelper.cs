@@ -22,18 +22,18 @@ namespace NCS.DSS.Outcomes.Cosmos.Helper
             return isCustomerReadOnly;
         }
 
-        public async Task<bool> DoesInteractionExist(Guid interactionId)
+        public bool DoesInteractionResourceExistAndBelongToCustomer(Guid interactionId, Guid customerId)
         {
             var documentDbProvider = new DocumentDBProvider();
-            var doesInteractionExist = await documentDbProvider.DoesInteractionResourceExist(interactionId);
+            var doesInteractionExist = documentDbProvider.DoesInteractionResourceExistAndBelongToCustomer(interactionId, customerId);
 
             return doesInteractionExist;
         }
 
-        public async Task<bool> DoesActionPlanExist(Guid actionplanId)
+        public bool DoesActionPlanResourceExistAndBelongToCustomer(Guid actionplanId, Guid interactionId, Guid customerId)
         {
             var documentDbProvider = new DocumentDBProvider();
-            var doesActionPlanExist = await documentDbProvider.DoesActionPlanResourceExist(actionplanId);
+            var doesActionPlanExist = documentDbProvider.DoesActionPlanResourceExistAndBelongToCustomer(actionplanId, interactionId, customerId);
 
             return doesActionPlanExist;
         }
