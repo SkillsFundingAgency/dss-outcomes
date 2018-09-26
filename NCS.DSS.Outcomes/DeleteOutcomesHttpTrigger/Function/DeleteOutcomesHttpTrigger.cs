@@ -47,12 +47,12 @@ namespace NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Function
             if (!doesCustomerExist)
                 return HttpResponseMessageHelper.NoContent(customerGuid);
 
-            var doesInteractionExist = await resourceHelper.DoesInteractionExist(interactionGuid);
+            var doesInteractionExist = resourceHelper.DoesInteractionResourceExistAndBelongToCustomer(interactionGuid, customerGuid);
 
             if (!doesInteractionExist)
                 return HttpResponseMessageHelper.NoContent(interactionGuid);
 
-            var doesActionPlanExist = await resourceHelper.DoesActionPlanExist(actionplanGuid);
+            var doesActionPlanExist = resourceHelper.DoesActionPlanResourceExistAndBelongToCustomer(actionplanGuid, interactionGuid, customerGuid);
 
             if (!doesActionPlanExist)
                 return HttpResponseMessageHelper.NoContent(actionplanGuid);

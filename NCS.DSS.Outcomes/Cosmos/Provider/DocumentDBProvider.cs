@@ -36,9 +36,9 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
             return false;
         }
 
-        public async Task<bool> DoesInteractionResourceExist(Guid interactionId)
+        public bool DoesInteractionResourceExistAndBelongToCustomer(Guid interactionId, Guid customerId)
         {
-            var documentUri = DocumentDBHelper.CreateInteractionDocumentUri(interactionId);
+            var collectionUri = DocumentDBHelper.CreateInteractionDocumentCollectionUri();
 
             var client = DocumentDBClient.CreateDocumentClient();
 
@@ -47,21 +47,31 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
 
             try
             {
-                var response = await client.ReadDocumentAsync(documentUri);
-                if (response.Resource != null)
-                    return true;
+                var query = client.CreateDocumentQuery<long>(collectionUri, new SqlQuerySpec()
+                {
+                    QueryText = "SELECT VALUE COUNT(1) FROM interactions i " +
+                                "WHERE i.id = @interactionId " +
+                                "AND i.CustomerId = @customerId",
+
+                    Parameters = new SqlParameterCollection()
+                    {
+                        new SqlParameter("@interactionId", interactionId),
+                        new SqlParameter("@customerId", customerId)
+                    }
+                }).AsEnumerable().FirstOrDefault();
+
+                return Convert.ToBoolean(Convert.ToInt16(query));
             }
-            catch (DocumentClientException)
+            catch (DocumentQueryException)
             {
                 return false;
             }
 
-            return false;
         }
 
-        public async Task<bool> DoesActionPlanResourceExist(Guid actionPlanId)
+        public bool DoesActionPlanResourceExistAndBelongToCustomer(Guid actionPlanId, Guid interactionId, Guid customerId)
         {
-            var documentUri = DocumentDBHelper.CreateActionPlanDocumentUri(actionPlanId);
+            var collectionUri = DocumentDBHelper.CreateActionPlanDocumentCollectionUri();
 
             var client = DocumentDBClient.CreateDocumentClient();
 
@@ -70,16 +80,28 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
 
             try
             {
-                var response = await client.ReadDocumentAsync(documentUri);
-                if (response.Resource != null)
-                    return true;
+                var query = client.CreateDocumentQuery<long>(collectionUri, new SqlQuerySpec()
+                {
+                    QueryText = "SELECT VALUE COUNT(1) FROM actionplans a " +
+                                "WHERE a.id = @actionPlanId " +
+                                "AND a.InteractionId = @interactionId " +
+                                "AND a.CustomerId = @customerId",
+
+                    Parameters = new SqlParameterCollection()
+                    {
+                        new SqlParameter("@actionPlanId", actionPlanId),
+                        new SqlParameter("@interactionId", interactionId),
+                        new SqlParameter("@customerId", customerId)
+                    }
+                }).AsEnumerable().FirstOrDefault();
+
+                return Convert.ToBoolean(Convert.ToInt16(query));
             }
-            catch (DocumentClientException)
+            catch (DocumentQueryException)
             {
                 return false;
             }
 
-            return false;
         }
 
         public async Task<bool> DoesCustomerHaveATerminationDate(Guid customerId)

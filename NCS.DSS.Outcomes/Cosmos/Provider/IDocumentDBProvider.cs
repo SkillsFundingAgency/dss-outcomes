@@ -9,8 +9,8 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
     public interface IDocumentDBProvider
     {
         Task<bool> DoesCustomerResourceExist(Guid customerId);
-        Task<bool> DoesInteractionResourceExist(Guid interactionId);
-        Task<bool> DoesActionPlanResourceExist(Guid actionPlanId);
+        bool DoesInteractionResourceExistAndBelongToCustomer(Guid interactionId, Guid customerId);
+        bool DoesActionPlanResourceExistAndBelongToCustomer(Guid actionPlanId, Guid interactionId, Guid customerId);
         Task<bool> DoesCustomerHaveATerminationDate(Guid customerId);
         Task<List<Models.Outcomes>> GetOutcomesForCustomerAsync(Guid customerId);
         Task<Models.Outcomes> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionplanId, Guid outcomeId);
