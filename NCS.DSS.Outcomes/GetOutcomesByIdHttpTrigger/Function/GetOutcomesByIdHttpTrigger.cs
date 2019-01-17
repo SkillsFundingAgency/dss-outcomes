@@ -2,24 +2,23 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.Host;
 using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Http.Description;
 using Microsoft.Extensions.Logging;
-using NCS.DSS.Outcomes.Annotations;
 using NCS.DSS.Outcomes.Cosmos.Helper;
 using NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Service;
 using NCS.DSS.Outcomes.Helpers;
-using NCS.DSS.Outcomes.Ioc;
+using DFC.Swagger.Standard.Annotations;
+using Microsoft.AspNetCore.Mvc;
+using DFC.Functions.DI.Standard.Attributes;
 
 namespace NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Function
 {
     public static class GetOutcomesByIdHttpTrigger
     {
         [FunctionName("GetById")]
-        [ResponseType(typeof(Models.Outcomes))]
+        [ProducesResponseType(typeof(Models.Outcomes), 200)]
         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Action Plan found", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Action Plan does not exist", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.BadRequest, Description = "Request was malformed", ShowSchema = false)]

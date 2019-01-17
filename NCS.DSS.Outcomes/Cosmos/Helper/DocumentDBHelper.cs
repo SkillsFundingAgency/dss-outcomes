@@ -1,6 +1,5 @@
 ﻿
 using System;
-using System.Configuration;
 using Microsoft.Azure.Documents.Client;
 
 namespace NCS.DSS.Outcomes.Cosmos.Helper
@@ -8,20 +7,20 @@ namespace NCS.DSS.Outcomes.Cosmos.Helper
     public static class DocumentDBHelper
     {
         private static Uri _documentCollectionUri;
-        private static readonly string DatabaseId = ConfigurationManager.AppSettings["DatabaseId"];
-        private static readonly string CollectionId = ConfigurationManager.AppSettings["CollectionId"];
+        private static readonly string DatabaseId = Environment.GetEnvironmentVariable("DatabaseId");
+        private static readonly string CollectionId = Environment.GetEnvironmentVariable("CollectionId");
 
         private static Uri _customerDocumentCollectionUri;
-        private static readonly string CustomerDatabaseId = ConfigurationManager.AppSettings["CustomerDatabaseId"];
-        private static readonly string CustomerCollectionId = ConfigurationManager.AppSettings["CustomerCollectionId"];
+        private static readonly string CustomerDatabaseId = Environment.GetEnvironmentVariable("CustomerDatabaseId");
+        private static readonly string CustomerCollectionId = Environment.GetEnvironmentVariable("CustomerCollectionId");
 
         private static Uri _interactionDocumentCollectionUri;
-        private static readonly string InteractionDatabaseId = ConfigurationManager.AppSettings["InteractionDatabaseId"];
-        private static readonly string InteractionCollectionId = ConfigurationManager.AppSettings["InteractionCollectionId"];
+        private static readonly string InteractionDatabaseId = Environment.GetEnvironmentVariable("InteractionDatabaseId");
+        private static readonly string InteractionCollectionId = Environment.GetEnvironmentVariable("InteractionCollectionId");
 
         private static Uri _actionplanDocumentCollectionUri;
-        private static readonly string ActionPlanDatabaseId = ConfigurationManager.AppSettings["ActionPlanDatabaseId"];
-        private static readonly string ActionPlanCollectionId = ConfigurationManager.AppSettings["ActionPlanCollectionId"];
+        private static readonly string ActionPlanDatabaseId = Environment.GetEnvironmentVariable("ActionPlanDatabaseId");
+        private static readonly string ActionPlanCollectionId = Environment.GetEnvironmentVariable("ActionPlanCollectionId");
 
         public static Uri CreateDocumentCollectionUri()
         {
