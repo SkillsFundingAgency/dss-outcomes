@@ -4,14 +4,17 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using DFC.Common.Standard.Logging;
 using DFC.Functions.DI.Standard.Attributes;
+using DFC.HTTP.Standard;
+using DFC.JSON.Standard;
 using DFC.Swagger.Standard.Annotations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Outcomes.Cosmos.Helper;
-using NCS.DSS.Outcomes.Helpers;
 using NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.Validation;
 using Newtonsoft.Json;
@@ -29,77 +32,80 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Action Plan validation error(s)", ShowSchema = false)]
         [Display(Name = "Post", Description = "Ability to create a new action plan for a customer.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/actionplans/{actionplanId}/Outcomes")]HttpRequestMessage req, ILogger log, string customerId, string interactionId, string actionplanId,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/actionplans/{actionplanId}/Outcomes")]HttpRequest req, ILogger log, string customerId, string interactionId, string actionplanId,
             [Inject]IResourceHelper resourceHelper,
-            [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
+            [Inject]IPostOutcomesHttpTriggerService outcomesPostService,
             [Inject]IValidate validate,
-            [Inject]IPostOutcomesHttpTriggerService outcomesPostService)
+            [Inject]ILoggerHelper loggerHelper,
+            [Inject]IHttpRequestHelper httpRequestHelper,
+            [Inject]IHttpResponseMessageHelper httpResponseMessageHelper,
+            [Inject]IJsonHelper jsonHelper)
         {
-            var touchpointId = httpRequestMessageHelper.GetTouchpointId(req);
+            var touchpointId = httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
                 log.LogInformation("Unable to locate 'APIM-TouchpointId' in request header.");
-                return HttpResponseMessageHelper.BadRequest();
+                return httpResponseMessageHelper.BadRequest();
             }
 
-            var ApimURL = httpRequestMessageHelper.GetApimURL(req);
+            var ApimURL = httpRequestHelper.GetDssApimUrl(req);
             if (string.IsNullOrEmpty(ApimURL))
             {
                 log.LogInformation("Unable to locate 'apimurl' in request header");
-                return HttpResponseMessageHelper.BadRequest();
+                return httpResponseMessageHelper.BadRequest();
             }
 
             log.LogInformation("Post Action Plan C# HTTP trigger function processed a request. " + touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
-                return HttpResponseMessageHelper.BadRequest(customerGuid);
+                return httpResponseMessageHelper.BadRequest(customerGuid);
 
             if (!Guid.TryParse(interactionId, out var interactionGuid))
-                return HttpResponseMessageHelper.BadRequest(interactionGuid);
+                return httpResponseMessageHelper.BadRequest(interactionGuid);
 
             if (!Guid.TryParse(actionplanId, out var actionplanGuid))
-                return HttpResponseMessageHelper.BadRequest(actionplanGuid);
+                return httpResponseMessageHelper.BadRequest(actionplanGuid);
 
             Models.Outcomes outcomesRequest;
 
             try
             {
-                outcomesRequest = await httpRequestMessageHelper.GetOutcomesFromRequest<Models.Outcomes>(req);
+                outcomesRequest = await httpRequestHelper.GetResourceFromRequest<Models.Outcomes>(req);
             }
             catch (JsonException ex)
             {
-                return HttpResponseMessageHelper.UnprocessableEntity(ex);
+                return httpResponseMessageHelper.UnprocessableEntity(ex);
             }
 
             if (outcomesRequest == null)
-                return HttpResponseMessageHelper.UnprocessableEntity(req);
+                return httpResponseMessageHelper.UnprocessableEntity(req);
 
             outcomesRequest.SetIds(customerGuid, actionplanGuid, touchpointId);
 
             var errors = validate.ValidateResource(outcomesRequest);
 
             if (errors != null && errors.Any())
-                return HttpResponseMessageHelper.UnprocessableEntity(errors);
+                return httpResponseMessageHelper.UnprocessableEntity(errors);
 
             var doesCustomerExist = await resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
-                return HttpResponseMessageHelper.NoContent(customerGuid);
+                return httpResponseMessageHelper.NoContent(customerGuid);
 
             var isCustomerReadOnly = await resourceHelper.IsCustomerReadOnly(customerGuid);
 
             if (isCustomerReadOnly)
-                return HttpResponseMessageHelper.Forbidden(customerGuid);
+                return httpResponseMessageHelper.Forbidden(customerGuid);
 
             var doesInteractionExist = resourceHelper.DoesInteractionResourceExistAndBelongToCustomer(interactionGuid, customerGuid);
 
             if (!doesInteractionExist)
-                return HttpResponseMessageHelper.NoContent(interactionGuid);
+                return httpResponseMessageHelper.NoContent(interactionGuid);
 
             var doesActionPlanExist = resourceHelper.DoesActionPlanResourceExistAndBelongToCustomer(actionplanGuid, interactionGuid, customerGuid);
 
             if (!doesActionPlanExist)
-                return HttpResponseMessageHelper.NoContent(actionplanGuid);
+                return httpResponseMessageHelper.NoContent(actionplanGuid);
 
             var outcomes = await outcomesPostService.CreateAsync(outcomesRequest);
 
@@ -107,8 +113,8 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
                 await outcomesPostService.SendToServiceBusQueueAsync(outcomes, ApimURL);
 
             return outcomes == null
-                ? HttpResponseMessageHelper.BadRequest(customerGuid)
-                : HttpResponseMessageHelper.Created(JsonHelper.SerializeObject(outcomes));
+                ? httpResponseMessageHelper.BadRequest(customerGuid)
+                : httpResponseMessageHelper.Created(jsonHelper.SerializeObjectAndRenameIdProperty(outcomes, "id", "OutcomeId"));
 
         }
     }

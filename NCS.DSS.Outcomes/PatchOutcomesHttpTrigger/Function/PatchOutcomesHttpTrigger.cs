@@ -4,14 +4,17 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using DFC.Common.Standard.Logging;
 using DFC.Functions.DI.Standard.Attributes;
+using DFC.HTTP.Standard;
+using DFC.JSON.Standard;
 using DFC.Swagger.Standard.Annotations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Outcomes.Cosmos.Helper;
-using NCS.DSS.Outcomes.Helpers;
 using NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.Validation;
 using Newtonsoft.Json;
@@ -29,85 +32,88 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Action Plan validation error(s)", ShowSchema = false)]
         [Display(Name = "Patch", Description = "Ability to modify/update a customers action plan record.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Interactions/{interactionId}/actionplans/{actionplanId}/Outcomes/{OutcomeId}")]HttpRequestMessage req, ILogger log, string customerId, string interactionId, string actionplanId, string OutcomeId,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Interactions/{interactionId}/actionplans/{actionplanId}/Outcomes/{OutcomeId}")]HttpRequest req, ILogger log, string customerId, string interactionId, string actionplanId, string OutcomeId,
             [Inject]IResourceHelper resourceHelper, 
-            [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
+            [Inject]IPatchOutcomesHttpTriggerService outcomesPatchService,
             [Inject]IValidate validate,
-            [Inject]IPatchOutcomesHttpTriggerService outcomesPatchService)
+            [Inject]ILoggerHelper loggerHelper,
+            [Inject]IHttpRequestHelper httpRequestHelper,
+            [Inject]IHttpResponseMessageHelper httpResponseMessageHelper,
+            [Inject]IJsonHelper jsonHelper)
         {
-            var touchpointId = httpRequestMessageHelper.GetTouchpointId(req);
+            var touchpointId = httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
                 log.LogInformation("Unable to locate 'APIM-TouchpointId' in request header.");
-                return HttpResponseMessageHelper.BadRequest();
+                return httpResponseMessageHelper.BadRequest();
             }
 
-            var ApimURL = httpRequestMessageHelper.GetApimURL(req);
+            var ApimURL = httpRequestHelper.GetDssApimUrl(req);
             if (string.IsNullOrEmpty(ApimURL))
             {
                 log.LogInformation("Unable to locate 'apimurl' in request header");
-                return HttpResponseMessageHelper.BadRequest();
+                return httpResponseMessageHelper.BadRequest();
             }
 
             log.LogInformation("Patch Action Plan C# HTTP trigger function processed a request. " + touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
-                return HttpResponseMessageHelper.BadRequest(customerGuid);
+                return httpResponseMessageHelper.BadRequest(customerGuid);
 
             if (!Guid.TryParse(interactionId, out var interactionGuid))
-                return HttpResponseMessageHelper.BadRequest(interactionGuid);
+                return httpResponseMessageHelper.BadRequest(interactionGuid);
 
             if (!Guid.TryParse(actionplanId, out var actionplanGuid))
-                return HttpResponseMessageHelper.BadRequest(actionplanGuid);
+                return httpResponseMessageHelper.BadRequest(actionplanGuid);
 
             if (!Guid.TryParse(OutcomeId, out var outcomesGuid))
-                return HttpResponseMessageHelper.BadRequest(outcomesGuid);
+                return httpResponseMessageHelper.BadRequest(outcomesGuid);
 
             Models.OutcomesPatch  outcomesPatchRequest;
 
             try
             {
-                outcomesPatchRequest = await httpRequestMessageHelper.GetOutcomesFromRequest<Models.OutcomesPatch>(req);
+                outcomesPatchRequest = await httpRequestHelper.GetResourceFromRequest<Models.OutcomesPatch>(req);
             }
             catch (JsonException ex)
             {
-                return HttpResponseMessageHelper.UnprocessableEntity(ex);
+                return httpResponseMessageHelper.UnprocessableEntity(ex);
             }
 
             if (outcomesPatchRequest == null)
-                return HttpResponseMessageHelper.UnprocessableEntity(req);
+                return httpResponseMessageHelper.UnprocessableEntity(req);
 
             outcomesPatchRequest.LastModifiedTouchpointId = touchpointId;
 
             var errors = validate.ValidateResource(outcomesPatchRequest);
 
             if (errors != null && errors.Any())
-                return HttpResponseMessageHelper.UnprocessableEntity(errors);
+                return httpResponseMessageHelper.UnprocessableEntity(errors);
 
             var doesCustomerExist = await resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
-                return HttpResponseMessageHelper.NoContent(customerGuid);
+                return httpResponseMessageHelper.NoContent(customerGuid);
 
             var isCustomerReadOnly = await resourceHelper.IsCustomerReadOnly(customerGuid);
 
             if (isCustomerReadOnly)
-                return HttpResponseMessageHelper.Forbidden(customerGuid);
+                return httpResponseMessageHelper.Forbidden(customerGuid);
 
             var doesInteractionExist = resourceHelper.DoesInteractionResourceExistAndBelongToCustomer(interactionGuid, customerGuid);
 
             if (!doesInteractionExist)
-                return HttpResponseMessageHelper.NoContent(interactionGuid);
+                return httpResponseMessageHelper.NoContent(interactionGuid);
 
             var doesActionPlanExist = resourceHelper.DoesActionPlanResourceExistAndBelongToCustomer(actionplanGuid, interactionGuid, customerGuid);
 
             if (!doesActionPlanExist)
-                return HttpResponseMessageHelper.NoContent(actionplanGuid);
+                return httpResponseMessageHelper.NoContent(actionplanGuid);
 
             var outcomes = await outcomesPatchService.GetOutcomesForCustomerAsync(customerGuid, interactionGuid, actionplanGuid, outcomesGuid);
 
             if (outcomes == null)
-                return HttpResponseMessageHelper.NoContent(outcomesGuid);
+                return httpResponseMessageHelper.NoContent(outcomesGuid);
 
             var updatedOutcomes = await outcomesPatchService.UpdateAsync(outcomes, outcomesPatchRequest);
 
@@ -115,8 +121,8 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                 await outcomesPatchService.SendToServiceBusQueueAsync(updatedOutcomes,customerGuid, ApimURL);
 
             return updatedOutcomes == null ?
-                HttpResponseMessageHelper.BadRequest(outcomesGuid) :
-                HttpResponseMessageHelper.Ok(JsonHelper.SerializeObject(updatedOutcomes));
+                httpResponseMessageHelper.BadRequest(outcomesGuid) :
+                httpResponseMessageHelper.Ok(jsonHelper.SerializeObjectAndRenameIdProperty(outcomes, "id", "OutcomeId"));
 
         }
     }

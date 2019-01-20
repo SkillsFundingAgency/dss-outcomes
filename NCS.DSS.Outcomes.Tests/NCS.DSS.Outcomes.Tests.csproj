@@ -42,6 +42,23 @@
     <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>..\packages\Castle.Core.4.3.1\lib\net45\Castle.Core.dll</HintPath>
     </Reference>
+    <Reference Include="DFC.Common.Standard">
+      <HintPath>..\..\..\..\.nuget\packages\dfc.common.standard\1.0.0\lib\netstandard2.0\DFC.Common.Standard.dll</HintPath>
+    </Reference>
+    <Reference Include="DFC.HTTP.Standard">
+      <HintPath>..\..\..\..\.nuget\packages\dfc.http.standard\1.0.0\lib\netstandard2.0\DFC.HTTP.Standard.dll</HintPath>
+    </Reference>
+    <Reference Include="DFC.JSON.Standard">
+      <HintPath>..\..\..\..\.nuget\packages\dfc.json.standard\1.0.0\lib\netstandard2.0\DFC.JSON.Standard.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Http, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\.nuget\packages\microsoft.aspnetcore.http\2.1.0\lib\netstandard2.0\Microsoft.AspNetCore.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Http.Abstractions, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\.nuget\packages\microsoft.aspnetcore.http.abstractions\2.1.0\lib\netstandard2.0\Microsoft.AspNetCore.Http.Abstractions.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=2.2.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.2.2.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
@@ -86,11 +103,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DeleteOutcomesHttpTriggerTests.cs" />
-    <Compile Include="GetOutcomesByIdHttpTriggerTests.cs" />
-    <Compile Include="GetOutcomesHttpTriggerTest.cs" />
-    <Compile Include="PatchOutcomesHttpTriggerTests.cs" />
-    <Compile Include="PostOutcomesHttpTriggerTests.cs" />
+    <Compile Include="FunctionTests\DeleteOutcomesHttpTriggerTests.cs" />
+    <Compile Include="FunctionTests\GetOutcomesByIdHttpTriggerTests.cs" />
+    <Compile Include="FunctionTests\GetOutcomesHttpTriggerTest.cs" />
+    <Compile Include="FunctionTests\PatchOutcomesHttpTriggerTests.cs" />
+    <Compile Include="FunctionTests\PostOutcomesHttpTriggerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

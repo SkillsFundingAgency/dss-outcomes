@@ -2,14 +2,19 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using DFC.Common.Standard.Logging;
+using DFC.HTTP.Standard;
+using DFC.JSON.Standard;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Outcomes.Cosmos.Helper;
 using NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Service;
-using NCS.DSS.Outcomes.Helpers;
+using NCS.DSS.Outcomes.Validation;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace NCS.DSS.Outcomes.Tests
+namespace NCS.DSS.Outcomes.Tests.FunctionTests
 {
     [TestFixture]
     public class GetOutcomesByIdHttpTriggerTests
@@ -21,9 +26,13 @@ namespace NCS.DSS.Outcomes.Tests
         private const string InValidId = "1111111-2222-3333-4444-555555555555";
 
         private ILogger _log;
-        private HttpRequestMessage _request;
+        private HttpRequest _request;
         private IResourceHelper _resourceHelper;
-        private IHttpRequestMessageHelper _httpRequestMessageHelper;
+        private IValidate _validate;
+        private ILoggerHelper _loggerHelper;
+        private IHttpRequestHelper _httpRequestHelper;
+        private IHttpResponseMessageHelper _httpResponseMessageHelper;
+        private IJsonHelper _jsonHelper;
         private IGetOutcomesByIdHttpTriggerService _getOutcomesByIdHttpTriggerService;
         private Models.Outcomes _outcome;
 
@@ -32,26 +41,29 @@ namespace NCS.DSS.Outcomes.Tests
         {
             _outcome = Substitute.For<Models.Outcomes>();
 
-            _request = new HttpRequestMessage()
-            {
-                Content = new StringContent(string.Empty),
-                RequestUri = 
-                    new Uri($"http://localhost:7071/api/Customers/7E467BDB-213F-407A-B86A-1954053D3C24/" +
-                            $"Interactions/aa57e39e-4469-4c79-a9e9-9cb4ef410382/" +
-                            $"Outcomes/d5369b9a-6959-4bd3-92fc-1583e72b7e51")
-            };
+            _request = new DefaultHttpRequest(new DefaultHttpContext());
 
             _log = Substitute.For<ILogger>();
             _resourceHelper = Substitute.For<IResourceHelper>();
-            _httpRequestMessageHelper = Substitute.For<IHttpRequestMessageHelper>();
+            _validate = Substitute.For<IValidate>();
+            _loggerHelper = Substitute.For<ILoggerHelper>();
+            _httpRequestHelper = Substitute.For<IHttpRequestHelper>();
+            _httpResponseMessageHelper = Substitute.For<IHttpResponseMessageHelper>();
+            _jsonHelper = Substitute.For<IJsonHelper>();
+            _log = Substitute.For<ILogger>();
+            _resourceHelper = Substitute.For<IResourceHelper>();
+
             _getOutcomesByIdHttpTriggerService = Substitute.For<IGetOutcomesByIdHttpTriggerService>();
-            _httpRequestMessageHelper.GetTouchpointId(_request).Returns("0000000001");
+            _httpRequestHelper.GetDssTouchpointId(_request).Returns("0000000001");
         }
 
         [Test]
         public async Task GetOutcomesByIdHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
         {
-            _httpRequestMessageHelper.GetTouchpointId(_request).Returns((string)null);
+            _httpRequestHelper.GetDssTouchpointId(_request).Returns((string)null);
+
+            _httpResponseMessageHelper
+                .BadRequest().Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
@@ -64,6 +76,9 @@ namespace NCS.DSS.Outcomes.Tests
         [Test]
         public async Task GetOutcomesByIdHttpTrigger_ReturnsStatusCodeBadRequest_WhenCustomerIdIsInvalid()
         {
+            _httpResponseMessageHelper
+                .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
+
             // Act
             var result = await RunFunction(InValidId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
@@ -75,6 +90,9 @@ namespace NCS.DSS.Outcomes.Tests
         [Test]
         public async Task GetOutcomesByIdHttpTrigger_ReturnsStatusCodeBadRequest_WhenInteractionIdIsInvalid()
         {
+            _httpResponseMessageHelper
+                .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
+
             // Act
             var result = await RunFunction(ValidCustomerId, InValidId, ValidActionPlanId, ValidOutcomeId);
 
@@ -86,6 +104,9 @@ namespace NCS.DSS.Outcomes.Tests
         [Test]
         public async Task GetOutcomesByIdHttpTrigger_ReturnsStatusCodeBadRequest_WhenActionPlanIdIsInvalid()
         {
+            _httpResponseMessageHelper
+                .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
+
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, InValidId, ValidOutcomeId);
 
@@ -97,6 +118,9 @@ namespace NCS.DSS.Outcomes.Tests
         [Test]
         public async Task GetOutcomesByIdHttpTrigger_ReturnsStatusCodeBadRequest_WhenOutcomeIdIsInvalid()
         {
+            _httpResponseMessageHelper
+                .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
+
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, InValidId);
 
@@ -109,6 +133,9 @@ namespace NCS.DSS.Outcomes.Tests
         public async Task GetOutcomesByIdHttpTrigger_ReturnsStatusCodeNoContent_WhenCustomerDoesNotExist()
         {
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(false);
+
+            _httpResponseMessageHelper
+                .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
@@ -125,6 +152,9 @@ namespace NCS.DSS.Outcomes.Tests
 
              _resourceHelper.DoesInteractionResourceExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(false);
 
+            _httpResponseMessageHelper
+                .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
+
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
@@ -139,6 +169,9 @@ namespace NCS.DSS.Outcomes.Tests
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(true);
              _resourceHelper.DoesInteractionResourceExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
             _resourceHelper.DoesActionPlanResourceExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(false);
+
+            _httpResponseMessageHelper
+                .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
@@ -157,6 +190,9 @@ namespace NCS.DSS.Outcomes.Tests
 
             _getOutcomesByIdHttpTriggerService.GetOutcomesForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult<Models.Outcomes>(null).Result);
 
+            _httpResponseMessageHelper
+                .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
+
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
@@ -174,6 +210,9 @@ namespace NCS.DSS.Outcomes.Tests
 
             _getOutcomesByIdHttpTriggerService.GetOutcomesForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult(_outcome).Result);
 
+            _httpResponseMessageHelper
+                .Ok(Arg.Any<string>()).Returns(x => new HttpResponseMessage(HttpStatusCode.OK));
+
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
@@ -185,7 +224,18 @@ namespace NCS.DSS.Outcomes.Tests
         private async Task<HttpResponseMessage> RunFunction(string customerId, string interactionId, string actionPlanId, string outcomeId)
         {
             return await GetOutcomesByIdHttpTrigger.Function.GetOutcomesByIdHttpTrigger.Run(
-                _request, _log, customerId, interactionId, actionPlanId, outcomeId, _resourceHelper, _httpRequestMessageHelper, _getOutcomesByIdHttpTriggerService).ConfigureAwait(false);
+                _request,
+                _log,
+                customerId,
+                interactionId,
+                actionPlanId,
+                outcomeId,
+                _resourceHelper,
+                _getOutcomesByIdHttpTriggerService,
+                _loggerHelper,
+                _httpRequestHelper,
+                _httpResponseMessageHelper,
+                _jsonHelper).ConfigureAwait(false);
         }
 
     }

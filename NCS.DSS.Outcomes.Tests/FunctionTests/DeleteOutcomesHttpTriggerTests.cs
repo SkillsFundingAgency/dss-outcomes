@@ -1,21 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using DFC.Common.Standard.Logging;
+using DFC.HTTP.Standard;
+using DFC.JSON.Standard;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Outcomes.Cosmos.Helper;
 using NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Service;
-using NCS.DSS.Outcomes.Helpers;
 using NCS.DSS.Outcomes.Models;
-using NCS.DSS.Outcomes.Validation;
-using Newtonsoft.Json;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
-namespace NCS.DSS.Outcomes.Tests
+namespace NCS.DSS.Outcomes.Tests.FunctionTests
 {
     [TestFixture]
     public class DeleteOutcomesHttpTriggerTests
@@ -26,33 +25,36 @@ namespace NCS.DSS.Outcomes.Tests
         private const string ValidOutcomeId = "d5369b9a-6959-4bd3-92fc-1583e72b7e51";
         private const string InValidId = "1111111-2222-3333-4444-555555555555";
         private ILogger _log;
-        private HttpRequestMessage _request;
-        private IResourceHelper _resourceHelper;
+        private HttpRequest _request;
         private IDeleteOutcomesHttpTriggerService _deleteOutcomesHttpTriggerService;
         private Models.Outcomes _outcome;
-        private OutcomesPatch _outcomePatch;
+        private IResourceHelper _resourceHelper;
+        private ILoggerHelper _loggerHelper;
+        private IHttpRequestHelper _httpRequestHelper;
+        private IHttpResponseMessageHelper _httpResponseMessageHelper;
+        private IJsonHelper _jsonHelper;
 
         [SetUp]
         public void Setup()
         {
             _outcome = Substitute.For<Models.Outcomes>();
-            _outcomePatch = Substitute.For<OutcomesPatch>();
 
-            _request = new HttpRequestMessage()
-            {
-                Content = new StringContent(string.Empty),
-                RequestUri = 
-                    new Uri($"http://localhost:7071/api/Customers/7E467BDB-213F-407A-B86A-1954053D3C24/" +
-                            $"Outcomes/1e1a555c-9633-4e12-ab28-09ed60d51cb3")
-            };
+            _request = new DefaultHttpRequest(new DefaultHttpContext());
 
+            _resourceHelper = Substitute.For<IResourceHelper>();
+            _loggerHelper = Substitute.For<ILoggerHelper>();
+            _httpRequestHelper = Substitute.For<IHttpRequestHelper>();
+            _httpResponseMessageHelper = Substitute.For<IHttpResponseMessageHelper>();
+            _jsonHelper = Substitute.For<IJsonHelper>();
             _log = Substitute.For<ILogger>();
             _resourceHelper = Substitute.For<IResourceHelper>();
+
             _deleteOutcomesHttpTriggerService = Substitute.For<IDeleteOutcomesHttpTriggerService>();
+
         }
 
         [Test]
-        public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeBadRequest_WhenCustomerIdIsInvalid()
+        public async Task DeleteOutcomesHttpTriggerTests_ReturnsStatusCodeBadRequest_WhenCustomerIdIsInvalid()
         {
             // Act
             var result = await RunFunction(InValidId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
@@ -63,7 +65,7 @@ namespace NCS.DSS.Outcomes.Tests
         }
 
         [Test]
-        public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeBadRequest_WhenInteractionIdIsInvalid()
+        public async Task DeleteOutcomesHttpTriggerTests_ReturnsStatusCodeBadRequest_WhenInteractionIdIsInvalid()
         {
             // Act
             var result = await RunFunction(ValidCustomerId, InValidId, ValidActionPlanId, ValidOutcomeId);
@@ -74,7 +76,7 @@ namespace NCS.DSS.Outcomes.Tests
         }
 
         [Test]
-        public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeBadRequest_WhenAcionPlanIdIsInvalid()
+        public async Task DeleteOutcomesHttpTriggerTests_ReturnsStatusCodeBadRequest_WhenAcionPlanIdIsInvalid()
         {
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, InValidId, ValidOutcomeId);
@@ -85,7 +87,7 @@ namespace NCS.DSS.Outcomes.Tests
         }
 
         [Test]
-        public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeNoContent_WhenCustomerDoesNotExist()
+        public async Task DeleteOutcomesHttpTriggerTests_ReturnsStatusCodeNoContent_WhenCustomerDoesNotExist()
         {
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(false);
 
@@ -98,7 +100,7 @@ namespace NCS.DSS.Outcomes.Tests
 
 
         [Test]
-        public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeNoContent_WhenInteractionDoesNotExist()
+        public async Task DeleteOutcomesHttpTriggerTests_ReturnsStatusCodeNoContent_WhenInteractionDoesNotExist()
         {
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(true);
             _resourceHelper.DoesInteractionResourceExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(false);
@@ -112,7 +114,7 @@ namespace NCS.DSS.Outcomes.Tests
         }
 
         [Test]
-        public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeNoContent_WhenActionPlanDoesNotExist()
+        public async Task DeleteOutcomesHttpTriggerTests_ReturnsStatusCodeNoContent_WhenActionPlanDoesNotExist()
         {
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
              _resourceHelper.DoesInteractionResourceExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
@@ -130,7 +132,7 @@ namespace NCS.DSS.Outcomes.Tests
 
 
         [Test]
-        public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeOk_WhenOutcomesDoesNotExist()
+        public async Task DeleteOutcomesHttpTriggerTests_ReturnsStatusCodeOk_WhenOutcomesDoesNotExist()
         {
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(true);
              _resourceHelper.DoesInteractionResourceExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
@@ -147,7 +149,7 @@ namespace NCS.DSS.Outcomes.Tests
         }
 
         [Test]
-        public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeOK_WhenRequestIsNotValid()
+        public async Task DeleteOutcomesHttpTriggerTests_ReturnsStatusCodeOK_WhenRequestIsNotValid()
         {
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
              _resourceHelper.DoesInteractionResourceExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
@@ -165,7 +167,7 @@ namespace NCS.DSS.Outcomes.Tests
         }
 
         [Test]
-        public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeOK_WhenRequestIsValid()
+        public async Task DeleteOutcomesHttpTriggerTests_ReturnsStatusCodeOK_WhenRequestIsValid()
         {
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
              _resourceHelper.DoesInteractionResourceExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
@@ -185,7 +187,18 @@ namespace NCS.DSS.Outcomes.Tests
         private async Task<HttpResponseMessage> RunFunction(string customerId, string interactionId, string actionPlanId, string outcomeId)
         {
             return await DeleteOutcomesHttpTrigger.Function.DeleteOutcomesHttpTrigger.Run(
-                _request, _log, customerId, interactionId, actionPlanId, outcomeId, _resourceHelper, _deleteOutcomesHttpTriggerService).ConfigureAwait(false);
+                _request,
+                _log,
+                customerId,
+                interactionId,
+                actionPlanId,
+                outcomeId,
+                _resourceHelper,
+                _deleteOutcomesHttpTriggerService,
+                _loggerHelper,
+                _httpRequestHelper,
+                _httpResponseMessageHelper,
+                _jsonHelper).ConfigureAwait(false);
         }
 
     }
