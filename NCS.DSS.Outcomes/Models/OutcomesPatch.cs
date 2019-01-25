@@ -53,7 +53,7 @@ namespace NCS.DSS.Outcomes.Models
                         "5 - Adults with special educational needs and / or disabilities,    " +
                         "6 - Adults aged 50 years or over who are unemployed or at demonstrable risk of unemployment,    " +
                         "99 - Not a priority customer")]
-        ClaimedPriorityGroupId ClaimedPriorityGroupId { get; set; }
+        public ClaimedPriorityGroupId? ClaimedPriorityGroupId { get; set; }
 
         [StringLength(10, MinimumLength = 10)]
         [Display(Description = "Identifier of the touchpoint claiming the outcome.")]
