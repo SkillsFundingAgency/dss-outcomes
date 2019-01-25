@@ -23,6 +23,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         private const string ValidInteractionId = "1e1a555c-9633-4e12-ab28-09ed60d51cb3";
         private const string ValidActionPlanId = "cff8080e-1da2-42bd-9b63-8f235aad9d86";
         private const string ValidOutcomeId = "d5369b9a-6959-4bd3-92fc-1583e72b7e51";
+        private const string ValidSessionId = "cff8080e-1da2-42bd-9b63-8f235aad9d86";
         private const string InValidId = "1111111-2222-3333-4444-555555555555";
         private ILogger _log;
         private HttpRequest _request;
