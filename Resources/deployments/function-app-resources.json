@@ -34,10 +34,17 @@
     },
     "serviceBusQueueName": {
       "type": "string"
+    },
+    "storageAccountName": {
+      "type": "string"
+    },
+    "storageAccountKey": {
+      "type": "string"
     }
   },
   "variables": {
-    "appInsightsName": "[concat('dss-', toLower(parameters('configEnvironmentName')), '-', split(parameters('functionAppName'), '-')[2], '-ai')]"
+    "appInsightsName": "[concat('dss-', toLower(parameters('configEnvironmentName')), '-', split(parameters('functionAppName'), '-')[2], '-ai')]",
+    "storageAccountConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=', parameters('storageAccountKey'), ';EndpointSuffix=core.windows.net')]"
   },
   "resources": [
     {
@@ -58,11 +65,15 @@
             },
             {
               "name": "FUNCTIONS_EXTENSION_VERSION",
-              "value": "~1"
+              "value": "~2"
             },
             {
               "name": "MSDEPLOY_RENAME_LOCKED_FILES",
               "value": "1"
+            },
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[variables('storageAccountConnectionString')]"
             },
             {
               "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
