@@ -65,11 +65,11 @@
             },
             {
               "name": "FUNCTIONS_EXTENSION_VERSION",
-              "value": "~1"
+              "value": "~2"
             },
             {
               "name": "MSDEPLOY_RENAME_LOCKED_FILES",
-              "value": "2"
+              "value": "1"
             },
             {
               "name": "AzureWebJobsStorage",
