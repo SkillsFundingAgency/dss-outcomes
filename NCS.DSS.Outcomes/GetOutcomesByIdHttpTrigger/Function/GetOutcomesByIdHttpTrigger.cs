@@ -37,7 +37,22 @@ namespace NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Function
             [Inject]IJsonHelper jsonHelper)
         {
 
-            return httpResponseMessageHelper.Ok();
+            Models.Outcomes test = new Models.Outcomes
+            {
+                OutcomeId = Guid.Parse("4a563744-bcef-4f7e-8d89-8cdfaf3e157a"),
+                CustomerId = Guid.Parse("518b8b41-ff04-4668-9bf1-62800399b90c"),
+                ActionPlanId = Guid.Parse("d5529a13-fca1-4775-b456-b5ee12d02fcd"),
+                SubcontractorId = "0000001212",
+                OutcomeType = ReferenceData.OutcomeType.CareersManagement,
+                OutcomeClaimedDate = DateTime.Parse("01/05/2018"),
+                OutcomeEffectiveDate = DateTime.Parse("04/04/2018"),
+                ClaimedPriorityGroupId = ReferenceData.ClaimedPriorityGroupId.AdultsWithSpecialEducationalNeedsAndOrDisabilities,
+                TouchpointId = "0000000010",
+                LastModifiedDate = DateTime.Parse("05/01/2019"),
+                LastModifiedTouchpointId = "000000010"
+            };
+
+            return httpResponseMessageHelper.Ok(jsonHelper.SerializeObjectAndRenameIdProperty(test, "id", "OutcomeId"));
 
             //var touchpointId = httpRequestHelper.GetDssTouchpointId(req);
             //if (string.IsNullOrEmpty(touchpointId))
