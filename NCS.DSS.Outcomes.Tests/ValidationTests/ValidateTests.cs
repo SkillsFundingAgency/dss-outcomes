@@ -59,7 +59,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
             Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Count);
+            Assert.AreEqual(3, result.Count);
         }
 
         [Test]
@@ -78,7 +78,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
             Assert.IsNotNull(result);
-            Assert.AreEqual(3, result.Count);
+            Assert.AreEqual(4, result.Count);
         }
 
         [Test]
@@ -97,7 +97,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
             Assert.IsNotNull(result);
-            Assert.AreEqual(3, result.Count);
+            Assert.AreEqual(4, result.Count);
         }
 
         [Test]
@@ -117,7 +117,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
             Assert.IsNotNull(result);
-            Assert.AreEqual(3, result.Count);
+            Assert.AreEqual(4, result.Count);
         }
 
         [Test]
@@ -137,7 +137,27 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
             Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Count);
+            Assert.AreEqual(3, result.Count);
+        }
+
+        [Test]
+        public void ValidateTests_ReturnValidationResult_WhenClaimedPriorityGroupIdDoesntHaveAValueAndOutcomeClaimedDateHasAValue()
+        {
+            var outcomes = new Models.Outcomes
+            {
+                OutcomeClaimedDate = DateTime.UtcNow,
+                OutcomeEffectiveDate = DateTime.UtcNow,
+                LastModifiedDate = DateTime.MaxValue
+            };
+
+            var validation = new Validate();
+
+            var result = validation.ValidateResource(outcomes);
+
+            // Assert
+            Assert.IsInstanceOf<List<ValidationResult>>(result);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(4, result.Count);
         }
 
     }

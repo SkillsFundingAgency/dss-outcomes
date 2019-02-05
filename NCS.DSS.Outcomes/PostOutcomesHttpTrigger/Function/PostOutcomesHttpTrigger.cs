@@ -32,7 +32,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Outcome validation error(s)", ShowSchema = false)]
         [Display(Name = "Post", Description = "Ability to create a new Outcome for a customer.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/Sessions/{sessionId}/actionplans/{actionplanId}/Outcomes")]HttpRequest req, ILogger log, string customerId, string interactionId, string actionplanId, string sessionId,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/Sessions/{sessionId}/ActionPlans/{actionplanId}/Outcomes")]HttpRequest req, ILogger log, string customerId, string interactionId, string actionplanId, string sessionId,
             [Inject]IResourceHelper resourceHelper,
             [Inject]IPostOutcomesHttpTriggerService outcomesPostService,
             [Inject]IValidate validate,
@@ -41,7 +41,6 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             [Inject]IHttpResponseMessageHelper httpResponseMessageHelper,
             [Inject]IJsonHelper jsonHelper)
         {
-
             loggerHelper.LogMethodEnter(log);
 
             var correlationId = httpRequestHelper.GetDssCorrelationId(req);
@@ -73,7 +72,9 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             if (string.IsNullOrEmpty(subcontractorId))
                 loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubcontractorId' in request header");
 
-            log.LogInformation("Post Action Plan C# HTTP trigger function processed a request. " + touchpointId);
+            loggerHelper.LogInformationMessage(log, correlationGuid,
+                string.Format("Post Outcome C# HTTP trigger function  processed a request. By Touchpoint: {0}",
+                    touchpointId));
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
@@ -85,6 +86,12 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             {
                 loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'interactionId' to a Guid: {0}", interactionId));
                 return httpResponseMessageHelper.BadRequest(interactionGuid);
+            }
+
+            if (!Guid.TryParse(sessionId, out var sessionGuid))
+            {
+                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'sessionId' to a Guid: {0}", sessionGuid));
+                return httpResponseMessageHelper.BadRequest(sessionGuid);
             }
 
             if (!Guid.TryParse(actionplanId, out var actionplanGuid))
@@ -142,12 +149,12 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
                 return httpResponseMessageHelper.Forbidden(customerGuid);
             }
 
-            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Interaction {0} for customer {1}", interactionGuid, customerGuid));
-            var doesInteractionExist = resourceHelper.DoesInteractionResourceExistAndBelongToCustomer(interactionGuid, customerGuid);
+            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Session {0} for customer {1}", interactionGuid, customerGuid));
+            var doesSessionExist = resourceHelper.DoesSessionExistAndBelongToCustomer(sessionGuid, interactionGuid, customerGuid);
 
-            if (!doesInteractionExist)
+            if (!doesSessionExist)
             {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Interaction does not exist {0}", interactionGuid));
+                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Session does not exist {0}", interactionGuid));
                 return httpResponseMessageHelper.NoContent(interactionGuid);
             }
 
