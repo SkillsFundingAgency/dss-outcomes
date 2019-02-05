@@ -23,13 +23,7 @@
     "functionAppName": {
       "type": "string"
     },
-    "serviceBusAccessKey": {
-      "type": "string"
-    },
-    "serviceBusAccessKeyName": {
-      "type": "string"
-    },
-    "serviceBusBaseAddress": {
+    "serviceBusConnectionString": {
       "type": "string"
     },
     "serviceBusQueueName": {
@@ -120,16 +114,8 @@
               "value": "actionplans"
             },
             {
-              "name": "KeyName",
-              "value": "[parameters('serviceBusAccessKeyName')]"
-            },
-            {
-              "name": "AccessKey",
-              "value": "[parameters('serviceBusAccessKey')]"
-            },
-            {
-              "name": "BaseAddress",
-              "value": "[parameters('serviceBusBaseAddress')]"
+              "name": "ServiceBusConnectionString",
+              "value": "[parameters('serviceBusConnectionString')]"
             },
             {
               "name": "QueueName",
