@@ -4,32 +4,46 @@ using System.Threading.Tasks;
 using NCS.DSS.Outcomes.Cosmos.Provider;
 using NCS.DSS.Outcomes.Models;
 using NCS.DSS.Outcomes.ServiceBus;
+using Newtonsoft.Json;
 
 namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
 {
     public class PatchOutcomesHttpTriggerService : IPatchOutcomesHttpTriggerService
     {
-        public async Task<Models.Outcomes> UpdateAsync(Models.Outcomes outcomes, OutcomesPatch outcomesPatch)
+        private readonly IOutcomePatchService _outcomePatchService;
+        private readonly IDocumentDBProvider _documentDbProvider;
+
+        public PatchOutcomesHttpTriggerService(IDocumentDBProvider documentDbProvider, IOutcomePatchService outcomePatchService)
         {
-            if (outcomes == null)
+            _documentDbProvider = documentDbProvider;
+            _outcomePatchService = outcomePatchService;
+        }
+
+        public async Task<Models.Outcomes> UpdateAsync(string outcomeJson, OutcomesPatch outcomesPatch, Guid outcomeId)
+        {
+            if (string.IsNullOrEmpty(outcomeJson))
+                return null;
+
+            if (outcomesPatch == null)
                 return null;
 
             outcomesPatch.SetDefaultValues();
 
-            outcomes.Patch(outcomesPatch);
+            var updatedJson = _outcomePatchService.Patch(outcomeJson, outcomesPatch);
 
-            var documentDbProvider = new DocumentDBProvider();
-            var response = await documentDbProvider.UpdateOutcomesAsync(outcomes);
+            if (string.IsNullOrEmpty(updatedJson))
+                return null;
 
-            var responseStatusCode = response.StatusCode;
+            var response = await _documentDbProvider.UpdateOutcomesAsync(updatedJson, outcomeId);
 
-            return responseStatusCode == HttpStatusCode.OK ? outcomes : null;
+            var responseStatusCode = response?.StatusCode;
+
+            return responseStatusCode == HttpStatusCode.OK ? JsonConvert.DeserializeObject<Models.Outcomes>(updatedJson) : null;
         }
 
-        public async Task<Models.Outcomes> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionplanId, Guid OutcomeId)
+        public async Task<string> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionPlanId, Guid outcomeId)
         {
-            var documentDbProvider = new DocumentDBProvider();
-            var outcomes = await documentDbProvider.GetOutcomesForCustomerAsync(customerId, interactionsId, actionplanId, OutcomeId);
+            var outcomes = await _documentDbProvider.GetOutcomesForCustomerAsyncToUpdateAsync(customerId, interactionsId, actionPlanId, outcomeId);
 
             return outcomes;
         }

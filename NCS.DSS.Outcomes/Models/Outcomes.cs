@@ -88,30 +88,5 @@ namespace NCS.DSS.Outcomes.Models
             LastModifiedTouchpointId = touchpointId;
             SubcontractorId = subcontractorid;
         }
-
-        public void Patch(OutcomesPatch outcomesPatch)
-        {
-            if (outcomesPatch == null)
-                return;
-
-            if(outcomesPatch.OutcomeType.HasValue)
-                OutcomeType = outcomesPatch.OutcomeType;
-            
-            if (outcomesPatch.OutcomeClaimedDate.HasValue)
-                OutcomeClaimedDate = outcomesPatch.OutcomeClaimedDate.Value;
-
-            if (outcomesPatch.OutcomeEffectiveDate.HasValue)
-                OutcomeEffectiveDate = outcomesPatch.OutcomeEffectiveDate;
-
-            if (!string.IsNullOrEmpty(outcomesPatch.TouchpointId))
-                TouchpointId = outcomesPatch.TouchpointId;
-
-            if (outcomesPatch.LastModifiedDate.HasValue)
-                LastModifiedDate = outcomesPatch.LastModifiedDate;
-
-            if (!string.IsNullOrEmpty(outcomesPatch.LastModifiedTouchpointId))
-                LastModifiedTouchpointId = outcomesPatch.LastModifiedTouchpointId;
-
-        }
     }
 }

@@ -33,11 +33,11 @@ namespace NCS.DSS.Outcomes.Ioc
             builder.Services.AddSingleton<IJsonHelper, JsonHelper>();
             builder.Services.AddSingleton<IDocumentDBProvider, DocumentDBProvider>();
 
-            //builder.Services.AddScoped<IActionPlansPatchService, OutcomesPatchService>();
             builder.Services.AddScoped<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
             builder.Services.AddScoped<IGetOutcomesHttpTriggerService, GetOutcomesHttpTriggerService>();
             builder.Services.AddScoped<IGetOutcomesByIdHttpTriggerService, GetOutcomesByIdHttpTriggerService>();
             builder.Services.AddScoped<IPostOutcomesHttpTriggerService, PostOutcomesHttpTriggerService>();
+            builder.Services.AddScoped<IPatchOutcomesHttpTriggerService, PatchOutcomesHttpTriggerService>();
             builder.Services.AddScoped<IPatchOutcomesHttpTriggerService, PatchOutcomesHttpTriggerService>();
         }
     }
