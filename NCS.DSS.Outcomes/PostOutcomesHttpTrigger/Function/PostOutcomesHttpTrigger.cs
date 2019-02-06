@@ -32,7 +32,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Outcome validation error(s)", ShowSchema = false)]
         [Display(Name = "Post", Description = "Ability to create a new Outcome for a customer.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/Sessions/{sessionId}/ActionPlans/{actionplanId}/Outcomes")]HttpRequest req, ILogger log, string customerId, string interactionId, string actionplanId, string sessionId,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/Sessions/{sessionId}/ActionPlans/{actionplanId}/Outcomes")]HttpRequest req, ILogger log, string customerId, string interactionId, string sessionId, string actionplanId, 
             [Inject]IResourceHelper resourceHelper,
             [Inject]IPostOutcomesHttpTriggerService outcomesPostService,
             [Inject]IValidate validate,

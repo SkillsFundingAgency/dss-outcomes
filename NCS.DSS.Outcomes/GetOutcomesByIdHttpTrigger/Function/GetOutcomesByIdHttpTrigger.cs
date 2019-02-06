@@ -28,7 +28,7 @@ namespace NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Display(Name = "Get", Description = "Ability to retrieve an individual Outcome for the given customer")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Interactions/{interactionId}/Sessions/{sessionId}/ActionPlans/{actionplanId}/Outcomes/{OutcomeId}")]HttpRequest req, ILogger log, string customerId, string interactionId, string actionPlanId, string outcomeId, string sessionId,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Interactions/{interactionId}/Sessions/{sessionId}/ActionPlans/{actionplanId}/Outcomes/{outcomeId}")]HttpRequest req, ILogger log, string customerId, string interactionId, string sessionId, string actionplanId, string outcomeId,
             [Inject]IResourceHelper resourceHelper,
             [Inject]IGetOutcomesByIdHttpTriggerService outcomesGetService,
             [Inject]ILoggerHelper loggerHelper,
@@ -80,9 +80,9 @@ namespace NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Function
                 return httpResponseMessageHelper.BadRequest(sessionGuid);
             }
 
-            if (!Guid.TryParse(actionPlanId, out var actionPlanGuid))
+            if (!Guid.TryParse(actionplanId, out var actionPlanGuid))
             {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'actionPlanId' to a Guid: {0}", actionPlanId));
+                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'actionPlanId' to a Guid: {0}", actionplanId));
                 return httpResponseMessageHelper.BadRequest(actionPlanGuid);
             }
 

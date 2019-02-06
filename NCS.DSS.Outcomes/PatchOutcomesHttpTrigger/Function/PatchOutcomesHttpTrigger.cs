@@ -32,7 +32,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Outcome validation error(s)", ShowSchema = false)]
         [Display(Name = "Patch", Description = "Ability to modify/update a customers Outcome record.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Interactions/{interactionId}/Sessions/{sessionId}/ActionPlans/{actionplanId}/Outcomes/{OutcomeId}")]HttpRequest req, ILogger log, string customerId, string interactionId, string actionPlanId, string outcomeId, string sessionId,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Interactions/{interactionId}/Sessions/{sessionId}/ActionPlans/{actionplanId}/Outcomes/{outcomeId}")]HttpRequest req, ILogger log, string customerId, string interactionId, string sessionId, string actionplanId, string outcomeId, 
             [Inject]IResourceHelper resourceHelper, 
             [Inject]IPatchOutcomesHttpTriggerService outcomesPatchService,
             [Inject]IValidate validate,
@@ -93,9 +93,9 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                 return httpResponseMessageHelper.BadRequest(sessionGuid);
             }
 
-            if (!Guid.TryParse(actionPlanId, out var actionPlanGuid))
+            if (!Guid.TryParse(actionplanId, out var actionPlanGuid))
             {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'actionplanId' to a Guid: {0}", actionPlanId));
+                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'actionplanId' to a Guid: {0}", actionplanId));
                 return httpResponseMessageHelper.BadRequest(actionPlanGuid);
             }
 
