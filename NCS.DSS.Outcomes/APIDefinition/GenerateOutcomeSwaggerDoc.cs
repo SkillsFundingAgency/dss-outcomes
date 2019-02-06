@@ -20,7 +20,11 @@ namespace NCS.DSS.Outcomes.APIDefinition
         public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = APIDefRoute)]HttpRequest req,
             [Inject]ISwaggerDocumentGenerator swaggerDocumentGenerator)
         {
-           var swagger = swaggerDocumentGenerator.GenerateSwaggerDocument(req, APITitle, APIDescription, APIDefinitionName, Assembly.GetExecutingAssembly());
+            var swagger = swaggerDocumentGenerator.GenerateSwaggerDocument(req, APITitle, APIDescription,
+                APIDefinitionName, Assembly.GetExecutingAssembly());
+
+            if (string.IsNullOrEmpty(swagger))
+                return new HttpResponseMessage(HttpStatusCode.NoContent);
 
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
