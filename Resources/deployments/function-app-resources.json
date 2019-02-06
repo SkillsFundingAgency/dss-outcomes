@@ -98,14 +98,6 @@
               "value": "customers"
             },
             {
-              "name": "InteractionCollectionId",
-              "value": "interactions"
-            },
-            {
-              "name": "InteractionDatabaseId",
-              "value": "interactions"
-            },
-            {
               "name": "ActionPlanCollectionId",
               "value": "actionplans"
             },
@@ -120,6 +112,14 @@
             {
               "name": "QueueName",
               "value": "[parameters('serviceBusQueueName')]"
+            },
+            {
+              "name": "SessionCollectionId",
+              "value": "sessions"
+            },
+            {
+              "name": "SessionDatabaseId",
+              "value": "sessions"
             }
           ]
         }
