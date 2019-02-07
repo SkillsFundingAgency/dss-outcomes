@@ -27,8 +27,8 @@ namespace NCS.DSS.Outcomes.Validation
             if (outcomesResource.OutcomeClaimedDate.HasValue && outcomesResource.OutcomeClaimedDate.Value > DateTime.UtcNow)
                 results.Add(new ValidationResult("Outcome Claimed Date must be less the current date/time", new[] { "OutcomeClaimedDate" }));
 
-            if(outcomesResource.OutcomeClaimedDate.HasValue && !outcomesResource.ClaimedPriorityGroupId.HasValue)
-                results.Add(new ValidationResult("Please supply a Claimed Priority Group Id", new[] { "ClaimedPriorityGroupId" }));
+            if(outcomesResource.OutcomeClaimedDate.HasValue && !outcomesResource.ClaimedPriorityGroup.HasValue)
+                results.Add(new ValidationResult("Please supply a Claimed Priority Group", new[] { "ClaimedPriorityGroup" }));
 
             if (outcomesResource.OutcomeEffectiveDate.HasValue && outcomesResource.OutcomeEffectiveDate.Value > DateTime.UtcNow)
                 results.Add(new ValidationResult("Outcome Effective Date Completed must be less the current date/time", new[] { "OutcomeEffectiveDate" }));
@@ -39,7 +39,9 @@ namespace NCS.DSS.Outcomes.Validation
             if (outcomesResource.OutcomeType.HasValue && !Enum.IsDefined(typeof(OutcomeType), outcomesResource.OutcomeType.Value))
                 results.Add(new ValidationResult("Please supply a valid OutcomeType", new[] { "OutcomeType" }));
 
-        }
+            if (outcomesResource.ClaimedPriorityGroup.HasValue && !Enum.IsDefined(typeof(ClaimedPriorityGroup), outcomesResource.ClaimedPriorityGroup.Value))
+                results.Add(new ValidationResult("Please supply a valid Claimed Priority Group", new[] { "ClaimedPriorityGroup" }));
+            }
 
     }
 }
