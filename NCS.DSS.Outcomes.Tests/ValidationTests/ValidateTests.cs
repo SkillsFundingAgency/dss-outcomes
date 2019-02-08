@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using NCS.DSS.Outcomes.ReferenceData;
 using NCS.DSS.Outcomes.Validation;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace NCS.DSS.Outcomes.Tests.ValidationTests
@@ -18,7 +19,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
 
             var validation = new Validate();
 
-            var result = validation.ValidateResource(outcomes);
+            var result = validation.ValidateResource(outcomes, Arg.Any<DateTime>());
 
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
@@ -36,7 +37,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
 
             var validation = new Validate();
 
-            var result = validation.ValidateResource(outcomes);
+            var result = validation.ValidateResource(outcomes, Arg.Any<DateTime>());
 
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
@@ -54,12 +55,12 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
 
             var validation = new Validate();
 
-            var result = validation.ValidateResource(outcomes);
+            var result = validation.ValidateResource(outcomes, Arg.Any<DateTime>());
 
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
             Assert.IsNotNull(result);
-            Assert.AreEqual(3, result.Count);
+            Assert.AreEqual(4, result.Count);
         }
 
         [Test]
@@ -73,7 +74,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
 
             var validation = new Validate();
 
-            var result = validation.ValidateResource(outcomes);
+            var result = validation.ValidateResource(outcomes, Arg.Any<DateTime>());
 
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
@@ -92,12 +93,12 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
 
             var validation = new Validate();
 
-            var result = validation.ValidateResource(outcomes);
+            var result = validation.ValidateResource(outcomes, Arg.Any<DateTime>());
 
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
             Assert.IsNotNull(result);
-            Assert.AreEqual(4, result.Count);
+            Assert.AreEqual(5, result.Count);
         }
 
         [Test]
@@ -112,7 +113,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
 
             var validation = new Validate();
 
-            var result = validation.ValidateResource(outcomes);
+            var result = validation.ValidateResource(outcomes, Arg.Any<DateTime>());
 
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
@@ -132,7 +133,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
 
             var validation = new Validate();
 
-            var result = validation.ValidateResource(outcomes);
+            var result = validation.ValidateResource(outcomes, Arg.Any<DateTime>());
 
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
@@ -152,7 +153,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
 
             var validation = new Validate();
 
-            var result = validation.ValidateResource(outcomes);
+            var result = validation.ValidateResource(outcomes, Arg.Any<DateTime>());
 
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);

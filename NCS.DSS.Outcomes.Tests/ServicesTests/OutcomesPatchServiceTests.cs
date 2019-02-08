@@ -39,6 +39,21 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         }
 
         [Test]
+        public void OutcomesPatchServiceTests_CheckSubcontractorIdIsUpdated_WhenPatchIsCalled()
+        {
+            var diversityPatch = new OutcomesPatch { SubcontractorId = "0000000111" };
+
+            var updated = _outcomePatchService.Patch(_json, diversityPatch);
+
+            var jsonObject = (JObject)JsonConvert.DeserializeObject(updated);
+
+            var subcontractorId = jsonObject["SubcontractorId"].ToString();
+
+            // Assert
+            Assert.AreEqual("0000000111", subcontractorId);
+        }
+
+        [Test]
         public void OutcomesPatchServiceTests_CheckOutcomeTypeIsUpdated_WhenPatchIsCalled()
         {
             var diversityPatch = new OutcomesPatch { OutcomeType = OutcomeType.CareerProgression };
@@ -81,6 +96,21 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
 
             // Assert
             Assert.AreEqual(DateTime.MaxValue, outcomeEffectiveDate);
+        }
+
+        [Test]
+        public void OutcomesPatchServiceTests_CheckClaimedPriorityGroupIsUpdated_WhenPatchIsCalled()
+        {
+            var diversityPatch = new OutcomesPatch { ClaimedPriorityGroup = ClaimedPriorityGroup.NotAPriorityCustomer };
+
+            var updated = _outcomePatchService.Patch(_json, diversityPatch);
+
+            var jsonObject = (JObject)JsonConvert.DeserializeObject(updated);
+
+            var claimedPriorityGroup = (ClaimedPriorityGroup)int.Parse(jsonObject["ClaimedPriorityGroup"].ToString());
+
+            // Assert
+            Assert.AreEqual(ClaimedPriorityGroup.NotAPriorityCustomer, claimedPriorityGroup);
         }
 
         [Test]
