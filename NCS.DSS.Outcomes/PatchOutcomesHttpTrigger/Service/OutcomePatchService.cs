@@ -20,6 +20,9 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
 
             var obj = JObject.Parse(outcomeJson);
 
+            if (!string.IsNullOrEmpty(outcomePatch.SubcontractorId))
+                _jsonHelper.UpdatePropertyValue(obj["SubcontractorId"], outcomePatch.SubcontractorId);
+
             if (outcomePatch.OutcomeType.HasValue)
                 _jsonHelper.UpdatePropertyValue(obj["OutcomeType"], outcomePatch.OutcomeType);
 
@@ -28,6 +31,9 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
 
             if (outcomePatch.OutcomeEffectiveDate.HasValue)
                 _jsonHelper.UpdatePropertyValue(obj["OutcomeEffectiveDate"], outcomePatch.OutcomeEffectiveDate);
+
+            if (outcomePatch.ClaimedPriorityGroup.HasValue)
+                _jsonHelper.UpdatePropertyValue(obj["ClaimedPriorityGroup"], outcomePatch.ClaimedPriorityGroup);
 
             if (!string.IsNullOrEmpty(outcomePatch.TouchpointId))
                 _jsonHelper.UpdatePropertyValue(obj["TouchpointId"], outcomePatch.TouchpointId);
