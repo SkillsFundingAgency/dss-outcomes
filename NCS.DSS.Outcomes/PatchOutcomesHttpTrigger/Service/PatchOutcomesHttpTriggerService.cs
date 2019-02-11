@@ -19,26 +19,31 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
             _outcomePatchService = outcomePatchService;
         }
 
-        public async Task<Models.Outcomes> UpdateAsync(string outcomeJson, OutcomesPatch outcomesPatch, Guid outcomeId)
+        public Models.Outcomes PatchResource(string outcomeJson, OutcomesPatch outcomesPatchPatch)
         {
             if (string.IsNullOrEmpty(outcomeJson))
                 return null;
 
-            if (outcomesPatch == null)
+            if (outcomesPatchPatch == null)
                 return null;
 
-            outcomesPatch.SetDefaultValues();
+            outcomesPatchPatch.SetDefaultValues();
 
-            var updatedJson = _outcomePatchService.Patch(outcomeJson, outcomesPatch);
+            var updatedOutcome = _outcomePatchService.Patch(outcomeJson, outcomesPatchPatch);
 
-            if (string.IsNullOrEmpty(updatedJson))
+            return updatedOutcome;
+        }
+
+        public async Task<Models.Outcomes> UpdateCosmosAsync(Models.Outcomes outcome)
+        {
+            if (outcome == null)
                 return null;
 
-            var response = await _documentDbProvider.UpdateOutcomesAsync(updatedJson, outcomeId);
+            var response = await _documentDbProvider.UpdateOutcomesAsync(outcome);
 
             var responseStatusCode = response?.StatusCode;
 
-            return responseStatusCode == HttpStatusCode.OK ? JsonConvert.DeserializeObject<Models.Outcomes>(updatedJson) : null;
+            return responseStatusCode == HttpStatusCode.OK ? (dynamic)response.Resource : null;
         }
 
         public async Task<string> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionPlanId, Guid outcomeId)

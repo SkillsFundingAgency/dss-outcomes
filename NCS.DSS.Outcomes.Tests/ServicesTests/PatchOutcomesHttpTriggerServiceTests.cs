@@ -22,7 +22,8 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         private IPatchOutcomesHttpTriggerService _outcomePatchHttpTriggerService;
         private IOutcomePatchService _outcomePatchService;
         private IDocumentDBProvider _documentDbProvider;
-        private Models.OutcomesPatch _outcomePatch;
+        private Models.Outcomes _outcome;
+        private OutcomesPatch _outcomePatch;
         private string _json;
 
         private readonly Guid _outcomeId = Guid.Parse("7E467BDB-213F-407A-B86A-1954053D3C24");
@@ -36,16 +37,17 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             _documentDbProvider = Substitute.For<IDocumentDBProvider>();
             _outcomePatchService = Substitute.For<IOutcomePatchService>();
             _outcomePatchHttpTriggerService = Substitute.For<PatchOutcomesHttpTriggerService>(_documentDbProvider, _outcomePatchService);
-            _outcomePatch = Substitute.For<Models.OutcomesPatch>();
+            _outcome = Substitute.For<Models.Outcomes>();
+            _outcomePatch = Substitute.For<OutcomesPatch>();
             _json = JsonConvert.SerializeObject(_outcomePatch);
-            _outcomePatchService.Patch(_json, _outcomePatch).Returns(_json);
+            _outcomePatchService.Patch(_json, _outcomePatch).Returns(_outcome);
         }
 
         [Test]
-        public async Task PatchOutcomesHttpTriggerServiceTests_UpdateAsync_ReturnsNullWhenOutcomeJsonIsNullOrEmpty()
+        public void PatchOutcomesHttpTriggerServiceTests_PatchResource_ReturnsNullWhenOutcomeJsonIsNullOrEmpty()
         {
             // Act
-            var result = await _outcomePatchHttpTriggerService.UpdateAsync(null, Arg.Any<Models.OutcomesPatch>(), Arg.Any<Guid>());
+            var result = _outcomePatchHttpTriggerService.PatchResource(null, Arg.Any<OutcomesPatch>());
 
             // Assert
             Assert.IsNull(result);
@@ -53,53 +55,53 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
 
 
         [Test]
-        public async Task PatchOutcomesHttpTriggerServiceTests_UpdateAsync_ReturnsNullWhenOutcomePatchIsNullOrEmpty()
+        public void PatchOutcomesHttpTriggerServiceTests_PatchResource_ReturnsNullWhenOutcomePatchIsNullOrEmpty()
         {
             // Act
-            var result = await _outcomePatchHttpTriggerService.UpdateAsync(Arg.Any<string>(), null, Arg.Any<Guid>());
+            var result = _outcomePatchHttpTriggerService.PatchResource(Arg.Any<string>(), null);
 
             // Assert
             Assert.IsNull(result);
         }
 
         [Test]
-        public async Task  PatchOutcomesHttpTriggerServiceTests_UpdateAsync_ReturnsNullWhenOutcomePatchServicePatchJsonIsNullOrEmpty()
+        public async Task  PatchOutcomesHttpTriggerServiceTests_UpdateCosmosAsync_ReturnsNullWhenOutcomePatchServicePatchJsonIsNullOrEmpty()
         {
             _outcomePatchService.Patch(Arg.Any<string>(), Arg.Any<OutcomesPatch>()).ReturnsNull();
 
             // Act
-            var result = await _outcomePatchHttpTriggerService.UpdateAsync(_json, _outcomePatch, _outcomeId);
+            var result = await _outcomePatchHttpTriggerService.UpdateCosmosAsync(_outcome);
 
             // Assert
             Assert.IsNull(result);
         }
 
         [Test]
-        public async Task  PatchOutcomesHttpTriggerServiceTests_UpdateAsync_ReturnsNullWhenResourceCannotBeUpdated()
+        public async Task  PatchOutcomesHttpTriggerServiceTests_UpdateCosmosAsync_ReturnsNullWhenResourceCannotBeUpdated()
         {
-            _documentDbProvider.UpdateOutcomesAsync(Arg.Any<string>(), Arg.Any<Guid>()).ReturnsNull();
+            _documentDbProvider.UpdateOutcomesAsync(Arg.Any<Models.Outcomes>()).ReturnsNull();
 
             // Act
-            var result = await _outcomePatchHttpTriggerService.UpdateAsync(_json, _outcomePatch, _outcomeId);
+            var result = await _outcomePatchHttpTriggerService.UpdateCosmosAsync(_outcome);
 
             // Assert
             Assert.IsNull(result);
         }
 
         [Test]
-        public async Task  PatchOutcomesHttpTriggerServiceTests_UpdateAsync_ReturnsNullWhenResourceCannotBeFound()
+        public async Task  PatchOutcomesHttpTriggerServiceTests_UpdateCosmosAsync_ReturnsNullWhenResourceCannotBeFound()
         {
             _documentDbProvider.CreateOutcomesAsync(Arg.Any<Models.Outcomes>()).Returns(Task.FromResult(new ResourceResponse<Document>(null)).Result);
 
             // Act
-            var result = await _outcomePatchHttpTriggerService.UpdateAsync(_json, _outcomePatch, _outcomeId);
+            var result = await _outcomePatchHttpTriggerService.UpdateCosmosAsync(_outcome);
 
             // Assert
             Assert.IsNull(result);
         }
 
         [Test]
-        public async Task  PatchOutcomesHttpTriggerServiceTests_UpdateAsync_ReturnsResourceWhenUpdated()
+        public async Task  PatchOutcomesHttpTriggerServiceTests_UpdateCosmosAsync_ReturnsResourceWhenUpdated()
         {
             const string documentServiceResponseClass = "Microsoft.Azure.Documents.DocumentServiceResponse, Microsoft.Azure.DocumentDB.Core, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
             const string dictionaryNameValueCollectionClass = "Microsoft.Azure.Documents.Collections.DictionaryNameValueCollection, Microsoft.Azure.DocumentDB.Core, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
@@ -123,10 +125,10 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
 
             responseField?.SetValue(resourceResponse, documentServiceResponse);
 
-            _documentDbProvider.UpdateOutcomesAsync(Arg.Any<string>(), Arg.Any<Guid>()).Returns(Task.FromResult(resourceResponse).Result);
+            _documentDbProvider.UpdateOutcomesAsync(Arg.Any<Models.Outcomes>()).Returns(Task.FromResult(resourceResponse).Result);
 
             // Act
-            var result = await _outcomePatchHttpTriggerService.UpdateAsync(_json, _outcomePatch, _outcomeId);
+            var result = await _outcomePatchHttpTriggerService.UpdateCosmosAsync(_outcome);
 
             // Assert
             Assert.IsNotNull(result);

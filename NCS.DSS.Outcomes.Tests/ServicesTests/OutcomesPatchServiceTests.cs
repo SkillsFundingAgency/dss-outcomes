@@ -4,7 +4,6 @@ using NCS.DSS.Outcomes.Models;
 using NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.ReferenceData;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -43,11 +42,9 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         {
             var diversityPatch = new OutcomesPatch { SubcontractorId = "0000000111" };
 
-            var updated = _outcomePatchService.Patch(_json, diversityPatch);
-
-            var jsonObject = (JObject)JsonConvert.DeserializeObject(updated);
-
-            var subcontractorId = jsonObject["SubcontractorId"].ToString();
+            var outcomes = _outcomePatchService.Patch(_json, diversityPatch);
+            
+            var subcontractorId = outcomes.SubcontractorId;
 
             // Assert
             Assert.AreEqual("0000000111", subcontractorId);
@@ -58,11 +55,9 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         {
             var diversityPatch = new OutcomesPatch { OutcomeType = OutcomeType.CareerProgression };
 
-            var updated = _outcomePatchService.Patch(_json, diversityPatch);
+            var outcome = _outcomePatchService.Patch(_json, diversityPatch);
 
-            var jsonObject = (JObject)JsonConvert.DeserializeObject(updated);
-
-            var outcomeType = (OutcomeType)int.Parse(jsonObject["OutcomeType"].ToString());
+            var outcomeType = outcome.OutcomeType;
             
             // Assert
             Assert.AreEqual(OutcomeType.CareerProgression, outcomeType);
@@ -73,11 +68,9 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         {
             var diversityPatch = new OutcomesPatch { OutcomeClaimedDate = DateTime.MaxValue };
 
-            var updated = _outcomePatchService.Patch(_json, diversityPatch);
+            var outcome = _outcomePatchService.Patch(_json, diversityPatch);
 
-            var jsonObject = (JObject)JsonConvert.DeserializeObject(updated);
-
-            var outcomeClaimedDate = (DateTime)jsonObject["OutcomeClaimedDate"];
+            var outcomeClaimedDate = outcome.OutcomeClaimedDate;
 
             // Assert
             Assert.AreEqual(DateTime.MaxValue, outcomeClaimedDate);
@@ -88,11 +81,9 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         {
             var diversityPatch = new Models.OutcomesPatch { OutcomeEffectiveDate = DateTime.MaxValue };
 
-            var updated = _outcomePatchService.Patch(_json, diversityPatch);
+            var outcome = _outcomePatchService.Patch(_json, diversityPatch);
 
-            var jsonObject = (JObject)JsonConvert.DeserializeObject(updated);
-
-            var outcomeEffectiveDate = (DateTime)jsonObject["OutcomeEffectiveDate"];
+            var outcomeEffectiveDate = outcome.OutcomeEffectiveDate;
 
             // Assert
             Assert.AreEqual(DateTime.MaxValue, outcomeEffectiveDate);
@@ -103,11 +94,9 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         {
             var diversityPatch = new OutcomesPatch { ClaimedPriorityGroup = ClaimedPriorityGroup.NotAPriorityCustomer };
 
-            var updated = _outcomePatchService.Patch(_json, diversityPatch);
+            var outcome = _outcomePatchService.Patch(_json, diversityPatch);
 
-            var jsonObject = (JObject)JsonConvert.DeserializeObject(updated);
-
-            var claimedPriorityGroup = (ClaimedPriorityGroup)int.Parse(jsonObject["ClaimedPriorityGroup"].ToString());
+            var claimedPriorityGroup = outcome.ClaimedPriorityGroup;
 
             // Assert
             Assert.AreEqual(ClaimedPriorityGroup.NotAPriorityCustomer, claimedPriorityGroup);
@@ -118,11 +107,9 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         {
             var diversityPatch = new OutcomesPatch { TouchpointId = "0000000111" };
 
-            var updated = _outcomePatchService.Patch(_json, diversityPatch);
+            var outcome = _outcomePatchService.Patch(_json, diversityPatch);
 
-            var jsonObject = (JObject)JsonConvert.DeserializeObject(updated);
-
-            var touchpointId = jsonObject["TouchpointId"].ToString();
+            var touchpointId = outcome.TouchpointId;
             
             // Assert
             Assert.AreEqual("0000000111", touchpointId);
@@ -133,11 +120,9 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         {
             var diversityPatch = new OutcomesPatch { LastModifiedDate = DateTime.MaxValue };
 
-            var updated = _outcomePatchService.Patch(_json, diversityPatch);
+            var outcome = _outcomePatchService.Patch(_json, diversityPatch);
 
-            var jsonObject = (JObject)JsonConvert.DeserializeObject(updated);
-
-            var lastModifiedDate = (DateTime)jsonObject["LastModifiedDate"];
+            var lastModifiedDate = outcome.LastModifiedDate;
             
             // Assert
             Assert.AreEqual(DateTime.MaxValue, lastModifiedDate);
@@ -148,11 +133,9 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         {
             var diversityPatch = new OutcomesPatch { LastModifiedTouchpointId = "0000000111" };
 
-            var updated = _outcomePatchService.Patch(_json, diversityPatch);
+            var outcome = _outcomePatchService.Patch(_json, diversityPatch);
 
-            var jsonObject = (JObject)JsonConvert.DeserializeObject(updated);
-
-            var lastModifiedTouchpointId = jsonObject["LastModifiedTouchpointId"].ToString();
+            var lastModifiedTouchpointId = outcome.LastModifiedTouchpointId;
 
             // Assert
             Assert.AreEqual("0000000111", lastModifiedTouchpointId);

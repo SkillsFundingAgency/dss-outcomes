@@ -70,6 +70,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             _httpRequestHelper.GetDssTouchpointId(_request).Returns("0000000001");
             _httpRequestHelper.GetDssApimUrl(_request).Returns("http://localhost:7071/");
             _httpRequestHelper.GetResourceFromRequest<OutcomesPatch>(_request).Returns(Task.FromResult(_outcomePatch).Result);
+            _patchOutcomesHttpTriggerService.PatchResource(Arg.Any<string>(), _outcomePatch).Returns(_outcome);
 
         }
 
@@ -151,8 +152,26 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         }
 
         [Test]
-        public async Task
-            PatchOutcomesHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenOutcomesHasFailedValidation()
+        public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeNoContent_WhenOutcomePatchCantBePatched()
+        {
+            _patchOutcomesHttpTriggerService.GetOutcomesForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult("outcome").Result);
+
+            _patchOutcomesHttpTriggerService.PatchResource(Arg.Any<string>(), Arg.Any<Models.OutcomesPatch>()).Returns((Models.Outcomes)null);
+
+            _httpResponseMessageHelper
+                .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
+
+            // Act
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId,
+                ValidSessionId);
+
+            // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.NoContent, result.StatusCode);
+        }
+
+        [Test]
+        public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenOutcomesHasFailedValidation()
         {
 
             var validationResults = new List<ValidationResult> {new ValidationResult("interaction Id is Required")};
@@ -169,23 +188,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             Assert.IsInstanceOf<HttpResponseMessage>(result);
             Assert.AreEqual((HttpStatusCode) 422, result.StatusCode);
         }
-
-        //[Test]
-        //public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenOutcomesRequestIsInvalid()
-        //{
-        //    _httpRequestHelper.GetResourceFromRequest<Models.Outcomes>(_request).Throws(new JsonException());
-
-        //    _httpResponseMessageHelper
-        //        .UnprocessableEntity(Arg.Any<HttpRequest>())
-        //        .Returns(x => new HttpResponseMessage((HttpStatusCode) 422));
-
-        //    var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId,
-        //        ValidSessionId);
-
-        //    // Assert
-        //    Assert.IsInstanceOf<HttpResponseMessage>(result);
-        //    Assert.AreEqual((HttpStatusCode) 422, result.StatusCode);
-        //}
 
         [Test]
         public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeNoContent_WhenCustomerDoesNotExist()
@@ -289,7 +291,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 .GetOutcomesForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>())
                 .Returns(Task.FromResult("Outcome").Result);
 
-            _patchOutcomesHttpTriggerService.UpdateAsync(Arg.Any<string>(), Arg.Any<OutcomesPatch>(), Arg.Any<Guid>())
+            _patchOutcomesHttpTriggerService.UpdateCosmosAsync(Arg.Any<Models.Outcomes>())
                 .Returns(Task.FromResult<Models.Outcomes>(null).Result);
 
             _httpResponseMessageHelper
@@ -310,7 +312,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 .GetOutcomesForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>())
                 .Returns(Task.FromResult("Outcome").Result);
 
-            _patchOutcomesHttpTriggerService.UpdateAsync(Arg.Any<string>(), Arg.Any<OutcomesPatch>(), Arg.Any<Guid>())
+            _patchOutcomesHttpTriggerService.UpdateCosmosAsync(Arg.Any<Models.Outcomes>())
                 .Returns(Task.FromResult<Models.Outcomes>(null).Result);
 
             _httpResponseMessageHelper
@@ -331,7 +333,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 .GetOutcomesForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>())
                 .Returns(Task.FromResult("Outcome").Result);
             
-            _patchOutcomesHttpTriggerService.UpdateAsync(Arg.Any<string>(), Arg.Any<OutcomesPatch>(), Arg.Any<Guid>())
+            _patchOutcomesHttpTriggerService.UpdateCosmosAsync(Arg.Any<Models.Outcomes>())
                 .Returns(Task.FromResult(_outcome).Result);
 
             _httpResponseMessageHelper

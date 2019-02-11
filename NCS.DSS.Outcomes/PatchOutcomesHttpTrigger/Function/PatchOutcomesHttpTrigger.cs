@@ -173,12 +173,20 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Outcome {0} for customer {1}", outcomesGuid, customerGuid));
-            var outcomes = await outcomesPatchService.GetOutcomesForCustomerAsync(customerGuid, interactionGuid, actionPlanGuid, outcomesGuid);
+            var outcome = await outcomesPatchService.GetOutcomesForCustomerAsync(customerGuid, interactionGuid, actionPlanGuid, outcomesGuid);
 
-            if (outcomes == null)
+            if (outcome == null)
             {
                 loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Outcome does not exist {0}", outcomesGuid));
                 return httpResponseMessageHelper.NoContent(outcomesGuid);
+            }
+            
+            var outcomeResource = outcomesPatchService.PatchResource(outcome, outcomesPatchRequest);
+
+            if (outcomeResource == null)
+            {
+                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("ActionPlan does not exist {0}", actionPlanGuid));
+                return httpResponseMessageHelper.NoContent(actionPlanGuid);
             }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to validate resource");
@@ -191,19 +199,19 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to update Outcome {0}", outcomesGuid));
-            var updatedOutcomes = await outcomesPatchService.UpdateAsync(outcomes, outcomesPatchRequest, outcomesGuid);
+            var updatedOutcome = await outcomesPatchService.UpdateCosmosAsync(outcomeResource);
 
-            if (updatedOutcomes != null)
+            if (updatedOutcome != null)
             {
                 loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("attempting to send to service bus {0}", outcomesGuid));
-                await outcomesPatchService.SendToServiceBusQueueAsync(updatedOutcomes, customerGuid, ApimURL);
+                await outcomesPatchService.SendToServiceBusQueueAsync(updatedOutcome, customerGuid, ApimURL);
             }
 
             loggerHelper.LogMethodExit(log);
 
-            return updatedOutcomes == null ?
+            return updatedOutcome == null ?
                 httpResponseMessageHelper.BadRequest(outcomesGuid) :
-                httpResponseMessageHelper.Ok(jsonHelper.SerializeObjectAndRenameIdProperty(outcomes, "id", "OutcomeId"));
+                httpResponseMessageHelper.Ok(jsonHelper.SerializeObjectAndRenameIdProperty(outcome, "id", "OutcomeId"));
 
         }
     }
