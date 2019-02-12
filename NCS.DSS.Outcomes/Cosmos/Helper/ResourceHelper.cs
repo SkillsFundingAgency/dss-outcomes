@@ -6,36 +6,45 @@ namespace NCS.DSS.Outcomes.Cosmos.Helper
 {
     public class ResourceHelper : IResourceHelper
     {
+        private readonly IDocumentDBProvider _documentDbProvider;
+        public ResourceHelper(IDocumentDBProvider documentDbProvider)
+        {
+            _documentDbProvider = documentDbProvider;
+        }
+
         public async Task<bool> DoesCustomerExist(Guid customerId)
         {
-            var documentDbProvider = new DocumentDBProvider();
-            var doesCustomerExist = await documentDbProvider.DoesCustomerResourceExist(customerId);
+            var doesCustomerExist = await _documentDbProvider.DoesCustomerResourceExist(customerId);
 
             return doesCustomerExist;
         }
 
         public async Task<bool> IsCustomerReadOnly(Guid customerId)
         {
-            var documentDbProvider = new DocumentDBProvider();
-            var isCustomerReadOnly = await documentDbProvider.DoesCustomerHaveATerminationDate(customerId);
+            var isCustomerReadOnly = await _documentDbProvider.DoesCustomerHaveATerminationDate(customerId);
 
             return isCustomerReadOnly;
         }
 
-        public bool DoesInteractionResourceExistAndBelongToCustomer(Guid interactionId, Guid customerId)
+        public bool DoesSessionExistAndBelongToCustomer(Guid sessionId, Guid interactionId, Guid customerId)
         {
-            var documentDbProvider = new DocumentDBProvider();
-            var doesInteractionExist = documentDbProvider.DoesInteractionResourceExistAndBelongToCustomer(interactionId, customerId);
+            var doesInteractionExist = _documentDbProvider.DoesSessionResourceExistAndBelongToCustomer(sessionId, interactionId, customerId);
 
             return doesInteractionExist;
         }
 
         public bool DoesActionPlanResourceExistAndBelongToCustomer(Guid actionplanId, Guid interactionId, Guid customerId)
         {
-            var documentDbProvider = new DocumentDBProvider();
-            var doesActionPlanExist = documentDbProvider.DoesActionPlanResourceExistAndBelongToCustomer(actionplanId, interactionId, customerId);
+            var doesActionPlanExist = _documentDbProvider.DoesActionPlanResourceExistAndBelongToCustomer(actionplanId, interactionId, customerId);
 
             return doesActionPlanExist;
+        }
+
+        public async Task<DateTime?> GetDateAndTimeOfSession(Guid sessionId)
+        {
+            var dateAndTimeOfSession = await _documentDbProvider.GetDateAndTimeOfSessionFromSessionResource(sessionId);
+
+            return dateAndTimeOfSession;
         }
     }
 }

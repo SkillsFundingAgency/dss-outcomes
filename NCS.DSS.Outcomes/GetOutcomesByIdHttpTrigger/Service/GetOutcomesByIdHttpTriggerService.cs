@@ -6,12 +6,17 @@ namespace NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Service
 {
     public class GetOutcomesByIdHttpTriggerService : IGetOutcomesByIdHttpTriggerService
     {
-        public async Task<Models.Outcomes> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionId, Guid actionplanId, Guid OutcomeId)
-        {
-            var documentDbProvider = new DocumentDBProvider();
-            var Outcomes = await documentDbProvider.GetOutcomesForCustomerAsync(customerId, interactionId, actionplanId, OutcomeId);
+        private readonly IDocumentDBProvider _documentDbProvider;
 
-            return Outcomes;
+        public GetOutcomesByIdHttpTriggerService(IDocumentDBProvider documentDbProvider)
+        {
+            _documentDbProvider = documentDbProvider;
+        }
+        public async Task<Models.Outcomes> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionId, Guid actionplanId, Guid outcomeId)
+        {
+            var outcomes = await _documentDbProvider.GetOutcomesForCustomerAsync(customerId, interactionId, actionplanId, outcomeId);
+
+            return outcomes;
         }
     }
 }

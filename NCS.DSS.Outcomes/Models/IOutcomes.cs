@@ -11,6 +11,7 @@ namespace NCS.DSS.Outcomes.Models
         OutcomeType? OutcomeType { get; set; }
         DateTime? OutcomeClaimedDate { get; set; }
         DateTime? OutcomeEffectiveDate { get; set; }
+        ClaimedPriorityGroup? ClaimedPriorityGroup { get; set; }
         string TouchpointId { get; set; }
         DateTime? LastModifiedDate { get; set; }
         string LastModifiedTouchpointId { get; set; }

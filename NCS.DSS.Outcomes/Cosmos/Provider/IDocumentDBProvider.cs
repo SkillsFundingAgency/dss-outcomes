@@ -9,13 +9,16 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
     public interface IDocumentDBProvider
     {
         Task<bool> DoesCustomerResourceExist(Guid customerId);
-        bool DoesInteractionResourceExistAndBelongToCustomer(Guid interactionId, Guid customerId);
+        bool DoesSessionResourceExistAndBelongToCustomer(Guid sessionId, Guid interactionId, Guid customerId);
+        Task<DateTime?> GetDateAndTimeOfSessionFromSessionResource(Guid sessionId);
         bool DoesActionPlanResourceExistAndBelongToCustomer(Guid actionPlanId, Guid interactionId, Guid customerId);
         Task<bool> DoesCustomerHaveATerminationDate(Guid customerId);
         Task<List<Models.Outcomes>> GetOutcomesForCustomerAsync(Guid customerId);
+        Task<string> GetOutcomesForCustomerAsyncToUpdateAsync(Guid customerId, Guid interactionsId, Guid actionPlanId, Guid outcomeId);
+
         Task<Models.Outcomes> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionplanId, Guid outcomeId);
         Task<ResourceResponse<Document>> CreateOutcomesAsync(Models.Outcomes outcomes);
-        Task<ResourceResponse<Document>> UpdateOutcomesAsync(Models.Outcomes outcomes);
-        Task<bool> DeleteAsync(Guid OutcomeId);
+        Task<ResourceResponse<Document>> UpdateOutcomesAsync(Models.Outcomes outcome);
+        Task<bool> DeleteAsync(Guid outcomeId);
     }
 }

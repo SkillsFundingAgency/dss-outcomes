@@ -8,6 +8,7 @@ using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
 using NCS.DSS.Outcomes.Cosmos.Client;
 using NCS.DSS.Outcomes.Cosmos.Helper;
+using Newtonsoft.Json.Linq;
 
 namespace NCS.DSS.Outcomes.Cosmos.Provider
 {
@@ -36,9 +37,9 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
             return false;
         }
 
-        public bool DoesInteractionResourceExistAndBelongToCustomer(Guid interactionId, Guid customerId)
+        public bool DoesSessionResourceExistAndBelongToCustomer(Guid sessionId, Guid interactionId, Guid customerId)
         {
-            var collectionUri = DocumentDBHelper.CreateInteractionDocumentCollectionUri();
+            var collectionUri = DocumentDBHelper.CreateSessionDocumentCollectionUri();
 
             var client = DocumentDBClient.CreateDocumentClient();
 
@@ -49,12 +50,14 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
             {
                 var query = client.CreateDocumentQuery<long>(collectionUri, new SqlQuerySpec()
                 {
-                    QueryText = "SELECT VALUE COUNT(1) FROM interactions i " +
-                                "WHERE i.id = @interactionId " +
-                                "AND i.CustomerId = @customerId",
+                    QueryText = "SELECT VALUE COUNT(1) FROM sessions s " +
+                                "WHERE s.id = @sessionId " +
+                                "AND s.InteractionId = @interactionId " +
+                                "AND s.CustomerId = @customerId",
 
                     Parameters = new SqlParameterCollection()
                     {
+                        new SqlParameter("@sessionId", sessionId),
                         new SqlParameter("@interactionId", interactionId),
                         new SqlParameter("@customerId", customerId)
                     }
@@ -67,6 +70,29 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
                 return false;
             }
 
+        }
+
+        public async Task<DateTime?> GetDateAndTimeOfSessionFromSessionResource(Guid sessionId)
+        {
+            var documentUri = DocumentDBHelper.CreateSessionDocumentUri(sessionId);
+
+            var client = DocumentDBClient.CreateDocumentClient();
+
+            if (client == null)
+                return null;
+
+            try
+            {
+                var response = await client.ReadDocumentAsync(documentUri);
+
+                var dateAndTimeOfSession = response.Resource?.GetPropertyValue<DateTime?>("DateandTimeOfSession");
+
+                return dateAndTimeOfSession.GetValueOrDefault();
+            }
+            catch (DocumentClientException)
+            {
+                return null;
+            }
         }
 
         public bool DoesActionPlanResourceExistAndBelongToCustomer(Guid actionPlanId, Guid interactionId, Guid customerId)
@@ -171,6 +197,27 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
             return outcomes?.FirstOrDefault();
         }
 
+        public async Task<string> GetOutcomesForCustomerAsyncToUpdateAsync(Guid customerId, Guid interactionsId, Guid actionPlanId, Guid outcomeId)
+        {
+            var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
+
+            var client = DocumentDBClient.CreateDocumentClient();
+
+            var outcomesForCustomerQuery = client
+                ?.CreateDocumentQuery<Models.Outcomes>(collectionUri, new FeedOptions { MaxItemCount = 1 })
+                .Where(x => x.CustomerId == customerId &&
+                            x.ActionPlanId == actionPlanId &&
+                            x.OutcomeId == outcomeId)
+                .AsDocumentQuery();
+
+            if (outcomesForCustomerQuery == null)
+                return null;
+
+            var outcomes = await outcomesForCustomerQuery.ExecuteNextAsync();
+
+            return outcomes?.FirstOrDefault()?.ToString();
+        }
+
         public async Task<ResourceResponse<Document>> CreateOutcomesAsync(Models.Outcomes outcomes)
         {
 
@@ -187,16 +234,16 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
 
         }
 
-        public async Task<ResourceResponse<Document>> UpdateOutcomesAsync(Models.Outcomes outcomes)
+        public async Task<ResourceResponse<Document>> UpdateOutcomesAsync(Models.Outcomes outcome)
         {
-            var documentUri = DocumentDBHelper.CreateDocumentUri(outcomes.OutcomeId.GetValueOrDefault());
+            var documentUri = DocumentDBHelper.CreateDocumentUri(outcome.OutcomeId.GetValueOrDefault());
 
             var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return null;
 
-            var response = await client.ReplaceDocumentAsync(documentUri, outcomes);
+            var response = await client.ReplaceDocumentAsync(documentUri, outcome);
 
             return response;
         }

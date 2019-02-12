@@ -1,12 +1,11 @@
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("NCS.DSS.Outcomes.Tests")]
+[assembly: AssemblyTitle("NCS.DSS.Outcomes.Tests.FunctionTests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("NCS.DSS.Outcomes.Tests")]
+[assembly: AssemblyProduct("NCS.DSS.Outcomes.Tests.FunctionTests")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

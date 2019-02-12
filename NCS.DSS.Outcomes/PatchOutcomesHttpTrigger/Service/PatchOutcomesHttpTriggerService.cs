@@ -4,32 +4,51 @@ using System.Threading.Tasks;
 using NCS.DSS.Outcomes.Cosmos.Provider;
 using NCS.DSS.Outcomes.Models;
 using NCS.DSS.Outcomes.ServiceBus;
+using Newtonsoft.Json;
 
 namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
 {
     public class PatchOutcomesHttpTriggerService : IPatchOutcomesHttpTriggerService
     {
-        public async Task<Models.Outcomes> UpdateAsync(Models.Outcomes outcomes, OutcomesPatch outcomesPatch)
+        private readonly IOutcomePatchService _outcomePatchService;
+        private readonly IDocumentDBProvider _documentDbProvider;
+
+        public PatchOutcomesHttpTriggerService(IDocumentDBProvider documentDbProvider, IOutcomePatchService outcomePatchService)
         {
-            if (outcomes == null)
-                return null;
-
-            outcomesPatch.SetDefaultValues();
-
-            outcomes.Patch(outcomesPatch);
-
-            var documentDbProvider = new DocumentDBProvider();
-            var response = await documentDbProvider.UpdateOutcomesAsync(outcomes);
-
-            var responseStatusCode = response.StatusCode;
-
-            return responseStatusCode == HttpStatusCode.OK ? outcomes : null;
+            _documentDbProvider = documentDbProvider;
+            _outcomePatchService = outcomePatchService;
         }
 
-        public async Task<Models.Outcomes> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionplanId, Guid OutcomeId)
+        public Models.Outcomes PatchResource(string outcomeJson, OutcomesPatch outcomesPatchPatch)
         {
-            var documentDbProvider = new DocumentDBProvider();
-            var outcomes = await documentDbProvider.GetOutcomesForCustomerAsync(customerId, interactionsId, actionplanId, OutcomeId);
+            if (string.IsNullOrEmpty(outcomeJson))
+                return null;
+
+            if (outcomesPatchPatch == null)
+                return null;
+
+            outcomesPatchPatch.SetDefaultValues();
+
+            var updatedOutcome = _outcomePatchService.Patch(outcomeJson, outcomesPatchPatch);
+
+            return updatedOutcome;
+        }
+
+        public async Task<Models.Outcomes> UpdateCosmosAsync(Models.Outcomes outcome)
+        {
+            if (outcome == null)
+                return null;
+
+            var response = await _documentDbProvider.UpdateOutcomesAsync(outcome);
+
+            var responseStatusCode = response?.StatusCode;
+
+            return responseStatusCode == HttpStatusCode.OK ? (dynamic)response.Resource : null;
+        }
+
+        public async Task<string> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionPlanId, Guid outcomeId)
+        {
+            var outcomes = await _documentDbProvider.GetOutcomesForCustomerAsyncToUpdateAsync(customerId, interactionsId, actionPlanId, outcomeId);
 
             return outcomes;
         }
