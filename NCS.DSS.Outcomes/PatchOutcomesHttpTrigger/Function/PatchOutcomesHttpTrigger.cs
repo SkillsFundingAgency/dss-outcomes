@@ -185,7 +185,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
 
             if (outcomeResource == null)
             {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("ActionPlan does not exist {0}", actionPlanGuid));
+                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Outcome does not exist {0}", actionPlanGuid));
                 return httpResponseMessageHelper.NoContent(actionPlanGuid);
             }
 

@@ -39,6 +39,7 @@ namespace NCS.DSS.Outcomes.Ioc
             builder.Services.AddScoped<IPostOutcomesHttpTriggerService, PostOutcomesHttpTriggerService>();
             builder.Services.AddScoped<IPatchOutcomesHttpTriggerService, PatchOutcomesHttpTriggerService>();
             builder.Services.AddScoped<IPatchOutcomesHttpTriggerService, PatchOutcomesHttpTriggerService>();
+            builder.Services.AddScoped<IOutcomePatchService, OutcomePatchService>();
         }
     }
 }
