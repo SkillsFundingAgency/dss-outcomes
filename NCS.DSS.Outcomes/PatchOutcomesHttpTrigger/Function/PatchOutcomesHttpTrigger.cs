@@ -190,7 +190,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to validate resource");
-            var errors = validate.ValidateResource(outcomesPatchRequest, dateAndTimeOfSession.Value);
+            var errors = validate.ValidateResource(outcomeResource, dateAndTimeOfSession.Value);
 
             if (errors != null && errors.Any())
             {
