@@ -175,7 +175,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         {
 
             var validationResults = new List<ValidationResult> {new ValidationResult("interaction Id is Required")};
-            _validate.ValidateResource(Arg.Any<OutcomesPatch>(), Arg.Any<DateTime>()).Returns(validationResults);
+            _validate.ValidateResource(Arg.Any<OutcomesPatch>(), Arg.Any<DateTime>()).ReturnsForAnyArgs(validationResults);
 
             _httpResponseMessageHelper
                 .UnprocessableEntity(Arg.Any<List<ValidationResult>>())
