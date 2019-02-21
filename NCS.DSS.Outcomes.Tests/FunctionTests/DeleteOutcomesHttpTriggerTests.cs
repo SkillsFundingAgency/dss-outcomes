@@ -1,21 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Outcomes.Cosmos.Helper;
 using NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Service;
-using NCS.DSS.Outcomes.Helpers;
 using NCS.DSS.Outcomes.Models;
-using NCS.DSS.Outcomes.Validation;
-using Newtonsoft.Json;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
-namespace NCS.DSS.Outcomes.Tests
+namespace NCS.DSS.Outcomes.Tests.FunctionTests
 {
     [TestFixture]
     public class DeleteOutcomesHttpTriggerTests

@@ -14,8 +14,11 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
         Task<bool> DoesCustomerHaveATerminationDate(Guid customerId);
         Task<List<Models.Outcomes>> GetOutcomesForCustomerAsync(Guid customerId);
         Task<Models.Outcomes> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionplanId, Guid outcomeId);
+
+        Task<string> GetOutcomesForCustomerAsyncToUpdateAsync(Guid customerId, Guid interactionsId, Guid actionPlanId,
+            Guid outcomeId);
         Task<ResourceResponse<Document>> CreateOutcomesAsync(Models.Outcomes outcomes);
-        Task<ResourceResponse<Document>> UpdateOutcomesAsync(Models.Outcomes outcomes);
+        Task<ResourceResponse<Document>> UpdateOutcomesAsync(string outcomeJson, Guid outcomeId);
         Task<bool> DeleteAsync(Guid OutcomeId);
     }
 }

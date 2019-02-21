@@ -105,12 +105,17 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             if (!doesActionPlanExist)
                 return HttpResponseMessageHelper.NoContent(actionplanGuid);
 
-            var outcomes = await outcomesPatchService.GetOutcomesForCustomerAsync(customerGuid, interactionGuid, actionplanGuid, outcomesGuid);
+            var outcomeForCustomer = await outcomesPatchService.GetOutcomesForCustomerAsync(customerGuid, interactionGuid, actionplanGuid, outcomesGuid);
 
-            if (outcomes == null)
+            if (outcomeForCustomer == null)
                 return HttpResponseMessageHelper.NoContent(outcomesGuid);
 
-            var updatedOutcomes = await outcomesPatchService.UpdateAsync(outcomes, outcomesPatchRequest);
+            var patchedOutcome = outcomesPatchService.PatchResource(outcomeForCustomer, outcomesPatchRequest);
+
+            if (patchedOutcome == null)
+                return HttpResponseMessageHelper.NoContent(outcomesGuid);
+
+            var updatedOutcomes = await outcomesPatchService.UpdateCosmosAsync(patchedOutcome, outcomesGuid);
 
             if (updatedOutcomes != null)
                 await outcomesPatchService.SendToServiceBusQueueAsync(updatedOutcomes,customerGuid, ApimURL);

@@ -84,12 +84,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GetOutcomesByIdHttpTriggerTests.cs" />
-    <Compile Include="GetOutcomesHttpTriggerTest.cs" />
-    <Compile Include="DeleteOutcomesHttpTriggerTests.cs" />
-    <Compile Include="PatchOutcomesHttpTriggerTests.cs" />
-    <Compile Include="PostOutcomesHttpTriggerTests.cs" />
+    <Compile Include="FunctionTests\GetOutcomesByIdHttpTriggerTests.cs" />
+    <Compile Include="FunctionTests\GetOutcomesHttpTriggerTest.cs" />
+    <Compile Include="FunctionTests\DeleteOutcomesHttpTriggerTests.cs" />
+    <Compile Include="FunctionTests\PatchOutcomesHttpTriggerTests.cs" />
+    <Compile Include="FunctionTests\PostOutcomesHttpTriggerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceTests\OutcomesPatchServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

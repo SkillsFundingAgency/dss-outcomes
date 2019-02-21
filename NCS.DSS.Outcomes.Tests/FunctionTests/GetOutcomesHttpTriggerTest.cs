@@ -10,7 +10,7 @@ using NCS.DSS.Outcomes.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace NCS.DSS.Outcomes.Tests
+namespace NCS.DSS.Outcomes.Tests.FunctionTests
 {
     [TestFixture]
     public class GetOutcomesHttpTriggerTest
