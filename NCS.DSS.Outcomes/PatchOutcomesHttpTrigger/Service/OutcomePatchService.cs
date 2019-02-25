@@ -13,7 +13,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
             _jsonHelper = jsonHelper;
         }
 
-        public Models.Outcomes Patch(string outcomeJson, OutcomesPatch outcomePatch)
+        public string Patch(string outcomeJson, OutcomesPatch outcomePatch)
         {
             if (string.IsNullOrEmpty(outcomeJson))
                 return null;
@@ -54,7 +54,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
             if (!string.IsNullOrEmpty(outcomePatch.LastModifiedTouchpointId))
                 _jsonHelper.UpdatePropertyValue(obj["LastModifiedTouchpointId"], outcomePatch.LastModifiedTouchpointId);
 
-            return obj.ToObject<Models.Outcomes>();
+            return obj.ToString();
 
         }
     }

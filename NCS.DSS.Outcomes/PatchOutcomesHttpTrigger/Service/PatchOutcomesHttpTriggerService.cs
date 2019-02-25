@@ -19,7 +19,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
             _outcomePatchService = outcomePatchService;
         }
 
-        public Models.Outcomes PatchResource(string outcomeJson, OutcomesPatch outcomesPatchPatch)
+        public string PatchResource(string outcomeJson, OutcomesPatch outcomesPatchPatch)
         {
             if (string.IsNullOrEmpty(outcomeJson))
                 return null;
@@ -34,12 +34,12 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
             return updatedOutcome;
         }
 
-        public async Task<Models.Outcomes> UpdateCosmosAsync(Models.Outcomes outcome)
+        public async Task<Models.Outcomes> UpdateCosmosAsync(string outcomeJson, Guid outcomeId)
         {
-            if (outcome == null)
+            if (string.IsNullOrEmpty(outcomeJson))
                 return null;
 
-            var response = await _documentDbProvider.UpdateOutcomesAsync(outcome);
+            var response = await _documentDbProvider.UpdateOutcomesAsync(outcomeJson, outcomeId);
 
             var responseStatusCode = response?.StatusCode;
 

@@ -181,16 +181,34 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                 return httpResponseMessageHelper.NoContent(outcomesGuid);
             }
             
-            var outcomeResource = outcomesPatchService.PatchResource(outcome, outcomesPatchRequest);
+            var patchedOutcomeResource = outcomesPatchService.PatchResource(outcome, outcomesPatchRequest);
 
-            if (outcomeResource == null)
+            if (patchedOutcomeResource == null)
             {
                 loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Outcome does not exist {0}", actionPlanGuid));
                 return httpResponseMessageHelper.NoContent(actionPlanGuid);
             }
 
+            Models.Outcomes outcomeValidationObject;
+
+            try
+            {
+                outcomeValidationObject = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomeResource);
+            }
+            catch (JsonException ex)
+            {
+                loggerHelper.LogError(log, correlationGuid, "Unable to Deserialize Object", ex);
+                throw;
+            }
+
+            if (outcomeValidationObject == null)
+            {
+                loggerHelper.LogInformationMessage(log, correlationGuid, "Action Plan Validation Object is null");
+                return httpResponseMessageHelper.UnprocessableEntity(req);
+            }
+
             loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to validate resource");
-            var errors = validate.ValidateResource(outcomeResource, dateAndTimeOfSession.Value);
+            var errors = validate.ValidateResource(outcomeValidationObject, dateAndTimeOfSession.Value);
 
             if (errors != null && errors.Any())
             {
@@ -199,7 +217,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to update Outcome {0}", outcomesGuid));
-            var updatedOutcome = await outcomesPatchService.UpdateCosmosAsync(outcomeResource);
+            var updatedOutcome = await outcomesPatchService.UpdateCosmosAsync(patchedOutcomeResource, outcomesGuid);
 
             if (updatedOutcome != null)
             {

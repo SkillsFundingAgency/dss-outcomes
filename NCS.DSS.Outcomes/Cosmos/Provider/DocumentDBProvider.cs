@@ -234,16 +234,21 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
 
         }
 
-        public async Task<ResourceResponse<Document>> UpdateOutcomesAsync(Models.Outcomes outcome)
+        public async Task<ResourceResponse<Document>> UpdateOutcomesAsync(string outcomeJson, Guid outcomeId)
         {
-            var documentUri = DocumentDBHelper.CreateDocumentUri(outcome.OutcomeId.GetValueOrDefault());
+            if (string.IsNullOrEmpty(outcomeJson))
+                return null;
+
+            var documentUri = DocumentDBHelper.CreateDocumentUri(outcomeId);
 
             var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return null;
 
-            var response = await client.ReplaceDocumentAsync(documentUri, outcome);
+            var outcomeDocumentJObject = JObject.Parse(outcomeJson);
+
+            var response = await client.ReplaceDocumentAsync(documentUri, outcomeDocumentJObject);
 
             return response;
         }

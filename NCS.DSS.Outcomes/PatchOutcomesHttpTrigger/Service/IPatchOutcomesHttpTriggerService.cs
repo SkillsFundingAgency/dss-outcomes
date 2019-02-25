@@ -6,8 +6,8 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
 {
     public interface IPatchOutcomesHttpTriggerService
     {
-        Models.Outcomes PatchResource(string outcomeJson, OutcomesPatch outcomesPatchPatch);
-        Task<Models.Outcomes> UpdateCosmosAsync(Models.Outcomes outcome);
+        string PatchResource(string outcomeJson, OutcomesPatch outcomesPatchPatch);
+        Task<Models.Outcomes> UpdateCosmosAsync(string outcomeJson, Guid outcomeId);
         Task<string> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionPlanId, Guid outcomeId);
         Task SendToServiceBusQueueAsync(Models.Outcomes outcomes, Guid customerId, string reqUrl);
     }
