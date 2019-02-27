@@ -8,6 +8,7 @@ using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
 using NCS.DSS.Outcomes.Cosmos.Client;
 using NCS.DSS.Outcomes.Cosmos.Helper;
+using Newtonsoft.Json.Linq;
 
 namespace NCS.DSS.Outcomes.Cosmos.Provider
 {
@@ -171,6 +172,27 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
             return outcomes?.FirstOrDefault();
         }
 
+        public async Task<string> GetOutcomesForCustomerAsyncToUpdateAsync(Guid customerId, Guid interactionsId, Guid actionPlanId, Guid outcomeId)
+        {
+            var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
+
+            var client = DocumentDBClient.CreateDocumentClient();
+
+            var outcomesForCustomerQuery = client
+                ?.CreateDocumentQuery<Models.Outcomes>(collectionUri, new FeedOptions { MaxItemCount = 1 })
+                .Where(x => x.CustomerId == customerId &&
+                            x.ActionPlanId == actionPlanId &&
+                            x.OutcomeId == outcomeId)
+                .AsDocumentQuery();
+
+            if (outcomesForCustomerQuery == null)
+                return null;
+
+            var outcomes = await outcomesForCustomerQuery.ExecuteNextAsync();
+
+            return outcomes?.FirstOrDefault()?.ToString();
+        }
+
         public async Task<ResourceResponse<Document>> CreateOutcomesAsync(Models.Outcomes outcomes)
         {
 
@@ -187,16 +209,21 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
 
         }
 
-        public async Task<ResourceResponse<Document>> UpdateOutcomesAsync(Models.Outcomes outcomes)
+        public async Task<ResourceResponse<Document>> UpdateOutcomesAsync(string outcomeJson, Guid outcomeId)
         {
-            var documentUri = DocumentDBHelper.CreateDocumentUri(outcomes.OutcomeId.GetValueOrDefault());
+            if (string.IsNullOrEmpty(outcomeJson))
+                return null;
+
+            var documentUri = DocumentDBHelper.CreateDocumentUri(outcomeId);
 
             var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return null;
 
-            var response = await client.ReplaceDocumentAsync(documentUri, outcomes);
+            var outcomeDocumentJObject = JObject.Parse(outcomeJson);
+
+            var response = await client.ReplaceDocumentAsync(documentUri, outcomeDocumentJObject);
 
             return response;
         }

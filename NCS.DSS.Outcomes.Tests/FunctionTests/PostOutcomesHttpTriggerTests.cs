@@ -14,7 +14,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
-namespace NCS.DSS.Outcomes.Tests
+namespace NCS.DSS.Outcomes.Tests.FunctionTests
 {
     [TestFixture]
     public class PostOutcomesHttpTriggerTests

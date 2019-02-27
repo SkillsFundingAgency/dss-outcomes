@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using NCS.DSS.Outcomes.Cosmos.Helper;
+using NCS.DSS.Outcomes.Cosmos.Provider;
 using NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Service;
 using NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Service;
@@ -17,14 +18,19 @@ namespace NCS.DSS.Outcomes.Ioc
         public IServiceProvider CreateServiceProvider()
         {
             var services = new ServiceCollection();
+
             services.AddTransient<IGetOutcomesHttpTriggerService, GetOutcomesHttpTriggerService>();
             services.AddTransient<IGetOutcomesByIdHttpTriggerService, GetOutcomesByIdHttpTriggerService>();
             services.AddTransient<IPostOutcomesHttpTriggerService, PostOutcomesHttpTriggerService>();
             services.AddTransient<IPatchOutcomesHttpTriggerService, PatchOutcomesHttpTriggerService>();
             services.AddTransient<IDeleteOutcomesHttpTriggerService, DeleteOutcomesHttpTriggerService>();
+            services.AddScoped<IOutcomePatchService, OutcomePatchService>();
+
             services.AddTransient<IResourceHelper, ResourceHelper>();
             services.AddTransient<IValidate, Validate>();
             services.AddTransient<IHttpRequestMessageHelper, HttpRequestMessageHelper>();
+            services.AddSingleton<IDocumentDBProvider, DocumentDBProvider>();
+
             return services.BuildServiceProvider(true);
         }
     }
