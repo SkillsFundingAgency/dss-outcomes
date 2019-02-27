@@ -4,6 +4,6 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
 {
     public interface IOutcomePatchService
     {
-        Models.Outcomes Patch(string outcomeJson, OutcomesPatch outcomePatch);
+        string Patch(string outcomeJson, OutcomesPatch outcomePatch);
     }
 }

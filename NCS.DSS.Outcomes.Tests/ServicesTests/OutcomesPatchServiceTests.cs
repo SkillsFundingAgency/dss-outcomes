@@ -40,105 +40,105 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         [Test]
         public void OutcomesPatchServiceTests_CheckSubcontractorIdIsUpdated_WhenPatchIsCalled()
         {
-            var diversityPatch = new OutcomesPatch { SubcontractorId = "0000000111" };
+            var outcomePatch = new OutcomesPatch { SubcontractorId = "0000000111" };
 
-            var outcomes = _outcomePatchService.Patch(_json, diversityPatch);
-            
-            var subcontractorId = outcomes.SubcontractorId;
+            var patchedOutcomes = _outcomePatchService.Patch(_json, outcomePatch);
+
+            var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
 
             // Assert
-            Assert.AreEqual("0000000111", subcontractorId);
+            Assert.AreEqual("0000000111", outcome.SubcontractorId);
         }
 
         [Test]
         public void OutcomesPatchServiceTests_CheckOutcomeTypeIsUpdated_WhenPatchIsCalled()
         {
-            var diversityPatch = new OutcomesPatch { OutcomeType = OutcomeType.CareerProgression };
+            var outcomePatch = new OutcomesPatch { OutcomeType = OutcomeType.CareerProgression };
 
-            var outcome = _outcomePatchService.Patch(_json, diversityPatch);
+            var patchedOutcomes = _outcomePatchService.Patch(_json, outcomePatch);
 
-            var outcomeType = outcome.OutcomeType;
+            var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
             
             // Assert
-            Assert.AreEqual(OutcomeType.CareerProgression, outcomeType);
+            Assert.AreEqual(OutcomeType.CareerProgression, outcome.OutcomeType);
         }
 
         [Test]
         public void OutcomesPatchServiceTests_CheckOutcomeClaimedDateIsUpdated_WhenPatchIsCalled()
         {
-            var diversityPatch = new OutcomesPatch { OutcomeClaimedDate = DateTime.MaxValue };
+            var outcomePatch = new OutcomesPatch { OutcomeClaimedDate = DateTime.MaxValue };
 
-            var outcome = _outcomePatchService.Patch(_json, diversityPatch);
+            var patchedOutcomes = _outcomePatchService.Patch(_json, outcomePatch);
 
-            var outcomeClaimedDate = outcome.OutcomeClaimedDate;
+            var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
 
             // Assert
-            Assert.AreEqual(DateTime.MaxValue, outcomeClaimedDate);
+            Assert.AreEqual(DateTime.MaxValue, outcome.OutcomeClaimedDate);
         }
 
         [Test]
         public void OutcomesPatchServiceTests_CheckOutcomeEffectiveDateIsUpdated_WhenPatchIsCalled()
         {
-            var diversityPatch = new Models.OutcomesPatch { OutcomeEffectiveDate = DateTime.MaxValue };
+            var outcomePatch = new Models.OutcomesPatch { OutcomeEffectiveDate = DateTime.MaxValue };
 
-            var outcome = _outcomePatchService.Patch(_json, diversityPatch);
+            var patchedOutcomes = _outcomePatchService.Patch(_json, outcomePatch);
 
-            var outcomeEffectiveDate = outcome.OutcomeEffectiveDate;
+            var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
 
             // Assert
-            Assert.AreEqual(DateTime.MaxValue, outcomeEffectiveDate);
+            Assert.AreEqual(DateTime.MaxValue, outcome.OutcomeEffectiveDate);
         }
 
         [Test]
         public void OutcomesPatchServiceTests_CheckClaimedPriorityGroupIsUpdated_WhenPatchIsCalled()
         {
-            var diversityPatch = new OutcomesPatch { ClaimedPriorityGroup = ClaimedPriorityGroup.NotAPriorityCustomer };
+            var outcomePatch = new OutcomesPatch { ClaimedPriorityGroup = ClaimedPriorityGroup.NotAPriorityCustomer };
 
-            var outcome = _outcomePatchService.Patch(_json, diversityPatch);
+            var patchedOutcomes = _outcomePatchService.Patch(_json, outcomePatch);
 
-            var claimedPriorityGroup = outcome.ClaimedPriorityGroup;
+            var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
 
             // Assert
-            Assert.AreEqual(ClaimedPriorityGroup.NotAPriorityCustomer, claimedPriorityGroup);
+            Assert.AreEqual(ClaimedPriorityGroup.NotAPriorityCustomer, outcome.ClaimedPriorityGroup);
         }
 
         [Test]
         public void OutcomesPatchServiceTests_CheckTouchpointId_WhenPatchIsCalled()
         {
-            var diversityPatch = new OutcomesPatch { TouchpointId = "0000000111" };
+            var outcomePatch = new OutcomesPatch { TouchpointId = "0000000111" };
 
-            var outcome = _outcomePatchService.Patch(_json, diversityPatch);
+            var patchedOutcomes = _outcomePatchService.Patch(_json, outcomePatch);
 
-            var touchpointId = outcome.TouchpointId;
-            
+            var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
+
             // Assert
-            Assert.AreEqual("0000000111", touchpointId);
+            Assert.AreEqual("0000000111", outcome.TouchpointId);
         }
 
         [Test]
         public void OutcomesPatchServiceTests_CheckLastModifiedDateIsUpdated_WhenPatchIsCalled()
         {
-            var diversityPatch = new OutcomesPatch { LastModifiedDate = DateTime.MaxValue };
+            var outcomePatch = new OutcomesPatch { LastModifiedDate = DateTime.MaxValue };
 
-            var outcome = _outcomePatchService.Patch(_json, diversityPatch);
+            var patchedOutcomes = _outcomePatchService.Patch(_json, outcomePatch);
 
-            var lastModifiedDate = outcome.LastModifiedDate;
+            var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
             
             // Assert
-            Assert.AreEqual(DateTime.MaxValue, lastModifiedDate);
+            Assert.AreEqual(DateTime.MaxValue, outcome.LastModifiedDate);
         }
 
         [Test]
         public void OutcomesPatchServiceTests_CheckLastModifiedByUpdated_WhenPatchIsCalled()
         {
-            var diversityPatch = new OutcomesPatch { LastModifiedTouchpointId = "0000000111" };
+            var outcomePatch = new OutcomesPatch { LastModifiedTouchpointId = "0000000111" };
 
-            var outcome = _outcomePatchService.Patch(_json, diversityPatch);
+            var patchedOutcomes = _outcomePatchService.Patch(_json, outcomePatch);
 
-            var lastModifiedTouchpointId = outcome.LastModifiedTouchpointId;
+            var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
 
             // Assert
-            Assert.AreEqual("0000000111", lastModifiedTouchpointId);
+            Assert.AreEqual("0000000111", outcome.LastModifiedTouchpointId);
         }
         
     }

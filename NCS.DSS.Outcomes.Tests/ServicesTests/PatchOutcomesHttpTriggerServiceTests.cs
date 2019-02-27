@@ -27,9 +27,6 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         private string _json;
 
         private readonly Guid _outcomeId = Guid.Parse("7E467BDB-213F-407A-B86A-1954053D3C24");
-        private readonly Guid _customerId = Guid.Parse("58b43e3f-4a50-4900-9c82-a14682ee90fa");
-        private readonly Guid _interactionId = Guid.Parse("a06b29da-d949-4486-8b18-c0107dc8bae8");
-        private readonly Guid _actionPlanId = Guid.Parse("679897e6-c16a-41ba-90c9-f4fbd0a9f666");
 
         [SetUp]
         public void Setup()
@@ -40,7 +37,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             _outcome = Substitute.For<Models.Outcomes>();
             _outcomePatch = Substitute.For<OutcomesPatch>();
             _json = JsonConvert.SerializeObject(_outcomePatch);
-            _outcomePatchService.Patch(_json, _outcomePatch).Returns(_outcome);
+            _outcomePatchService.Patch(_json, _outcomePatch).Returns(_outcome.ToString());
         }
 
         [Test]
@@ -70,7 +67,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             _outcomePatchService.Patch(Arg.Any<string>(), Arg.Any<OutcomesPatch>()).ReturnsNull();
 
             // Act
-            var result = await _outcomePatchHttpTriggerService.UpdateCosmosAsync(_outcome);
+            var result = await _outcomePatchHttpTriggerService.UpdateCosmosAsync(_outcome.ToString(), _outcomeId);
 
             // Assert
             Assert.IsNull(result);
@@ -79,10 +76,10 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         [Test]
         public async Task  PatchOutcomesHttpTriggerServiceTests_UpdateCosmosAsync_ReturnsNullWhenResourceCannotBeUpdated()
         {
-            _documentDbProvider.UpdateOutcomesAsync(Arg.Any<Models.Outcomes>()).ReturnsNull();
+            _documentDbProvider.UpdateOutcomesAsync(Arg.Any<string>(), Arg.Any<Guid>()).ReturnsNull();
 
             // Act
-            var result = await _outcomePatchHttpTriggerService.UpdateCosmosAsync(_outcome);
+            var result = await _outcomePatchHttpTriggerService.UpdateCosmosAsync(_outcome.ToString(), _outcomeId);
 
             // Assert
             Assert.IsNull(result);
@@ -94,7 +91,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             _documentDbProvider.CreateOutcomesAsync(Arg.Any<Models.Outcomes>()).Returns(Task.FromResult(new ResourceResponse<Document>(null)).Result);
 
             // Act
-            var result = await _outcomePatchHttpTriggerService.UpdateCosmosAsync(_outcome);
+            var result = await _outcomePatchHttpTriggerService.UpdateCosmosAsync(_outcome.ToString(), _outcomeId);
 
             // Assert
             Assert.IsNull(result);
@@ -125,10 +122,10 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
 
             responseField?.SetValue(resourceResponse, documentServiceResponse);
 
-            _documentDbProvider.UpdateOutcomesAsync(Arg.Any<Models.Outcomes>()).Returns(Task.FromResult(resourceResponse).Result);
+            _documentDbProvider.UpdateOutcomesAsync(Arg.Any<string>(), Arg.Any<Guid>()).Returns(Task.FromResult(resourceResponse).Result);
 
             // Act
-            var result = await _outcomePatchHttpTriggerService.UpdateCosmosAsync(_outcome);
+            var result = await _outcomePatchHttpTriggerService.UpdateCosmosAsync(_outcome.ToString(), _outcomeId);
 
             // Assert
             Assert.IsNotNull(result);
