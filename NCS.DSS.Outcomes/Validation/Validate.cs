@@ -8,7 +8,7 @@ namespace NCS.DSS.Outcomes.Validation
 {
     public class Validate : IValidate
     {
-        public List<ValidationResult> ValidateResource(IOutcomes resource, DateTime dateAndTimeSessionCreated)
+        public List<ValidationResult> ValidateResource(IOutcomes resource, DateTime? dateAndTimeSessionCreated)
         {
             var context = new ValidationContext(resource, null, null);
             var results = new List<ValidationResult>();
@@ -19,7 +19,7 @@ namespace NCS.DSS.Outcomes.Validation
             return results;
         }
 
-        private void ValidateOutcomesRules(IOutcomes outcomesResource, List<ValidationResult> results, DateTime dateAndTimeSessionCreated)
+        private void ValidateOutcomesRules(IOutcomes outcomesResource, List<ValidationResult> results, DateTime? dateAndTimeSessionCreated)
         {
             if (outcomesResource == null)
                 return;
@@ -46,7 +46,7 @@ namespace NCS.DSS.Outcomes.Validation
                 if (outcomesResource.OutcomeEffectiveDate.Value > DateTime.UtcNow)
                     results.Add(new ValidationResult("Outcome Effective Date Completed must be less the current date/time", new[] { "OutcomeEffectiveDate" }));
 
-                if (outcomesResource.OutcomeType.HasValue)
+                if (outcomesResource.OutcomeType.HasValue && dateAndTimeSessionCreated.HasValue)
                 {
                     switch (outcomesResource.OutcomeType)
                     {
@@ -56,7 +56,7 @@ namespace NCS.DSS.Outcomes.Validation
                         case OutcomeType.CareerProgression:
                             if (!(outcomesResource.OutcomeEffectiveDate.Value >= dateAndTimeSessionCreated &&
                                   outcomesResource.OutcomeEffectiveDate.Value <=
-                                  dateAndTimeSessionCreated.AddMonths(12)))
+                                  dateAndTimeSessionCreated.Value.AddMonths(12)))
                                 results.Add(new ValidationResult(
                                     "Outcome Effective Date Completed must be within 12 months of Date Time Session Created",
                                     new[] { "OutcomeEffectiveDate" }));
@@ -64,7 +64,7 @@ namespace NCS.DSS.Outcomes.Validation
                         case OutcomeType.SustainableEmployment:
                             if (!(outcomesResource.OutcomeEffectiveDate.Value >= dateAndTimeSessionCreated &&
                                   outcomesResource.OutcomeEffectiveDate.Value <=
-                                  dateAndTimeSessionCreated.AddMonths(13)))
+                                  dateAndTimeSessionCreated.Value.AddMonths(13)))
                                 results.Add(new ValidationResult(
                                     "Outcome Effective Date Completed must be within 13 months of Date Time Session Created",
                                     new[] {"OutcomeEffectiveDate"}));

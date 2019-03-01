@@ -20,6 +20,14 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
 
             var obj = JObject.Parse(outcomeJson);
 
+            if (outcomePatch.SessionId.HasValue)
+            {
+                if (obj["SessionId"] == null)
+                    _jsonHelper.CreatePropertyOnJObject(obj, "SessionId", outcomePatch.SessionId);
+                else
+                    _jsonHelper.UpdatePropertyValue(obj["SessionId"], outcomePatch.SessionId);
+            }
+
             if (!string.IsNullOrEmpty(outcomePatch.SubcontractorId))
             {
                 if (obj["SubcontractorId"] == null)

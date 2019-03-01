@@ -66,7 +66,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
             _resourceHelper.IsCustomerReadOnly(Arg.Any<Guid>()).ReturnsForAnyArgs(false);
-            _resourceHelper.DoesSessionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
+            _resourceHelper.DoesInteractionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
             _resourceHelper.GetDateAndTimeOfSession(Arg.Any<Guid>()).Returns(DateTime.Now);
             _resourceHelper.DoesActionPlanResourceExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
 
@@ -86,8 +86,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 .BadRequest().Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
 
             // Act
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId,
-                ValidSessionId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -101,8 +100,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
 
             // Act
-            var result = await RunFunction(InValidId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId,
-                ValidSessionId);
+            var result = await RunFunction(InValidId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -116,8 +114,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
 
             // Act
-            var result = await RunFunction(ValidCustomerId, InValidId, ValidActionPlanId, ValidOutcomeId,
-                ValidSessionId);
+            var result = await RunFunction(ValidCustomerId, InValidId, ValidActionPlanId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -131,8 +128,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
 
             // Act
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, InValidId, ValidOutcomeId,
-                ValidSessionId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, InValidId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -146,8 +142,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
 
             // Act
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, InValidId,
-                ValidSessionId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, InValidId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -165,8 +160,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
 
             // Act
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId,
-                ValidSessionId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -183,8 +177,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 .UnprocessableEntity(Arg.Any<List<ValidationResult>>())
                 .Returns(x => new HttpResponseMessage((HttpStatusCode) 422));
 
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId,
-                ValidSessionId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -199,8 +192,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             _httpResponseMessageHelper
                 .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
 
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId,
-                ValidSessionId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -211,32 +203,14 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         [Test]
         public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeNoContent_WhenSessionDoesNotExist()
         {
-            _resourceHelper.DoesSessionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>())
+            _resourceHelper.DoesInteractionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>())
                 .Returns(false);
 
             _httpResponseMessageHelper
                 .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
 
             // Act
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId,
-                ValidSessionId);
-
-            // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.NoContent, result.StatusCode);
-        }
-
-        [Test]
-        public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeNoContent_WhenDateAndTimeOfSessionDoesNotExist()
-        {
-            _resourceHelper.GetDateAndTimeOfSession(Arg.Any<Guid>()).Returns((DateTime?)null);
-
-            _httpResponseMessageHelper
-                .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
-
-            // Act
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId,
-                ValidSessionId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -258,8 +232,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
 
             // Act
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId,
-                ValidSessionId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -278,8 +251,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
 
             // Act
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId,
-                ValidSessionId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -299,8 +271,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             _httpResponseMessageHelper
                 .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
 
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId,
-                ValidSessionId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -320,8 +291,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             _httpResponseMessageHelper
                 .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
 
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId,
-                ValidSessionId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -341,8 +311,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             _httpResponseMessageHelper
                 .Ok(Arg.Any<string>()).Returns(x => new HttpResponseMessage(HttpStatusCode.OK));
 
-            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId,
-                ValidSessionId);
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -350,7 +319,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         }
 
         private async Task<HttpResponseMessage> RunFunction(string customerId, string interactionId,
-            string actionPlanId, string outcomeId, string sessionId)
+            string actionPlanId, string outcomeId)
         {
             return await PatchOutcomesHttpTrigger.Function.PatchOutcomesHttpTrigger.Run(
                 _request,
@@ -359,7 +328,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 interactionId,
                 actionPlanId,
                 outcomeId,
-                sessionId,
                 _resourceHelper,
                 _patchOutcomesHttpTriggerService,
                 _validate,

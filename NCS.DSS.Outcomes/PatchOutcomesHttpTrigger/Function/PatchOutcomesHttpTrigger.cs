@@ -32,7 +32,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Outcome validation error(s)", ShowSchema = false)]
         [Display(Name = "Patch", Description = "Ability to modify/update a customers Outcome record.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Interactions/{interactionId}/Sessions/{sessionId}/ActionPlans/{actionplanId}/Outcomes/{outcomeId}")]HttpRequest req, ILogger log, string customerId, string interactionId, string sessionId, string actionplanId, string outcomeId, 
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes/{outcomeId}")]HttpRequest req, ILogger log, string customerId, string interactionId, string actionplanId, string outcomeId, 
             [Inject]IResourceHelper resourceHelper, 
             [Inject]IPatchOutcomesHttpTriggerService outcomesPatchService,
             [Inject]IValidate validate,
@@ -87,12 +87,6 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                 return httpResponseMessageHelper.BadRequest(interactionGuid);
             }
 
-            if (!Guid.TryParse(sessionId, out var sessionGuid))
-            {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'sessionId' to a Guid: {0}", sessionGuid));
-                return httpResponseMessageHelper.BadRequest(sessionGuid);
-            }
-
             if (!Guid.TryParse(actionplanId, out var actionPlanGuid))
             {
                 loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'actionplanId' to a Guid: {0}", actionplanId));
@@ -145,22 +139,13 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                 return httpResponseMessageHelper.Forbidden(customerGuid);
             }
 
-            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Session {0} for customer {1}", sessionGuid, customerGuid));
-            var doesSessionExist = resourceHelper.DoesSessionExistAndBelongToCustomer(sessionGuid, interactionGuid, customerGuid);
+            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Interaction {0} for customer {1}", interactionGuid, customerGuid));
+            var doesInteractionExist = resourceHelper.DoesInteractionExistAndBelongToCustomer(interactionGuid, customerGuid);
 
-            if (!doesSessionExist)
+            if (!doesInteractionExist)
             {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Session does not exist {0}", sessionGuid));
-                return httpResponseMessageHelper.NoContent(sessionGuid);
-            }
-
-            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get GetDateAndTimeOfSession for Session {0}", sessionGuid));
-            var dateAndTimeOfSession = await resourceHelper.GetDateAndTimeOfSession(sessionGuid);
-
-            if (!dateAndTimeOfSession.HasValue)
-            {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to get GetDateAndTimeOfSession{0}", sessionGuid));
-                return httpResponseMessageHelper.NoContent(sessionGuid);
+                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Interaction does not exist {0}", interactionGuid));
+                return httpResponseMessageHelper.NoContent(interactionGuid);
             }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get action plan {0} for customer {1}", actionPlanGuid, customerGuid));
@@ -207,8 +192,11 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                 return httpResponseMessageHelper.UnprocessableEntity(req);
             }
 
+            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get GetDateAndTimeOfSession for Session {0}", outcomeValidationObject.SessionId));
+            var dateAndTimeOfSession = await resourceHelper.GetDateAndTimeOfSession(outcomeValidationObject.SessionId.GetValueOrDefault());
+
             loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to validate resource");
-            var errors = validate.ValidateResource(outcomeValidationObject, dateAndTimeOfSession.Value);
+            var errors = validate.ValidateResource(outcomeValidationObject, dateAndTimeOfSession);
 
             if (errors != null && errors.Any())
             {
