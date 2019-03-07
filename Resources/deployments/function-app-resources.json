@@ -82,12 +82,8 @@
               "value": "[parameters('cosmosDbDatabaseId')]"
             },
             {
-              "name": "Endpoint",
-              "value": "[parameters('cosmosDbEndpoint')]"
-            },
-            {
-              "name": "Key",
-              "value": "[parameters('cosmosDbKey')]"
+              "name": "OutcomesConnectionString",
+              "value": "[concat('AccountEndpoint=', parameters('cosmosDbEndpoint'), '/;AccountKey=', parameters('cosmosDbKey'), ';')]"
             },
             {
               "name": "CustomerCollectionId",
@@ -110,16 +106,20 @@
               "value": "[parameters('serviceBusConnectionString')]"
             },
             {
+              "name": "ChangeFeedQueueName",
+              "value": "dss.changefeedqueue"
+            },
+            {
               "name": "QueueName",
               "value": "[parameters('serviceBusQueueName')]"
             },
             {
-              "name": "InteractionCollectionId",
-              "value": "interactions"
+              "name": "LeaseCollectionName",
+              "value": "outcomes-lease"
             },
             {
-              "name": "InteractionDatabaseId",
-              "value": "interactions"
+              "name": "LeaseCollectionPrefix",
+              "value": "outcomesChangeFeedPrefix"
             },
             {
               "name": "SessionCollectionId",
