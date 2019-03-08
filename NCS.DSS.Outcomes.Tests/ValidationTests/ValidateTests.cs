@@ -24,7 +24,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
             Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Count);
+            Assert.AreEqual(3, result.Count);
         }
 
         [Test]
@@ -32,7 +32,8 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
         {
             var outcomes = new Models.Outcomes
             {
-                OutcomeEffectiveDate = DateTime.UtcNow
+                OutcomeEffectiveDate = DateTime.UtcNow,
+                SessionId = Guid.Empty
             };
 
             var validation = new Validate();
@@ -51,6 +52,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             var outcomes = new Models.Outcomes
             {
                 OutcomeClaimedDate = DateTime.UtcNow,
+                SessionId = Guid.Empty
             };
 
             var validation = new Validate();
@@ -69,7 +71,8 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             var outcomes = new Models.Outcomes
             {
                 OutcomeClaimedDate = DateTime.MaxValue,
-                OutcomeEffectiveDate = DateTime.UtcNow
+                OutcomeEffectiveDate = DateTime.UtcNow,
+                SessionId = Guid.Empty
             };
 
             var validation = new Validate();
@@ -88,7 +91,8 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             var outcomes = new Models.Outcomes
             {
                 OutcomeClaimedDate = DateTime.UtcNow,
-                OutcomeEffectiveDate = DateTime.MaxValue
+                OutcomeEffectiveDate = DateTime.MaxValue,
+                SessionId = Guid.Empty
             };
 
             var validation = new Validate();
@@ -108,7 +112,8 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             {
                 OutcomeClaimedDate = DateTime.UtcNow,
                 OutcomeEffectiveDate = DateTime.UtcNow,
-                LastModifiedDate = DateTime.MaxValue
+                LastModifiedDate = DateTime.MaxValue,
+                SessionId = Guid.Empty
             };
 
             var validation = new Validate();
@@ -128,7 +133,8 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             {
                 OutcomeClaimedDate = DateTime.UtcNow,
                 OutcomeEffectiveDate = DateTime.UtcNow,
-                OutcomeType = (OutcomeType)100
+                OutcomeType = (OutcomeType)100,
+                SessionId = Guid.Empty
             };
 
             var validation = new Validate();
@@ -148,7 +154,8 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             {
                 OutcomeClaimedDate = DateTime.UtcNow,
                 OutcomeEffectiveDate = DateTime.UtcNow,
-                LastModifiedDate = DateTime.MaxValue
+                LastModifiedDate = DateTime.MaxValue,
+                SessionId = Guid.Empty
             };
 
             var validation = new Validate();
