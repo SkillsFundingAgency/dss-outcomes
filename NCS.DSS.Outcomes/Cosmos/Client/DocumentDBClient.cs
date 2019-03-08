@@ -19,7 +19,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Client
 
         private static DocumentClient InitialiseDocumentClient()
         {
-            var connectionString = Environment.GetEnvironmentVariable("SessionConnectionString");
+            var connectionString = Environment.GetEnvironmentVariable("OutcomeConnectionString");
 
             if (string.IsNullOrWhiteSpace(connectionString))
                 throw new ArgumentNullException();
