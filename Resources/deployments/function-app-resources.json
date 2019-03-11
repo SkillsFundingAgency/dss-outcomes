@@ -82,7 +82,7 @@
               "value": "[parameters('cosmosDbDatabaseId')]"
             },
             {
-              "name": "OutcomesConnectionString",
+              "name": "OutcomeConnectionString",
               "value": "[concat('AccountEndpoint=', parameters('cosmosDbEndpoint'), '/;AccountKey=', parameters('cosmosDbKey'), ';')]"
             },
             {
