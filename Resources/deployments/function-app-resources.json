@@ -114,6 +114,14 @@
               "value": "[parameters('serviceBusQueueName')]"
             },
             {
+              "name": "InteractionCollectionId",
+              "value": "interactions"
+            },
+            {
+              "name": "InteractionDatabaseId",
+              "value": "interactions"
+            },
+            {
               "name": "LeaseCollectionName",
               "value": "outcomes-lease"
             },
