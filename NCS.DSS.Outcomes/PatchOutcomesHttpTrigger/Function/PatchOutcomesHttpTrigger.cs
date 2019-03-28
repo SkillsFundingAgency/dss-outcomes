@@ -31,7 +31,20 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Outcome validation error(s)", ShowSchema = false)]
-        [Display(Name = "Patch", Description = "Ability to modify/update a customers Outcome record.")]
+        [Display(Name = "Patch", Description = "Ability to modify/update a customers Outcome record. <br>" +
+                                               "<br> <b>Validation Rules:</b> <br>" +
+                                               "<br><b>OutcomeClaimedDate:</b> OutcomeClaimedDate >= OutcomeEffectiveDate <br>" +
+                                               "<br><b>OutcomeEffectiveDate:</b> <br>" +
+                                               "When OutcomeType of: <br>" +
+                                               "<ul><li>Customer Satisfaction</li> <br>" +
+                                               "<li>Career Management, </li> <br>" +
+                                               "<li>Accredited Learning, </li> <br>" +
+                                               "<li>Career Progression </li></ul> <br>" +
+                                               "Rule = OutcomeEffectiveDate >= Session.DateAndTimeOfSession AND <= Session.DateAndTimeOfSession + 12 months <br>" +
+                                               "<br> When OutcomeType of: <br>" +
+                                               "<br><li>Sustainable Employment </li> <br>" +
+                                               "Rule = OutcomeEffectiveDate >= Session.DateAndTimeOfSession AND <= Session.DateAndTimeOfSession + 13 months <br>" +
+                                               "<br><b>ClaimedPriorityGroup:</b> This is mandatory if OutcomeClaimedDate has a value")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes/{outcomeId}")]HttpRequest req, ILogger log, string customerId, string interactionId, string actionplanId, string outcomeId, 
             [Inject]IResourceHelper resourceHelper, 
             [Inject]IPatchOutcomesHttpTriggerService outcomesPatchService,
