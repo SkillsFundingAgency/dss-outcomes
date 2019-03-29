@@ -31,7 +31,20 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Outcome validation error(s)", ShowSchema = false)]
-        [Display(Name = "Post", Description = "Ability to create a new Outcome for a customer.")]
+        [Display(Name = "Post", Description = "Ability to create a new Outcome for a customer. <br>" +
+                                              "<br> <b>Validation Rules:</b> <br>" +
+                                              "<br><b>OutcomeClaimedDate:</b> OutcomeClaimedDate >= OutcomeEffectiveDate <br>" +
+                                              "<br><b>OutcomeEffectiveDate:</b> <br>" +
+                                              "When OutcomeType of: <br>" +
+                                              "<ul><li>Customer Satisfaction</li> <br>" +
+                                              "<li>Career Management, </li> <br>" +
+                                              "<li>Accredited Learning, </li> <br>" +
+                                              "<li>Career Progression </li></ul> <br>" +
+                                              "Rule = OutcomeEffectiveDate >= Session.DateAndTimeOfSession AND <= Session.DateAndTimeOfSession + 12 months <br>" +
+                                              "<br> When OutcomeType of: <br>" +
+                                              "<br><ul><li>Sustainable Employment </li> </ul><br>" +
+                                              "Rule = OutcomeEffectiveDate >= Session.DateAndTimeOfSession AND <= Session.DateAndTimeOfSession + 13 months <br>" +
+                                              "<br><b>ClaimedPriorityGroup:</b> This is mandatory if OutcomeClaimedDate has a value")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes")]HttpRequest req, ILogger log, string customerId, string interactionId, string actionplanId, 
             [Inject]IResourceHelper resourceHelper,
             [Inject]IPostOutcomesHttpTriggerService outcomesPostService,
