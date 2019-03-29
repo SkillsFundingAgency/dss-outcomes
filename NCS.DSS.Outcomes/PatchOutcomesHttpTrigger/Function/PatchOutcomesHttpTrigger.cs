@@ -42,7 +42,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                                                "<li>Career Progression </li></ul> <br>" +
                                                "Rule = OutcomeEffectiveDate >= Session.DateAndTimeOfSession AND <= Session.DateAndTimeOfSession + 12 months <br>" +
                                                "<br> When OutcomeType of: <br>" +
-                                               "<br><li>Sustainable Employment </li> <br>" +
+                                               "<br><ul><li>Sustainable Employment </li> </ul><br>" +
                                                "Rule = OutcomeEffectiveDate >= Session.DateAndTimeOfSession AND <= Session.DateAndTimeOfSession + 13 months <br>" +
                                                "<br><b>ClaimedPriorityGroup:</b> This is mandatory if OutcomeClaimedDate has a value")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes/{outcomeId}")]HttpRequest req, ILogger log, string customerId, string interactionId, string actionplanId, string outcomeId, 
