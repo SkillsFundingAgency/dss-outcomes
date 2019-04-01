@@ -16,10 +16,12 @@ namespace NCS.DSS.Outcomes.Models
         [Example(Description = "2730af9c-fc34-4c2b-a905-c4b584b0f379")]
         public Guid? CustomerId { get; set; }
 
+        [Required]
         [Display(Description = "Unique identifier to the related action plan resource.")]
         [Example(Description = "2730af9c-fc34-4c2b-a905-c4b584b0f379")]
         public Guid? ActionPlanId { get; set; }
 
+        [Required]
         [Display(Description = "Outcome Type reference data value   :   " +
                                 "1 - Customer Satisfaction,   " + 
                                 "2 - Career Management,    " +
@@ -29,13 +31,11 @@ namespace NCS.DSS.Outcomes.Models
         [Example(Description = "1")]
         public OutcomeType? OutcomeType { get; set; }
 
-        [Required]
         [DataType(DataType.DateTime)]
         [Display(Description = "Date that an outcome was claimed by the prime contractor.  Only one Outcome of each type is allowed within a 12 month period")]
         [Example(Description = "2018-06-20T21:45:00")]
         public DateTime? OutcomeClaimedDate { get; set; }
 
-        [Required]
         [DataType(DataType.DateTime)]
         [Display(Description = "Date the primes were notified that the outcome had been achieved by the customer")]
         [Example(Description = "2018-06-20T21:45:00")]
