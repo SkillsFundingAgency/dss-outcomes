@@ -35,12 +35,7 @@ namespace NCS.DSS.Outcomes.Models
         public string SubcontractorId { get; set; }
 
 
-        [Display(Description = "Outcome Type reference data value   :   " +
-                                        "1 - Customer Satisfaction,   " +
-                                        "2 - Career Management,    " +
-                                        "3 - Sustainable Employment,    " +
-                                        "4 - Accredited Learning,    " +
-                                        "5 - Career Progression")]
+        [Display(Description = "Outcome Type reference data value.")]
         [Example(Description = "1")]
         public OutcomeType? OutcomeType { get; set; }
 
@@ -54,14 +49,7 @@ namespace NCS.DSS.Outcomes.Models
         [Example(Description = "2018-06-20T21:45:00")]
         public DateTime? OutcomeEffectiveDate { get; set; }
 
-        [Display(Description = "Claimed Priority Group reference data values     :     " +
-                        "1 - 18 to 24 not in education, employment or training,    " +
-                        "2 - Low skilled adults without a level 2 qualification,    " +
-                        "3 - Adults who have been unemployed for more than 12 months,    " +
-                        "4 - Single parents with at least one dependant child living in the same household,    " +
-                        "5 - Adults with special educational needs and / or disabilities,    " +
-                        "6 - Adults aged 50 years or over who are unemployed or at demonstrable risk of unemployment,    " +
-                        "99 - Not a priority customer")]
+        [Display(Description = "Claimed Priority Group reference data values.")]
         public ClaimedPriorityGroup? ClaimedPriorityGroup { get; set; }
 
         [StringLength(10, MinimumLength = 10)]
