@@ -124,13 +124,13 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             {
                 requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine(e);
+                loggerHelper.LogException(log, correlationGuid, "Unable to read request Body", ex);
                 throw;
             }
 
-            if (requestBody != null)
+            if (!string.IsNullOrEmpty(requestBody))
             {
                 var jsonData = JObject.Parse(requestBody);
                 
