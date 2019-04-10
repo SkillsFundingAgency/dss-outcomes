@@ -19,6 +19,14 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
             _outcomePatchService = outcomePatchService;
         }
 
+        public string UpdateOutcomeClaimedDateOutcomeEffectiveDateValue(string outcomeJson, bool setOutcomeClaimedDateToNull, bool setOutcomeEffectiveDateToNull)
+        {
+            if (string.IsNullOrEmpty(outcomeJson))
+                return null;
+            
+            return _outcomePatchService.SetOutcomeClaimedDateOrOutcomeEffectiveDateToNull(outcomeJson, setOutcomeClaimedDateToNull, setOutcomeEffectiveDateToNull);
+        }
+
         public string PatchResource(string outcomeJson, OutcomesPatch outcomesPatchPatch)
         {
             if (string.IsNullOrEmpty(outcomeJson))
@@ -29,9 +37,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
 
             outcomesPatchPatch.SetDefaultValues();
 
-            var updatedOutcome = _outcomePatchService.Patch(outcomeJson, outcomesPatchPatch);
-
-            return updatedOutcome;
+            return _outcomePatchService.Patch(outcomeJson, outcomesPatchPatch);
         }
 
         public async Task<Models.Outcomes> UpdateCosmosAsync(string outcomeJson, Guid outcomeId)

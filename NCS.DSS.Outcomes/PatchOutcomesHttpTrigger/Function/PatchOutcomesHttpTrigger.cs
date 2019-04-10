@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -18,6 +19,7 @@ using NCS.DSS.Outcomes.Cosmos.Helper;
 using NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.Validation;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
 {
@@ -73,8 +75,8 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                 return httpResponseMessageHelper.BadRequest();
             }
 
-            var ApimURL = httpRequestHelper.GetDssApimUrl(req);
-            if (string.IsNullOrEmpty(ApimURL))
+            var apimUrl = httpRequestHelper.GetDssApimUrl(req);
+            if (string.IsNullOrEmpty(apimUrl))
             {
                 log.LogInformation("Unable to locate 'apimurl' in request header");
                 return httpResponseMessageHelper.BadRequest();
@@ -113,7 +115,47 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             }
 
             Models.OutcomesPatch outcomesPatchRequest;
+            
+            var setOutcomeClaimedDateToNull = false;
+            var setOutcomeEffectiveDateToNull = false;
+            string requestBody;
 
+            try
+            {
+                requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+            }
+            catch (Exception ex)
+            {
+                loggerHelper.LogException(log, correlationGuid, "Unable to read request Body", ex);
+                throw;
+            }
+
+            if (!string.IsNullOrEmpty(requestBody))
+            {
+                var jsonData = JObject.Parse(requestBody);
+                
+                if (jsonData != null)
+                {
+                    if (jsonData.TryGetValue("OutcomeClaimedDate", out var outcomeClaimedDateToken))
+                    {
+                        var outcomeClaimedDate = (string)outcomeClaimedDateToken;
+
+                        if (string.IsNullOrEmpty(outcomeClaimedDate))
+                            setOutcomeClaimedDateToNull = true;
+                    }
+
+                    if (jsonData.TryGetValue("OutcomeEffectiveDate", out var outcomeEffectiveDateToken))
+                    {
+                        var outcomeEffectiveDate = (string)outcomeEffectiveDateToken;
+
+                        if (string.IsNullOrEmpty(outcomeEffectiveDate))
+                            setOutcomeEffectiveDateToNull = true;
+                    }
+                }
+
+                req.Body.Position = 0;
+            }
+            
             try
             {
                 loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to get resource from body of the request");
@@ -124,7 +166,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                 loggerHelper.LogError(log, correlationGuid, "Unable to retrieve body from req", ex);
                 return httpResponseMessageHelper.UnprocessableEntity(ex);
             }
-
+            
             if (outcomesPatchRequest == null)
             {
                 loggerHelper.LogInformationMessage(log, correlationGuid, "outcome patch request is null");
@@ -187,6 +229,13 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                 return httpResponseMessageHelper.NoContent(actionPlanGuid);
             }
 
+            if (setOutcomeClaimedDateToNull || setOutcomeEffectiveDateToNull)
+            {
+                patchedOutcomeResource =
+                    outcomesPatchService.UpdateOutcomeClaimedDateOutcomeEffectiveDateValue(patchedOutcomeResource,
+                        setOutcomeClaimedDateToNull, setOutcomeEffectiveDateToNull);
+            }
+
             Models.Outcomes outcomeValidationObject;
 
             try
@@ -223,7 +272,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             if (updatedOutcome != null)
             {
                 loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("attempting to send to service bus {0}", outcomesGuid));
-                await outcomesPatchService.SendToServiceBusQueueAsync(updatedOutcome, customerGuid, ApimURL);
+                await outcomesPatchService.SendToServiceBusQueueAsync(updatedOutcome, customerGuid, apimUrl);
             }
 
             loggerHelper.LogMethodExit(log);
