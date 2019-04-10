@@ -65,5 +65,22 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
             return obj.ToString();
 
         }
+        
+        public string SetOutcomeClaimedDateOrOutcomeEffectiveDateToNull(string outcomeJson, bool setOutcomeClaimedDateToNull, bool setOutcomeEffectiveDateToNull)
+        {
+            if (string.IsNullOrEmpty(outcomeJson))
+                return null;
+
+            var obj = JObject.Parse(outcomeJson);
+
+            if(setOutcomeClaimedDateToNull)
+             _jsonHelper.UpdatePropertyValue(obj["OutcomeClaimedDate"], null);
+
+            if(setOutcomeEffectiveDateToNull)
+                _jsonHelper.UpdatePropertyValue(obj["OutcomeEffectiveDate"], null);
+
+            return obj.ToString();
+        }
+
     }
 }
