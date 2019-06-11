@@ -48,14 +48,13 @@
       <HintPath>..\packages\DFC.Functions.DI.Standard.0.1.0\lib\netstandard2.0\DFC.Functions.DI.Standard.dll</HintPath>
     </Reference>
     <Reference Include="DFC.HTTP.Standard, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DFC.HTTP.Standard.0.1.0\lib\netstandard2.0\DFC.HTTP.Standard.dll</HintPath>
+      <HintPath>..\packages\DFC.HTTP.Standard.0.1.5\lib\netstandard2.0\DFC.HTTP.Standard.dll</HintPath>
     </Reference>
     <Reference Include="DFC.JSON.Standard, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DFC.JSON.Standard.0.1.2\lib\netstandard2.0\DFC.JSON.Standard.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\DFC.JSON.Standard.0.1.3\lib\netstandard2.0\DFC.JSON.Standard.dll</HintPath>
     </Reference>
     <Reference Include="DFC.Swagger.Standard, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DFC.Swagger.Standard.0.1.0\lib\netstandard2.0\DFC.Swagger.Standard.dll</HintPath>
+      <HintPath>..\packages\DFC.Swagger.Standard.0.1.10\lib\netstandard2.0\DFC.Swagger.Standard.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNetCore.Authentication.Abstractions, Version=2.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNetCore.Authentication.Abstractions.2.1.0\lib\netstandard2.0\Microsoft.AspNetCore.Authentication.Abstractions.dll</HintPath>

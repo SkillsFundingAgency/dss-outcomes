@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using DFC.JSON.Standard.Attributes;
 using DFC.Swagger.Standard.Annotations;
 using NCS.DSS.Outcomes.ReferenceData;
 
@@ -66,6 +67,9 @@ namespace NCS.DSS.Outcomes.Models
         [Example(Description = "0000000001")]
         public string LastModifiedTouchpointId { get; set; }
 
+        [JsonIgnoreOnSerialize]
+        public string CreatedBy { get; set; }
+
         public void SetDefaultValues()
         {
 
@@ -81,6 +85,7 @@ namespace NCS.DSS.Outcomes.Models
             TouchpointId = touchpointId;
             LastModifiedTouchpointId = touchpointId;
             SubcontractorId = subcontractorid;
+            CreatedBy = touchpointId;
         }
     }
 }
