@@ -11,7 +11,6 @@ using NCS.DSS.Outcomes.Cosmos.Provider;
 using NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Service;
 using NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.Ioc;
-using NCS.DSS.Outcomes.OutcomeChangeFeedTrigger.Service;
 using NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.Validation;
@@ -41,7 +40,6 @@ namespace NCS.DSS.Outcomes.Ioc
             builder.Services.AddScoped<IPatchOutcomesHttpTriggerService, PatchOutcomesHttpTriggerService>();
             builder.Services.AddScoped<IPatchOutcomesHttpTriggerService, PatchOutcomesHttpTriggerService>();
             builder.Services.AddScoped<IOutcomePatchService, OutcomePatchService>();
-            builder.Services.AddScoped<IOutcomeChangeFeedTriggerService, OutcomeChangeFeedTriggerService>();
         }
     }
 }
