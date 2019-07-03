@@ -106,10 +106,6 @@
               "value": "[parameters('serviceBusConnectionString')]"
             },
             {
-              "name": "ChangeFeedQueueName",
-              "value": "dss.changefeedqueue"
-            },
-            {
               "name": "QueueName",
               "value": "[parameters('serviceBusQueueName')]"
             },
@@ -120,14 +116,6 @@
             {
               "name": "InteractionDatabaseId",
               "value": "interactions"
-            },
-            {
-              "name": "LeaseCollectionName",
-              "value": "outcomes-lease"
-            },
-            {
-              "name": "LeaseCollectionPrefix",
-              "value": "outcomesChangeFeedPrefix"
             },
             {
               "name": "SessionCollectionId",
