@@ -139,7 +139,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to see if this is a read only customer {0}", customerGuid));
-            var isCustomerReadOnly = await resourceHelper.IsCustomerReadOnly(customerGuid);
+            var isCustomerReadOnly = resourceHelper.IsCustomerReadOnly();
 
             if (isCustomerReadOnly)
             {
