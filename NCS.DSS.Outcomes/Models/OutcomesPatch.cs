@@ -65,14 +65,5 @@ namespace NCS.DSS.Outcomes.Models
             SubcontractorId = subcontractorId;
         }
 
-        public void ClearOutcomePatchForDuplicateCustomer()
-        {
-            SessionId = null;
-            OutcomeType = null;
-            ClaimedPriorityGroup = null;
-            OutcomeClaimedDate = null;
-            OutcomeEffectiveDate = null;
-        }
-
     }
 }

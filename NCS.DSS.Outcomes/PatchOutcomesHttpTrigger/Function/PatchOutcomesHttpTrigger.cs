@@ -19,6 +19,7 @@ using NCS.DSS.Outcomes.Cosmos.Helper;
 using NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.Validation;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
 {
@@ -117,6 +118,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             
             var setOutcomeClaimedDateToNull = false;
             var setOutcomeEffectiveDateToNull = false;
+            int requestCount = 0;
             string requestBody;
 
             try
@@ -141,6 +143,11 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
 
                 if (outcomeEffectiveDate == string.Empty)
                     setOutcomeEffectiveDateToNull = true;
+
+                var requestObject = JObject.Parse(requestBody);
+
+                if (requestObject != null)
+                    requestCount = requestObject.Count;
             }
 
             try
@@ -185,10 +192,15 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
 
             if (isADuplicateCustomer == 3)
             {
-                if(!setOutcomeClaimedDateToNull && !setOutcomeEffectiveDateToNull)
-                    return httpResponseMessageHelper.Forbidden(customerGuid);
+                if (requestCount > 2)
+                    return httpResponseMessageHelper.Forbidden();
 
-                outcomesPatchRequest.ClearOutcomePatchForDuplicateCustomer();
+                if (requestCount == 1 && !setOutcomeClaimedDateToNull && 
+                    requestCount == 1 && !setOutcomeEffectiveDateToNull ||
+                    (requestCount == 2 && (!setOutcomeClaimedDateToNull ||
+                                           !setOutcomeEffectiveDateToNull)))
+                    return httpResponseMessageHelper.Forbidden();
+
             }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Interaction {0} for customer {1}", interactionGuid, customerGuid));
