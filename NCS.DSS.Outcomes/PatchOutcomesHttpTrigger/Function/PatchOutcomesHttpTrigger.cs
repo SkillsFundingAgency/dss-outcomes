@@ -192,7 +192,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
 
             if (isADuplicateCustomer == 3)
             {
-                if (requestCount > 2 &&
+                if (requestCount > 2 ||
                     requestCount == 1 && !setOutcomeClaimedDateToNull && 
                     requestCount == 1 && !setOutcomeEffectiveDateToNull ||
                     (requestCount == 2 && (!setOutcomeClaimedDateToNull ||
