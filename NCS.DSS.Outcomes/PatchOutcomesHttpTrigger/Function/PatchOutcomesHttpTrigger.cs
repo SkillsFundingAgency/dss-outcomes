@@ -192,14 +192,13 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
 
             if (isADuplicateCustomer == 3)
             {
-                if (requestCount > 2)
-                    return httpResponseMessageHelper.Forbidden();
-
-                if (requestCount == 1 && !setOutcomeClaimedDateToNull && 
+                if (requestCount > 2 &&
+                    requestCount == 1 && !setOutcomeClaimedDateToNull && 
                     requestCount == 1 && !setOutcomeEffectiveDateToNull ||
                     (requestCount == 2 && (!setOutcomeClaimedDateToNull ||
                                            !setOutcomeEffectiveDateToNull)))
-                    return httpResponseMessageHelper.Forbidden();
+                    return httpResponseMessageHelper.Forbidden("Duplicate Customer: This resource is read only. " +
+                                                               "You may only remove values for Outcome Claimed and Effective date");
 
             }
 

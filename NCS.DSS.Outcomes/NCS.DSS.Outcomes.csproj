@@ -4,9 +4,9 @@
     <AzureFunctionsVersion>v2</AzureFunctionsVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="DFC.Common.Standard" Version="0.1.0" />
+    <PackageReference Include="DFC.Common.Standard" Version="0.1.1" />
     <PackageReference Include="DFC.Functions.DI.Standard" Version="0.1.0" />
-    <PackageReference Include="DFC.HTTP.Standard" Version="0.1.8" />
+    <PackageReference Include="DFC.HTTP.Standard" Version="0.1.9" />
     <PackageReference Include="DFC.JSON.Standard" Version="0.1.4" />
     <PackageReference Include="DFC.Swagger.Standard" Version="0.1.10" />
     <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.2.1" />
