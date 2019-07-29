@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
@@ -193,13 +194,17 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             if (isADuplicateCustomer == 3)
             {
                 if (requestCount > 2 ||
-                    requestCount == 1 && !setOutcomeClaimedDateToNull && 
+                    requestCount == 1 && !setOutcomeClaimedDateToNull &&
                     requestCount == 1 && !setOutcomeEffectiveDateToNull ||
                     (requestCount == 2 && (!setOutcomeClaimedDateToNull ||
                                            !setOutcomeEffectiveDateToNull)))
-                    return httpResponseMessageHelper.Forbidden("Duplicate Customer: This resource is read only. " +
-                                                               "You may only remove values for Outcome Claimed and Effective date");
+                {
+                    return httpResponseMessageHelper.Forbidden(new HttpErrorResponse(new List<string>
+                    {
+                        "Duplicate Customer: This resource is read only. You may only remove values for Outcome Claimed and Effective date"
+                    }, correlationGuid));
 
+                }
             }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Interaction {0} for customer {1}", interactionGuid, customerGuid));
