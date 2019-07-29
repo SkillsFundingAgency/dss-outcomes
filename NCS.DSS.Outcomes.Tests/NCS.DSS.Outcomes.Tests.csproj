@@ -46,7 +46,7 @@
       <HintPath>..\packages\DFC.Common.Standard.0.1.1\lib\netstandard2.0\DFC.Common.Standard.dll</HintPath>
     </Reference>
     <Reference Include="DFC.HTTP.Standard, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DFC.HTTP.Standard.0.1.9\lib\netstandard2.0\DFC.HTTP.Standard.dll</HintPath>
+      <HintPath>..\packages\DFC.HTTP.Standard.0.1.11\lib\netstandard2.0\DFC.HTTP.Standard.dll</HintPath>
     </Reference>
     <Reference Include="DFC.JSON.Standard, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DFC.JSON.Standard.0.1.4\lib\netstandard2.0\DFC.JSON.Standard.dll</HintPath>
