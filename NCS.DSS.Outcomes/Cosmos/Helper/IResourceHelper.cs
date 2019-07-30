@@ -10,6 +10,8 @@ namespace NCS.DSS.Outcomes.Cosmos.Helper
         int GetCustomerReasonForTermination();
         bool DoesActionPlanResourceExistAndBelongToCustomer(Guid actionplanId, Guid interactionId, Guid customerId);
         bool DoesInteractionExistAndBelongToCustomer(Guid interactionId, Guid customerId);
-        Task<DateTime?> GetDateAndTimeOfSession(Guid sessionId);
+        bool DoesSessionExistAndBelongToCustomer(Guid sessionId, Guid interactionId, Guid customerId);
+        DateTime? GetDateAndTimeOfSession(Guid sessionId);
+
     }
 }

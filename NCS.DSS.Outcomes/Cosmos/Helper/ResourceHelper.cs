@@ -55,9 +55,24 @@ namespace NCS.DSS.Outcomes.Cosmos.Helper
             return _documentDbProvider.DoesActionPlanResourceExistAndBelongToCustomer(actionplanId, interactionId, customerId);
         }
 
-        public async Task<DateTime?> GetDateAndTimeOfSession(Guid sessionId)
+        public bool DoesSessionExistAndBelongToCustomer(Guid sessionId, Guid interactionId, Guid customerId)
         {
-            return await _documentDbProvider.GetDateAndTimeOfSessionFromSessionResource(sessionId);
+            return _documentDbProvider.DoesSessionResourceExistAndBelongToCustomer(sessionId, interactionId, customerId);
+        }
+
+        public DateTime? GetDateAndTimeOfSession(Guid sessionId)
+        {
+            var sessionForCustomerJson = _documentDbProvider.GetSessionForCustomerJson();
+
+            if (string.IsNullOrWhiteSpace(sessionForCustomerJson))
+                return null;
+
+            var dateAndTimeOfSession = _jsonHelper.GetValue(sessionForCustomerJson, "DateandTimeOfSession");
+
+            if (string.IsNullOrEmpty(dateAndTimeOfSession))
+                return null;
+
+            return DateTime.Parse(dateAndTimeOfSession);
         }
 
     }
