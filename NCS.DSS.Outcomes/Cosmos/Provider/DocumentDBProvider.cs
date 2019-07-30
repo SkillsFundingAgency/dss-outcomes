@@ -14,6 +14,14 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
 {
     public class DocumentDBProvider : IDocumentDBProvider
     {
+
+        private string _customerJson;
+
+        public string GetCustomerJson()
+        {
+            return _customerJson;
+        }
+
         public async Task<bool> DoesCustomerResourceExist(Guid customerId)
         {
             var documentUri = DocumentDBHelper.CreateCustomerDocumentUri(customerId);
@@ -27,7 +35,10 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
             {
                 var response = await client.ReadDocumentAsync(documentUri);
                 if (response.Resource != null)
+                {
+                    _customerJson = response.Resource.ToString();
                     return true;
+                }
             }
             catch (DocumentClientException)
             {
@@ -126,29 +137,6 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
                 return false;
             }
 
-        }
-
-        public async Task<bool> DoesCustomerHaveATerminationDate(Guid customerId)
-        {
-            var documentUri = DocumentDBHelper.CreateCustomerDocumentUri(customerId);
-
-            var client = DocumentDBClient.CreateDocumentClient();
-
-            if (client == null)
-                return false;
-
-            try
-            {
-                var response = await client.ReadDocumentAsync(documentUri);
-
-                var dateOfTermination = response.Resource?.GetPropertyValue<DateTime?>("DateOfTermination");
-
-                return dateOfTermination.HasValue;
-            }
-            catch (DocumentClientException)
-            {
-                return false;
-            }
         }
 
         public async Task<List<Models.Outcomes>> GetOutcomesForCustomerAsync(Guid customerId)

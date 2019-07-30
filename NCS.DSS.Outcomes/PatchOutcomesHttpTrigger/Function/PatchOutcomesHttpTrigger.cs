@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
@@ -118,11 +119,13 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             
             var setOutcomeClaimedDateToNull = false;
             var setOutcomeEffectiveDateToNull = false;
+            int requestCount = 0;
             string requestBody;
 
             try
             {
                 requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                req.Body.Position = 0;
             }
             catch (Exception ex)
             {
@@ -132,30 +135,22 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
 
             if (!string.IsNullOrEmpty(requestBody))
             {
-                var jsonData = JObject.Parse(requestBody);
-                
-                if (jsonData != null)
-                {
-                    if (jsonData.TryGetValue("OutcomeClaimedDate", out var outcomeClaimedDateToken))
-                    {
-                        var outcomeClaimedDate = (string)outcomeClaimedDateToken;
+                var outcomeClaimedDate = jsonHelper.GetValue(requestBody, "OutcomeClaimedDate");
 
-                        if (string.IsNullOrEmpty(outcomeClaimedDate))
-                            setOutcomeClaimedDateToNull = true;
-                    }
+                if (outcomeClaimedDate == string.Empty)
+                    setOutcomeClaimedDateToNull = true;
 
-                    if (jsonData.TryGetValue("OutcomeEffectiveDate", out var outcomeEffectiveDateToken))
-                    {
-                        var outcomeEffectiveDate = (string)outcomeEffectiveDateToken;
+                var outcomeEffectiveDate = jsonHelper.GetValue(requestBody, "OutcomeEffectiveDate");
 
-                        if (string.IsNullOrEmpty(outcomeEffectiveDate))
-                            setOutcomeEffectiveDateToNull = true;
-                    }
-                }
+                if (outcomeEffectiveDate == string.Empty)
+                    setOutcomeEffectiveDateToNull = true;
 
-                req.Body.Position = 0;
+                var requestObject = JObject.Parse(requestBody);
+
+                if (requestObject != null)
+                    requestCount = requestObject.Count;
             }
-            
+
             try
             {
                 loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to get resource from body of the request");
@@ -186,12 +181,30 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to see if this is a read only customer {0}", customerGuid));
-            var isCustomerReadOnly = await resourceHelper.IsCustomerReadOnly(customerGuid);
+            var isCustomerReadOnly = resourceHelper.IsCustomerReadOnly();
 
-            if (isCustomerReadOnly)
+            var isADuplicateCustomer = resourceHelper.GetCustomerReasonForTermination();
+
+            if (isCustomerReadOnly && isADuplicateCustomer != 3)
             {
                 loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Customer is read only {0}", customerGuid));
                 return httpResponseMessageHelper.Forbidden(customerGuid);
+            }
+
+            if (isADuplicateCustomer == 3)
+            {
+                if (requestCount > 2 ||
+                    requestCount == 1 && !setOutcomeClaimedDateToNull &&
+                    requestCount == 1 && !setOutcomeEffectiveDateToNull ||
+                    (requestCount == 2 && (!setOutcomeClaimedDateToNull ||
+                                           !setOutcomeEffectiveDateToNull)))
+                {
+                    return httpResponseMessageHelper.Forbidden(new HttpErrorResponse(new List<string>
+                    {
+                        "Duplicate Customer: This resource is read only. You may only remove values for Outcome Claimed and Effective date"
+                    }, correlationGuid));
+
+                }
             }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Interaction {0} for customer {1}", interactionGuid, customerGuid));
@@ -282,5 +295,6 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                 httpResponseMessageHelper.Ok(jsonHelper.SerializeObjectAndRenameIdProperty(updatedOutcome, "id", "OutcomeId"));
 
         }
+
     }
 }

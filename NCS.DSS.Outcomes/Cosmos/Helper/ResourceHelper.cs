@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using DFC.JSON.Standard;
 using NCS.DSS.Outcomes.Cosmos.Provider;
 
 namespace NCS.DSS.Outcomes.Cosmos.Helper
@@ -7,44 +8,57 @@ namespace NCS.DSS.Outcomes.Cosmos.Helper
     public class ResourceHelper : IResourceHelper
     {
         private readonly IDocumentDBProvider _documentDbProvider;
-        public ResourceHelper(IDocumentDBProvider documentDbProvider)
+        private readonly IJsonHelper _jsonHelper;
+
+        public ResourceHelper(IDocumentDBProvider documentDbProvider, IJsonHelper jsonHelper)
         {
             _documentDbProvider = documentDbProvider;
+            _jsonHelper = jsonHelper;
         }
 
         public async Task<bool> DoesCustomerExist(Guid customerId)
         {
-            var doesCustomerExist = await _documentDbProvider.DoesCustomerResourceExist(customerId);
-
-            return doesCustomerExist;
+            return await _documentDbProvider.DoesCustomerResourceExist(customerId);
         }
 
-        public async Task<bool> IsCustomerReadOnly(Guid customerId)
+        public bool IsCustomerReadOnly()
         {
-            var isCustomerReadOnly = await _documentDbProvider.DoesCustomerHaveATerminationDate(customerId);
+            var customerJson = _documentDbProvider.GetCustomerJson();
+            
+            if (string.IsNullOrWhiteSpace(customerJson))
+                return false;
+            
+            var dateOfTermination = _jsonHelper.GetValue(customerJson, "DateOfTermination");
 
-            return isCustomerReadOnly;
+            return !string.IsNullOrWhiteSpace(dateOfTermination);
+        }
+
+        public int GetCustomerReasonForTermination()
+        {
+            var customerJson = _documentDbProvider.GetCustomerJson();
+            
+            if (string.IsNullOrWhiteSpace(customerJson))
+                return 99;
+            
+            var reasonForTermination = _jsonHelper.GetValue(customerJson, "ReasonForTermination");
+
+            return string.IsNullOrWhiteSpace(reasonForTermination) ? 99 : int.Parse(reasonForTermination);
         }
 
         public bool DoesInteractionExistAndBelongToCustomer(Guid interactionId, Guid customerId)
         {
-            var doesInteractionExist = _documentDbProvider.DoesInteractionResourceExistAndBelongToCustomer(interactionId, customerId);
-
-            return doesInteractionExist;
+            return _documentDbProvider.DoesInteractionResourceExistAndBelongToCustomer(interactionId, customerId); 
         }
 
         public bool DoesActionPlanResourceExistAndBelongToCustomer(Guid actionplanId, Guid interactionId, Guid customerId)
         {
-            var doesActionPlanExist = _documentDbProvider.DoesActionPlanResourceExistAndBelongToCustomer(actionplanId, interactionId, customerId);
-
-            return doesActionPlanExist;
+            return _documentDbProvider.DoesActionPlanResourceExistAndBelongToCustomer(actionplanId, interactionId, customerId);
         }
 
         public async Task<DateTime?> GetDateAndTimeOfSession(Guid sessionId)
         {
-            var dateAndTimeOfSession = await _documentDbProvider.GetDateAndTimeOfSessionFromSessionResource(sessionId);
-
-            return dateAndTimeOfSession;
+            return await _documentDbProvider.GetDateAndTimeOfSessionFromSessionResource(sessionId);
         }
+
     }
 }
