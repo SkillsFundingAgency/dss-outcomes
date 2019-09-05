@@ -61,7 +61,6 @@ namespace NCS.DSS.Outcomes.Models
         public void SetIds(string touchpointId, string subcontractorId)
         {
             LastModifiedTouchpointId = touchpointId;
-            TouchpointId = touchpointId;
             SubcontractorId = subcontractorId;
         }
 
