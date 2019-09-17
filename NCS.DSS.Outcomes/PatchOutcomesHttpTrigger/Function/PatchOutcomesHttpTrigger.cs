@@ -273,7 +273,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             if (!doesSessionExist)
             {
                 loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Session does not exist {0}", outcomeValidationObject.SessionId.GetValueOrDefault()));
-                return httpResponseMessageHelper.NoContent(outcomeValidationObject.SessionId.GetValueOrDefault());
+                return httpResponseMessageHelper.UnprocessableEntity(string.Format("Session ({0}) is not valid for interaction ({1}).", outcomeValidationObject.SessionId.GetValueOrDefault(), interactionGuid));
             }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get GetDateAndTimeOfSession for Session {0}", outcomeValidationObject.SessionId));
