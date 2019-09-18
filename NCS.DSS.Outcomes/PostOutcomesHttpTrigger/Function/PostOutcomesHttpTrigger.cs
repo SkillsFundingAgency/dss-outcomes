@@ -173,7 +173,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
 
             if (!doesActionPlanExist)
             {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Interaction does not exist {0}", interactionGuid));
+                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("ActionPlan does not exist {0}", actionplanGuid));
                 return httpResponseMessageHelper.NoContent(actionplanGuid);
             }
 
