@@ -16,10 +16,15 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
     {
 
         private string _customerJson;
+        private string _sessionForCustomerJson;
 
         public string GetCustomerJson()
         {
             return _customerJson;
+        }
+        public string GetSessionForCustomerJson()
+        {
+            return _sessionForCustomerJson;
         }
 
         public async Task<bool> DoesCustomerResourceExist(Guid customerId)
@@ -81,27 +86,44 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
 
         }
 
-        public async Task<DateTime?> GetDateAndTimeOfSessionFromSessionResource(Guid sessionId)
+        public bool DoesSessionResourceExistAndBelongToCustomer(Guid sessionId, Guid interactionId, Guid customerId)
         {
-            var documentUri = DocumentDBHelper.CreateSessionDocumentUri(sessionId);
+            var collectionUri = DocumentDBHelper.CreateSessionDocumentCollectionUri();
 
             var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
-                return null;
+                return false;
 
             try
             {
-                var response = await client.ReadDocumentAsync(documentUri);
+                var query = client.CreateDocumentQuery<Document>(collectionUri, new SqlQuerySpec()
+                {
+                    QueryText = "SELECT * FROM sessions s " +
+                                "WHERE s.id = @sessionId " +
+                                "AND s.InteractionId = @interactionId " +
+                                "AND s.CustomerId = @customerId",
 
-                var dateAndTimeOfSession = response.Resource?.GetPropertyValue<DateTime?>("DateandTimeOfSession");
+                    Parameters = new SqlParameterCollection()
+                    {
+                        new SqlParameter("@sessionId", sessionId),
+                        new SqlParameter("@interactionId", interactionId),
+                        new SqlParameter("@customerId", customerId)
+                    }
+                }).AsEnumerable().FirstOrDefault();
 
-                return dateAndTimeOfSession.GetValueOrDefault();
+                if (query == null)
+                    return false;
+
+                _sessionForCustomerJson = query.ToString();
+
+                return true;
             }
-            catch (DocumentClientException)
+            catch (DocumentQueryException)
             {
-                return null;
+                return false;
             }
+
         }
 
         public bool DoesActionPlanResourceExistAndBelongToCustomer(Guid actionPlanId, Guid interactionId, Guid customerId)
