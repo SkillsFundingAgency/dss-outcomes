@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using DFC.JSON.Standard;
 using NCS.DSS.Outcomes.Models;
 using NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service;
@@ -92,14 +93,14 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         [Test]
         public void OutcomesPatchServiceTests_CheckClaimedPriorityGroupIsUpdated_WhenPatchIsCalled()
         {
-            var outcomePatch = new OutcomesPatch { ClaimedPriorityGroup = ClaimedPriorityGroup.NotAPriorityCustomer };
+            var outcomePatch = new OutcomesPatch { ClaimedPriorityGroups = new List<ClaimedPriorityGroup> { ClaimedPriorityGroup.NotAPriorityCustomer } };
 
             var patchedOutcomes = _outcomePatchService.Patch(_json, outcomePatch);
 
             var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
 
             // Assert
-            Assert.AreEqual(ClaimedPriorityGroup.NotAPriorityCustomer, outcome.ClaimedPriorityGroup);
+            Assert.AreEqual(ClaimedPriorityGroup.NotAPriorityCustomer, outcome.ClaimedPriorityGroups[0]);
         }
 
         [Test]

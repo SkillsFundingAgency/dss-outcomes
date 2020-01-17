@@ -33,8 +33,10 @@ namespace NCS.DSS.Outcomes.Validation
                 if (!(outcomesResource.OutcomeClaimedDate >= outcomesResource.OutcomeEffectiveDate.GetValueOrDefault()))
                     results.Add(new ValidationResult("Outcome Claimed Date must be greater than Outcome Effective Date", new[] { "OutcomeClaimedDate" }));
 
-                if (!outcomesResource.ClaimedPriorityGroup.HasValue)
+                if (outcomesResource.ClaimedPriorityGroups != null && outcomesResource.ClaimedPriorityGroups.Count > 0)
+                {
                     results.Add(new ValidationResult("Please supply a Claimed Priority Group", new[] { "ClaimedPriorityGroup" }));
+                }
 
                 if (!outcomesResource.OutcomeEffectiveDate.HasValue)
                     results.Add(new ValidationResult("Please supply a Outcome Effective Date", new[] { "OutcomeEffectiveDate" }));
@@ -67,7 +69,7 @@ namespace NCS.DSS.Outcomes.Validation
                                   dateAndTimeSessionCreated.Value.AddMonths(13)))
                                 results.Add(new ValidationResult(
                                     "Outcome Effective Date Completed must be within 13 months of Date Time Session Created",
-                                    new[] {"OutcomeEffectiveDate"}));
+                                    new[] { "OutcomeEffectiveDate" }));
                             break;
                     }
                 }
@@ -75,13 +77,19 @@ namespace NCS.DSS.Outcomes.Validation
 
             if (outcomesResource.LastModifiedDate.HasValue && outcomesResource.LastModifiedDate.Value > DateTime.UtcNow)
                 results.Add(new ValidationResult("Last Modified Date must be less the current date/time", new[] { "LastModifiedDate" }));
-            
+
             if (outcomesResource.OutcomeType.HasValue && !Enum.IsDefined(typeof(OutcomeType), outcomesResource.OutcomeType.Value))
                 results.Add(new ValidationResult("Please supply a valid OutcomeType", new[] { "OutcomeType" }));
 
-            if (outcomesResource.ClaimedPriorityGroup.HasValue && !Enum.IsDefined(typeof(ClaimedPriorityGroup), outcomesResource.ClaimedPriorityGroup.Value))
-                results.Add(new ValidationResult("Please supply a valid Claimed Priority Group", new[] { "ClaimedPriorityGroup" }));
+            if (outcomesResource.ClaimedPriorityGroups != null && outcomesResource.ClaimedPriorityGroups.Count > 0)
+            {
+                foreach (var claimedPriorityGroup in outcomesResource.ClaimedPriorityGroups)
+                {
+                    if (!Enum.IsDefined(typeof(ClaimedPriorityGroup), claimedPriorityGroup))
+                        results.Add(new ValidationResult("Please supply a valid Claimed Priority Group", new[] { "ClaimedPriorityGroup" }));
+                }
             }
 
+        }
     }
 }

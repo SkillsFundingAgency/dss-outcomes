@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using DFC.Swagger.Standard.Annotations;
 using NCS.DSS.Outcomes.ReferenceData;
@@ -35,7 +36,7 @@ namespace NCS.DSS.Outcomes.Models
         public DateTime? OutcomeEffectiveDate { get; set; }
 
         [Display(Description = "Claimed Priority Group reference data values.")]
-        public ClaimedPriorityGroup? ClaimedPriorityGroup { get; set; }
+        public List<ClaimedPriorityGroup> ClaimedPriorityGroups { get; set; }
 
         [StringLength(10, MinimumLength = 10)]
         [Display(Description = "Identifier of the touchpoint claiming the outcome.")]

@@ -45,12 +45,12 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
             if (outcomePatch.OutcomeEffectiveDate.HasValue)
                 _jsonHelper.UpdatePropertyValue(obj["OutcomeEffectiveDate"], outcomePatch.OutcomeEffectiveDate);
 
-            if (outcomePatch.ClaimedPriorityGroup.HasValue)
+            if (outcomePatch.ClaimedPriorityGroups != null && outcomePatch.ClaimedPriorityGroups.Count > 0)
             {
                 if (obj["ClaimedPriorityGroup"] == null)
-                    _jsonHelper.CreatePropertyOnJObject(obj, "ClaimedPriorityGroup", outcomePatch.ClaimedPriorityGroup);
+                    _jsonHelper.CreatePropertyOnJObject(obj, "ClaimedPriorityGroup", outcomePatch.ClaimedPriorityGroups);
                 else
-                    _jsonHelper.UpdatePropertyValue(obj["ClaimedPriorityGroup"], outcomePatch.ClaimedPriorityGroup);
+                    _jsonHelper.UpdatePropertyValue(obj["ClaimedPriorityGroup"], outcomePatch.ClaimedPriorityGroups);
             }
 
             if (!string.IsNullOrEmpty(outcomePatch.TouchpointId))
