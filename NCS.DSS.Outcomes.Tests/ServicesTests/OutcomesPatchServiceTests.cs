@@ -97,8 +97,11 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
 
             var patchedOutcomes = _outcomePatchService.Patch(_json, outcomePatch);
 
+            string patchStr = patchedOutcomes.ToString();
+
             var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
 
+            string outcomeStr = outcome.ToString();
             // Assert
             Assert.AreEqual(ClaimedPriorityGroup.NotAPriorityCustomer, outcome.ClaimedPriorityGroups[0]);
         }

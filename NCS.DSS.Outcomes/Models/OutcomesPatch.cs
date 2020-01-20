@@ -35,6 +35,7 @@ namespace NCS.DSS.Outcomes.Models
         [Example(Description = "2018-06-20T21:45:00")]
         public DateTime? OutcomeEffectiveDate { get; set; }
 
+        [Newtonsoft.Json.JsonProperty("ClaimedPriorityGroup")]
         [Display(Description = "Claimed Priority Group reference data values.")]
         public List<ClaimedPriorityGroup> ClaimedPriorityGroups { get; set; }
 

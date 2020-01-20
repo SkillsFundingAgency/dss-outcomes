@@ -198,11 +198,10 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
 
             _patchOutcomesHttpTriggerService
                 .GetOutcomesForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>())
-                .Returns(Task.FromResult(_outcomeString).Result);
+                .Returns(Task.FromResult<string>(null).Result);
 
-            _patchOutcomesHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>())
-                .Returns(Task.FromResult(_outcome).Result);
-
+            //_patchOutcomesHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>())
+            //    .Returns(Task.FromResult(_outcome).Result);
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);

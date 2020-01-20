@@ -15,7 +15,9 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenOutcomesIsNotSuppliedForPost()
         {
-            var outcomes = new Models.Outcomes();
+            var outcomes = new Models.Outcomes{
+                ClaimedPriorityGroups = new List<ClaimedPriorityGroup> { ClaimedPriorityGroup.NotAPriorityCustomer }
+            };
 
             var validation = new Validate();
 
@@ -33,7 +35,8 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             var outcomes = new Models.Outcomes
             {
                 OutcomeEffectiveDate = DateTime.UtcNow,
-                SessionId = Guid.Empty
+                SessionId = Guid.Empty,
+                ClaimedPriorityGroups = new List<ClaimedPriorityGroup> { ClaimedPriorityGroup.NotAPriorityCustomer }
             };
 
             var validation = new Validate();
