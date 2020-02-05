@@ -14,10 +14,9 @@ namespace NCS.DSS.Outcomes.APIDefinition
         public const string ApiTitle = "Outcomes";
         public const string ApiDefinitionName = "API-Definition";
         public const string ApiDefRoute = ApiTitle + "/" + ApiDefinitionName;
-        public const string ApiDescription = "To support the Data Collections integration with DSS, ClaimedPriorityGroup, SessionId " +
-                                             "and SubcontractorId attributes have been added and OutcomeClaimedDate, OutcomeEffectiveDate " +
-                                             "have new validation rules.";
-        public const string ApiVersion = "2.0.0";
+        public const string ApiDescription = "To support the Data Collections integration with DSS ClaimedPriorityGroup has been removed and IsPriorityCustomer " +
+            "has been added as a true/false value.";
+        public const string ApiVersion = "3.0.0";
 
         [FunctionName(ApiDefinitionName)]
         public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = ApiDefRoute)]HttpRequest req,

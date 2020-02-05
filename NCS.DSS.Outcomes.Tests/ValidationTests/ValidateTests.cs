@@ -15,9 +15,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenOutcomesIsNotSuppliedForPost()
         {
-            var outcomes = new Models.Outcomes{
-                ClaimedPriorityGroups = new List<ClaimedPriorityGroup> { ClaimedPriorityGroup.NotAPriorityCustomer }
-            };
+            var outcomes = new Models.Outcomes();
 
             var validation = new Validate();
 
@@ -35,8 +33,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             var outcomes = new Models.Outcomes
             {
                 OutcomeEffectiveDate = DateTime.UtcNow,
-                SessionId = Guid.Empty,
-                ClaimedPriorityGroups = new List<ClaimedPriorityGroup> { ClaimedPriorityGroup.NotAPriorityCustomer }
+                SessionId = Guid.Empty
             };
 
             var validation = new Validate();
@@ -65,7 +62,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
             Assert.IsNotNull(result);
-            Assert.AreEqual(4, result.Count);
+            Assert.AreEqual(3, result.Count);
         }
 
         [Test]
@@ -85,7 +82,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
             Assert.IsNotNull(result);
-            Assert.AreEqual(4, result.Count);
+            Assert.AreEqual(3, result.Count);
         }
 
         [Test]
@@ -105,7 +102,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
             Assert.IsNotNull(result);
-            Assert.AreEqual(5, result.Count);
+            Assert.AreEqual(4, result.Count);
         }
 
         [Test]
@@ -126,7 +123,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
             Assert.IsNotNull(result);
-            Assert.AreEqual(4, result.Count);
+            Assert.AreEqual(3, result.Count);
         }
 
         [Test]
@@ -147,7 +144,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
             Assert.IsNotNull(result);
-            Assert.AreEqual(3, result.Count);
+            Assert.AreEqual(2, result.Count);
         }
 
         [Test]
@@ -168,7 +165,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
             Assert.IsNotNull(result);
-            Assert.AreEqual(4, result.Count);
+            Assert.AreEqual(3, result.Count);
         }
 
     }

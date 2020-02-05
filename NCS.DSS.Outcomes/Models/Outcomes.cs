@@ -49,10 +49,9 @@ namespace NCS.DSS.Outcomes.Models
         [Example(Description = "2018-06-20T21:45:00")]
         public DateTime? OutcomeEffectiveDate { get; set; }
 
-        [Required]
-        [Newtonsoft.Json.JsonProperty("ClaimedPriorityGroup")]
-        [Display(Description= "Claimed Priority Group reference data values.")]
-        public List<ClaimedPriorityGroup> ClaimedPriorityGroups { get; set; }
+        [Display(Description = "Set to true if customer is a priority customer")]
+        [Example(Description = "true/false")]
+        public bool? IsPriorityCustomer { get; set; }
 
 
         [StringLength(10, MinimumLength = 10)]
@@ -75,7 +74,8 @@ namespace NCS.DSS.Outcomes.Models
 
         public void SetDefaultValues()
         {
-
+            if (!IsPriorityCustomer.HasValue)
+                IsPriorityCustomer = false;
             if (!LastModifiedDate.HasValue)
                 LastModifiedDate = DateTime.UtcNow;
         }

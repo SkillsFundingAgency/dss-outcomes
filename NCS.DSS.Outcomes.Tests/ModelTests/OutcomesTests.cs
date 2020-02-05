@@ -16,6 +16,7 @@ namespace NCS.DSS.Outcomes.Tests.ModelTests
             diversity.SetDefaultValues();
 
             // Assert
+            Assert.AreEqual(false, diversity.IsPriorityCustomer);
             Assert.IsNotNull(diversity.LastModifiedDate);
         }
 

@@ -91,19 +91,16 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         }
 
         [Test]
-        public void OutcomesPatchServiceTests_CheckClaimedPriorityGroupIsUpdated_WhenPatchIsCalled()
+        public void OutcomesPatchServiceTests_CheckIsPriorityCustomerIsUpdated_WhenPatchIsCalled()
         {
-            var outcomePatch = new OutcomesPatch { ClaimedPriorityGroups = new List<ClaimedPriorityGroup> { ClaimedPriorityGroup.NotAPriorityCustomer } };
+            var outcomePatch = new OutcomesPatch { IsPriorityCustomer = true };
 
             var patchedOutcomes = _outcomePatchService.Patch(_json, outcomePatch);
 
-            string patchStr = patchedOutcomes.ToString();
-
             var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
 
-            string outcomeStr = outcome.ToString();
             // Assert
-            Assert.AreEqual(ClaimedPriorityGroup.NotAPriorityCustomer, outcome.ClaimedPriorityGroups[0]);
+            Assert.AreEqual(true, outcome.IsPriorityCustomer);
         }
 
         [Test]
