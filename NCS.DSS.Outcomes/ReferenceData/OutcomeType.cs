@@ -20,5 +20,8 @@ namespace NCS.DSS.Outcomes.ReferenceData
         [Description("Career Progression")]
         CareerProgression = 5,
 
+        [Description("NRS Satisfaction")]
+        NRSSatisfaction = 6
+
     }
 }
