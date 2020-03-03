@@ -47,7 +47,7 @@ namespace NCS.DSS.Outcomes.Models
         [Display(Description = "Date the primes were notified that the outcome had been achieved by the customer")]
         [Example(Description = "2018-06-20T21:45:00")]
         public DateTime? OutcomeEffectiveDate { get; set; }
-        //This is being removed for v3
+
         [Display(Description= "Claimed Priority Group reference data values.")]
         public ClaimedPriorityGroup? ClaimedPriorityGroup { get; set; }
 
