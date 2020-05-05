@@ -265,7 +265,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             {
                 loggerHelper.LogInformationMessage(log, correlationGuid, "Action Plan Validation Object is null");
                 return httpResponseMessageHelper.UnprocessableEntity(req);
-         
+            }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get GetDateAndTimeOfSession for Session {0}", outcomeValidationObject.SessionId));
             var dateAndTimeOfSession = resourceHelper.GetDateAndTimeOfSession(outcomeValidationObject.SessionId.GetValueOrDefault());
