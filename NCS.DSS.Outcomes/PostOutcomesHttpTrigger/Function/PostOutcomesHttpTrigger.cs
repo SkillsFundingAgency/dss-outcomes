@@ -156,16 +156,6 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
                 return httpResponseMessageHelper.NoContent(interactionGuid);
             }
 
-            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Session {0} for customer {1}", outcomesRequest.SessionId.GetValueOrDefault(), customerGuid));
-            var doesSessionExist = resourceHelper.DoesSessionExistAndBelongToCustomer(outcomesRequest.SessionId.GetValueOrDefault(), interactionGuid, customerGuid);
-
-            if (!doesSessionExist)
-            {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Session does not exist {0}", outcomesRequest.SessionId.GetValueOrDefault()));
-                //return httpResponseMessageHelper.UnprocessableEntity(string.Format("Session ({0}) is not valid for interaction ({1}).", outcomesRequest.SessionId.GetValueOrDefault(), interactionGuid));
-                return httpResponseMessageHelper.NoContent(outcomesRequest.SessionId.GetValueOrDefault());
-            }
-
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get GetDateAndTimeOfSession for Session {0}", outcomesRequest.SessionId));
             var dateAndTimeOfSession = resourceHelper.GetDateAndTimeOfSession(outcomesRequest.SessionId.GetValueOrDefault());
 
