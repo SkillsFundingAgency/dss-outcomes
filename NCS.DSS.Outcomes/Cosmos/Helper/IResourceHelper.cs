@@ -11,7 +11,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Helper
         bool DoesActionPlanResourceExistAndBelongToCustomer(Guid actionplanId, Guid interactionId, Guid customerId);
         bool DoesInteractionExistAndBelongToCustomer(Guid interactionId, Guid customerId);
         bool DoesSessionExistAndBelongToCustomer(Guid sessionId, Guid interactionId, Guid customerId);
-        DateTime? GetDateAndTimeOfSession(Guid sessionId);
+        Task<DateTime?> GetDateAndTimeOfSession(Guid sessionId);
 
     }
 }

@@ -126,6 +126,30 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
 
         }
 
+        //Put back in for removal of session validation
+        public async Task<DateTime?> GetDateAndTimeOfSessionFromSessionResource(Guid sessionId)
+        {
+            var documentUri = DocumentDBHelper.CreateSessionDocumentUri(sessionId);
+
+            var client = DocumentDBClient.CreateDocumentClient();
+
+            if (client == null)
+                return null;
+
+            try
+            {
+                var response = await client.ReadDocumentAsync(documentUri);
+
+                var dateAndTimeOfSession = response.Resource?.GetPropertyValue<DateTime?>("DateandTimeOfSession");
+
+                return dateAndTimeOfSession.GetValueOrDefault();
+            }
+            catch (DocumentClientException)
+            {
+                return null;
+            }
+        }
+
         public bool DoesActionPlanResourceExistAndBelongToCustomer(Guid actionPlanId, Guid interactionId, Guid customerId)
         {
             var collectionUri = DocumentDBHelper.CreateActionPlanDocumentCollectionUri();
