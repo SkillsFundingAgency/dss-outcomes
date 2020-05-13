@@ -268,7 +268,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get GetDateAndTimeOfSession for Session {0}", outcomeValidationObject.SessionId));
-            var dateAndTimeOfSession = resourceHelper.GetDateAndTimeOfSession(outcomeValidationObject.SessionId.GetValueOrDefault());
+            var dateAndTimeOfSession = await resourceHelper.GetDateAndTimeOfSession(outcomeValidationObject.SessionId.GetValueOrDefault());
 
             loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to validate resource");
             var errors = validate.ValidateResource(outcomeValidationObject, dateAndTimeOfSession);

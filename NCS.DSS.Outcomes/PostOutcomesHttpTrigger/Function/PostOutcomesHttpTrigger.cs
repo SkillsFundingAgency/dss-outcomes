@@ -157,7 +157,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             }
 
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get GetDateAndTimeOfSession for Session {0}", outcomesRequest.SessionId));
-            var dateAndTimeOfSession = resourceHelper.GetDateAndTimeOfSession(outcomesRequest.SessionId.GetValueOrDefault());
+            var dateAndTimeOfSession = await resourceHelper.GetDateAndTimeOfSession(outcomesRequest.SessionId.GetValueOrDefault());
 
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get ActionPlan {0} for customer {1}", interactionGuid, customerGuid));
             var doesActionPlanExist = resourceHelper.DoesActionPlanResourceExistAndBelongToCustomer(actionplanGuid, interactionGuid, customerGuid);
