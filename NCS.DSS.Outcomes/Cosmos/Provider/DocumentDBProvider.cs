@@ -53,6 +53,29 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
             return false;
         }
 
+        public async Task<DateTime?> GetDateAndTimeOfSessionFromSessionResource(Guid sessionId)
+        {
+            var documentUri = DocumentDBHelper.CreateSessionDocumentUri(sessionId);
+
+            var client = DocumentDBClient.CreateDocumentClient();
+
+            if (client == null)
+                return null;
+
+            try
+            {
+                var response = await client.ReadDocumentAsync(documentUri);
+
+                var dateAndTimeOfSession = response.Resource?.GetPropertyValue<DateTime?>("DateandTimeOfSession");
+
+                return dateAndTimeOfSession.GetValueOrDefault();
+            }
+            catch (DocumentClientException)
+            {
+                return null;
+            }
+        }
+
         public bool DoesInteractionResourceExistAndBelongToCustomer(Guid interactionId, Guid customerId)
         {
             var collectionUri = DocumentDBHelper.CreateInteractionDocumentCollectionUri();
