@@ -3,8 +3,6 @@ using System.Configuration;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.ServiceBus;
-using Microsoft.ServiceBus.Messaging;
 using Newtonsoft.Json;
 
 namespace NCS.DSS.Outcomes.ServiceBus
@@ -18,53 +16,53 @@ namespace NCS.DSS.Outcomes.ServiceBus
 
         public static async Task SendPostMessageAsync(Models.Outcomes outcomes, string reqUrl)
         {
-            var tokenProvider = TokenProvider.CreateSharedAccessSignatureTokenProvider(KeyName, AccessKey);
-            var messagingFactory = MessagingFactory.Create(BaseAddress, tokenProvider);
-            var sender = messagingFactory.CreateMessageSender(QueueName);
+            //var tokenProvider = TokenProvider.CreateSharedAccessSignatureTokenProvider(KeyName, AccessKey);
+            //var messagingFactory = MessagingFactory.Create(BaseAddress, tokenProvider);
+            //var sender = messagingFactory.CreateMessageSender(QueueName);
 
-            var messageModel = new MessageModel()
-            {
-                TitleMessage = "New Outcome record {" + outcomes.OutcomeId + "} added at " + DateTime.UtcNow,
-                CustomerGuid = outcomes.CustomerId,
-                LastModifiedDate = outcomes.LastModifiedDate,
-                URL = reqUrl + "/" + outcomes.OutcomeId,
-                IsNewCustomer = false,
-                TouchpointId = outcomes.LastModifiedTouchpointId
-            };
+            //var messageModel = new MessageModel()
+            //{
+            //    TitleMessage = "New Outcome record {" + outcomes.OutcomeId + "} added at " + DateTime.UtcNow,
+            //    CustomerGuid = outcomes.CustomerId,
+            //    LastModifiedDate = outcomes.LastModifiedDate,
+            //    URL = reqUrl + "/" + outcomes.OutcomeId,
+            //    IsNewCustomer = false,
+            //    TouchpointId = outcomes.LastModifiedTouchpointId
+            //};
 
-            var msg = new BrokeredMessage(new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(messageModel))))
-            {
-                ContentType = "application/json",
-                MessageId = outcomes.CustomerId + " " + DateTime.UtcNow
-            };
+            //var msg = new BrokeredMessage(new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(messageModel))))
+            //{
+            //    ContentType = "application/json",
+            //    MessageId = outcomes.CustomerId + " " + DateTime.UtcNow
+            //};
 
-            //msg.ForcePersistence = true; Required when we save message to cosmos
-            await sender.SendAsync(msg);
+            ////msg.ForcePersistence = true; Required when we save message to cosmos
+            //await sender.SendAsync(msg);
         }
 
         public static async Task SendPatchMessageAsync(Models.Outcomes outcomes, Guid customerId, string reqUrl)
         {
-            var tokenProvider = TokenProvider.CreateSharedAccessSignatureTokenProvider(KeyName, AccessKey);
-            var messagingFactory = MessagingFactory.Create(BaseAddress, tokenProvider);
-            var sender = messagingFactory.CreateMessageSender(QueueName);
-            var messageModel = new MessageModel
-            {
-                TitleMessage = "Action record modification for {" + customerId + "} at " + DateTime.UtcNow,
-                CustomerGuid = customerId,
-                LastModifiedDate = outcomes.LastModifiedDate,
-                URL = reqUrl,
-                IsNewCustomer = false,
-                TouchpointId = outcomes.LastModifiedTouchpointId
-            };
+            //var tokenProvider = TokenProvider.CreateSharedAccessSignatureTokenProvider(KeyName, AccessKey);
+            //var messagingFactory = MessagingFactory.Create(BaseAddress, tokenProvider);
+            //var sender = messagingFactory.CreateMessageSender(QueueName);
+            //var messageModel = new MessageModel
+            //{
+            //    TitleMessage = "Action record modification for {" + customerId + "} at " + DateTime.UtcNow,
+            //    CustomerGuid = customerId,
+            //    LastModifiedDate = outcomes.LastModifiedDate,
+            //    URL = reqUrl,
+            //    IsNewCustomer = false,
+            //    TouchpointId = outcomes.LastModifiedTouchpointId
+            //};
 
-            var msg = new BrokeredMessage(new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(messageModel))))
-            {
-                ContentType = "application/json",
-                MessageId = customerId + " " + DateTime.UtcNow
-            };
+            //var msg = new BrokeredMessage(new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(messageModel))))
+            //{
+            //    ContentType = "application/json",
+            //    MessageId = customerId + " " + DateTime.UtcNow
+            //};
 
-            //msg.ForcePersistence = true; Required when we save message to cosmos
-            await sender.SendAsync(msg);
+            ////msg.ForcePersistence = true; Required when we save message to cosmos
+            //await sender.SendAsync(msg);
         }
     }
 
