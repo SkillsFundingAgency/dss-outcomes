@@ -50,7 +50,7 @@ namespace NCS.DSS.Outcomes.Models
         public DateTime? OutcomeEffectiveDate { get; set; }
         //Priority groups removed from Outcomes. Replaced by IsPriorityCustomer
         [Display(Description = "Set to true if customer is a priority customer")]
-        [Example(Description = "true/false")]
+        [Example(Description = "true")]
         public bool? IsPriorityCustomer { get; set; }
 
 
