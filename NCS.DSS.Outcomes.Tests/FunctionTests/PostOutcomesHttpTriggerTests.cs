@@ -168,7 +168,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         }
 
         [Test]
-        public async Task PostOutcomesHttpTrigger_ReturnsStatusCodeNoContent_WhenSessionDoesNotExist()
+        public async Task PostOutcomesHttpTrigger_ReturnsStatusCodeBadRequest_WhenSessionDoesNotExist()
         {
             _resourceHelper.DoesSessionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(false);
 
@@ -176,7 +176,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.NoContent, result.StatusCode);
+            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
         }
 
         [Test]
@@ -265,7 +265,5 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 .Created(Arg.Any<string>()).Returns(x => new HttpResponseMessage(HttpStatusCode.Created));
 
         }
-
-
     }
 }
