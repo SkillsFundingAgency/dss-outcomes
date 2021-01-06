@@ -1,38 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using DFC.JSON.Standard;
+﻿using DFC.JSON.Standard;
+using Moq;
 using NCS.DSS.Outcomes.Models;
 using NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.ReferenceData;
 using Newtonsoft.Json;
-using NSubstitute;
 using NUnit.Framework;
+using System;
 
 namespace NCS.DSS.Outcomes.Tests.ServicesTests
 {
-
     [TestFixture]
     public class OutcomesPatchServiceTests
     {
-        private IJsonHelper _jsonHelper;
-        private OutcomePatchService _outcomePatchService;
-        private OutcomesPatch _outcomePatch;
-        private string _json;
+        private Mock<IJsonHelper> jsonHelper;
+        private IOutcomePatchService _outcomePatchService;
 
         [SetUp]
         public void Setup()
         {
-            _jsonHelper = Substitute.For<JsonHelper>();
-            _outcomePatchService = Substitute.For<OutcomePatchService>(_jsonHelper);
-            _outcomePatch = Substitute.For<OutcomesPatch>();
-
-            _json = JsonConvert.SerializeObject(_outcomePatch);
+            jsonHelper = new Mock<IJsonHelper>();
+            _outcomePatchService = new OutcomePatchService(jsonHelper.Object);
         }
 
         [Test]
         public void OutcomesPatchServiceTests_ReturnsNull_WhenOutcomePatchIsNull()
         {
-            var result = _outcomePatchService.Patch(string.Empty, Arg.Any<OutcomesPatch>());
+            // Arrange
+
+            // Act
+            var result = _outcomePatchService.Patch(string.Empty, It.IsAny<OutcomesPatch>());
 
             // Assert
             Assert.IsNull(result);
@@ -41,10 +37,12 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         [Test]
         public void OutcomesPatchServiceTests_CheckSubcontractorIdIsUpdated_WhenPatchIsCalled()
         {
+            // Arrange
             var outcomePatch = new OutcomesPatch { SubcontractorId = "0000000111" };
+            var json = JsonConvert.SerializeObject(outcomePatch);
 
-            var patchedOutcomes = _outcomePatchService.Patch(_json, outcomePatch);
-
+            // Act
+            var patchedOutcomes = _outcomePatchService.Patch(json, outcomePatch);
             var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
 
             // Assert
@@ -54,10 +52,12 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         [Test]
         public void OutcomesPatchServiceTests_CheckOutcomeTypeIsUpdated_WhenPatchIsCalled()
         {
+            // Arrange
             var outcomePatch = new OutcomesPatch { OutcomeType = OutcomeType.CareerProgression };
+            var json = JsonConvert.SerializeObject(outcomePatch);
 
-            var patchedOutcomes = _outcomePatchService.Patch(_json, outcomePatch);
-
+            // Act
+            var patchedOutcomes = _outcomePatchService.Patch(json, outcomePatch);
             var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
             
             // Assert
@@ -67,10 +67,12 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         [Test]
         public void OutcomesPatchServiceTests_CheckOutcomeClaimedDateIsUpdated_WhenPatchIsCalled()
         {
+            // Arrange
             var outcomePatch = new OutcomesPatch { OutcomeClaimedDate = DateTime.MaxValue };
+            var json = JsonConvert.SerializeObject(outcomePatch);
 
-            var patchedOutcomes = _outcomePatchService.Patch(_json, outcomePatch);
-
+            // Act
+            var patchedOutcomes = _outcomePatchService.Patch(json, outcomePatch);
             var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
 
             // Assert
@@ -80,10 +82,12 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         [Test]
         public void OutcomesPatchServiceTests_CheckOutcomeEffectiveDateIsUpdated_WhenPatchIsCalled()
         {
+            // Arrange
             var outcomePatch = new Models.OutcomesPatch { OutcomeEffectiveDate = DateTime.MaxValue };
+            var json = JsonConvert.SerializeObject(outcomePatch);
 
-            var patchedOutcomes = _outcomePatchService.Patch(_json, outcomePatch);
-
+            // Act
+            var patchedOutcomes = _outcomePatchService.Patch(json, outcomePatch);
             var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
 
             // Assert
@@ -93,10 +97,12 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         [Test]
         public void OutcomesPatchServiceTests_CheckIsPriorityCustomerIsUpdated_WhenPatchIsCalled()
         {
+            // Arrange
             var outcomePatch = new OutcomesPatch { IsPriorityCustomer = true };
+            var json = JsonConvert.SerializeObject(outcomePatch);
 
-            var patchedOutcomes = _outcomePatchService.Patch(_json, outcomePatch);
-
+            // Act
+            var patchedOutcomes = _outcomePatchService.Patch(json, outcomePatch);
             var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
 
             // Assert
@@ -106,10 +112,12 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         [Test]
         public void OutcomesPatchServiceTests_CheckTouchpointId_WhenPatchIsCalled()
         {
+            // Arrange
             var outcomePatch = new OutcomesPatch { TouchpointId = "0000000111" };
+            var json = JsonConvert.SerializeObject(outcomePatch);
 
-            var patchedOutcomes = _outcomePatchService.Patch(_json, outcomePatch);
-
+            // Act
+            var patchedOutcomes = _outcomePatchService.Patch(json, outcomePatch);
             var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
 
             // Assert
@@ -119,10 +127,12 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         [Test]
         public void OutcomesPatchServiceTests_CheckLastModifiedDateIsUpdated_WhenPatchIsCalled()
         {
+            // Arrange
             var outcomePatch = new OutcomesPatch { LastModifiedDate = DateTime.MaxValue };
+            var json = JsonConvert.SerializeObject(outcomePatch);
 
-            var patchedOutcomes = _outcomePatchService.Patch(_json, outcomePatch);
-
+            // Act
+            var patchedOutcomes = _outcomePatchService.Patch(json, outcomePatch);
             var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
             
             // Assert
@@ -132,10 +142,12 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         [Test]
         public void OutcomesPatchServiceTests_CheckLastModifiedByUpdated_WhenPatchIsCalled()
         {
+            // Arrange
             var outcomePatch = new OutcomesPatch { LastModifiedTouchpointId = "0000000111" };
+            var json = JsonConvert.SerializeObject(outcomePatch);
 
-            var patchedOutcomes = _outcomePatchService.Patch(_json, outcomePatch);
-
+            // Act
+            var patchedOutcomes = _outcomePatchService.Patch(json, outcomePatch);
             var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
 
             // Assert

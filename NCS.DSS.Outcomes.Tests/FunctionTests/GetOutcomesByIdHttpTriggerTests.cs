@@ -1,8 +1,4 @@
-﻿using System;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using DFC.Common.Standard.Logging;
+﻿using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using Microsoft.AspNetCore.Http;
@@ -13,6 +9,10 @@ using NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Service;
 using NCS.DSS.Outcomes.Validation;
 using NSubstitute;
 using NUnit.Framework;
+using System;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.Outcomes.Tests.FunctionTests
 {

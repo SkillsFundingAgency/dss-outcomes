@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using NCS.DSS.Outcomes.ReferenceData;
+﻿using NCS.DSS.Outcomes.ReferenceData;
 using NCS.DSS.Outcomes.Validation;
 using NSubstitute;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace NCS.DSS.Outcomes.Tests.ValidationTests
 {
@@ -123,7 +123,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
             Assert.IsNotNull(result);
-            Assert.AreEqual(3, result.Count);
+            Assert.AreEqual(4, result.Count);
         }
 
         [Test]
@@ -144,7 +144,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
             Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Count);
+            Assert.AreEqual(3, result.Count);
         }
 
         [Test]
@@ -165,7 +165,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
             Assert.IsNotNull(result);
-            Assert.AreEqual(3, result.Count);
+            Assert.AreEqual(4, result.Count);
         }
 
     }

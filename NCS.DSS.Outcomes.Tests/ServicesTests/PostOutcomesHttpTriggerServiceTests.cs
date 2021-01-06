@@ -1,15 +1,16 @@
-﻿using System;
+﻿using Microsoft.Azure.Documents;
+using Microsoft.Azure.Documents.Client;
+using Moq;
+using NCS.DSS.Outcomes.Cosmos.Provider;
+using NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service;
+using NSubstitute;
+using NUnit.Framework;
+using System;
 using System.Collections.Specialized;
 using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.Azure.Documents;
-using Microsoft.Azure.Documents.Client;
-using NCS.DSS.Outcomes.Cosmos.Provider;
-using NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service;
-using NSubstitute;
-using NUnit.Framework;
 
 namespace NCS.DSS.Outcomes.Tests.ServicesTests
 {
@@ -17,20 +18,22 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
     public class PostOutcomesHttpTriggerServiceTests
     {
         private IPostOutcomesHttpTriggerService _postOutcomesHttpTriggerService;
-        private IDocumentDBProvider _documentDbProvider;
+        private Mock<IDocumentDBProvider> _documentDbProvider;
         private Models.Outcomes _outcome;
 
         [SetUp]
         public void Setup()
         {
-            _documentDbProvider = Substitute.For<IDocumentDBProvider>();
-            _postOutcomesHttpTriggerService = Substitute.For<PostOutcomesHttpTriggerService>(_documentDbProvider);
+            _documentDbProvider = new Mock<IDocumentDBProvider>();
+            _postOutcomesHttpTriggerService = new PostOutcomesHttpTriggerService(_documentDbProvider.Object);
             _outcome = Substitute.For<Models.Outcomes>();
         }
 
         [Test]
         public async Task PostOutcomesHttpTriggerServiceTests_CreateAsync_ReturnsNullWhenOutcomeJsonIsNullOrEmpty()
         {
+            // Arrange
+
             // Act
             var result = await _postOutcomesHttpTriggerService.CreateAsync(null);
 
@@ -41,6 +44,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         [Test]
         public async Task PostOutcomesHttpTriggerServiceTests_CreateAsync_ReturnsResourceWhenUpdated()
         {
+            // Arrange
             const string documentServiceResponseClass = "Microsoft.Azure.Documents.DocumentServiceResponse, Microsoft.Azure.DocumentDB.Core, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
             const string dictionaryNameValueCollectionClass = "Microsoft.Azure.Documents.Collections.DictionaryNameValueCollection, Microsoft.Azure.DocumentDB.Core, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
 
@@ -63,7 +67,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
 
             responseField?.SetValue(resourceResponse, documentServiceResponse);
 
-            _documentDbProvider.CreateOutcomesAsync(Arg.Any<Models.Outcomes>()).Returns(Task.FromResult(resourceResponse).Result);
+            _documentDbProvider.Setup(x=>x.CreateOutcomesAsync(It.IsAny<Models.Outcomes>())).Returns(Task.FromResult(resourceResponse));
 
             // Act
             var result = await _postOutcomesHttpTriggerService.CreateAsync(_outcome);
