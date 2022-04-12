@@ -85,7 +85,10 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
 
             var subcontractorId = httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subcontractorId))
-                loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubcontractorId' in request header");
+            {
+                log.LogInformation("Unable to locate 'APIM-subcontractorId' in request header.");
+                return httpResponseMessageHelper.BadRequest();
+            }
 
             loggerHelper.LogInformationMessage(log, correlationGuid,
                 string.Format("Patch Outcome C# HTTP trigger function  processed a request. By Touchpoint: {0}",

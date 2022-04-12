@@ -60,6 +60,9 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
             if (!string.IsNullOrEmpty(outcomePatch.TouchpointId))
                 _jsonHelper.UpdatePropertyValue(obj["TouchpointId"], outcomePatch.TouchpointId);
 
+            if (!string.IsNullOrEmpty(outcomePatch.TouchpointId))
+                _jsonHelper.UpdatePropertyValue(obj["SubcontractorId"], outcomePatch.SubcontractorId);
+
             if (outcomePatch.LastModifiedDate.HasValue)
                 _jsonHelper.UpdatePropertyValue(obj["LastModifiedDate"], outcomePatch.LastModifiedDate);
 
