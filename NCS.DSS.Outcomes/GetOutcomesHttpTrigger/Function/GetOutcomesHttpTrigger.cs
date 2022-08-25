@@ -56,6 +56,13 @@ namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Function
                 return httpResponseMessageHelper.BadRequest();
             }
 
+            var subcontractorId = httpRequestHelper.GetDssSubcontractorId(req);
+            if (string.IsNullOrEmpty(subcontractorId))
+            {
+                loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubcontractorId' in request header");
+                return httpResponseMessageHelper.BadRequest();
+            }
+
             loggerHelper.LogInformationMessage(log, correlationGuid,
                 string.Format("Get Outcomes C# HTTP trigger function  processed a request. By Touchpoint: {0}",
                     touchpointId));

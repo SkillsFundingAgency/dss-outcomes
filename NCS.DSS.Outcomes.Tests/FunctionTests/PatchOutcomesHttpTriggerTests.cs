@@ -71,6 +71,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             _resourceHelper.DoesActionPlanResourceExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
 
             _httpRequestHelper.GetDssTouchpointId(_request).Returns("0000000001");
+            _httpRequestHelper.GetDssSubcontractorId(_request).Returns("9999999999");
             _httpRequestHelper.GetDssApimUrl(_request).Returns("http://localhost:7071/");
             _httpRequestHelper.GetResourceFromRequest<OutcomesPatch>(_request).Returns(Task.FromResult(_outcomePatch).Result);
             _patchOutcomesHttpTriggerService.PatchResource(Arg.Any<string>(), _outcomePatch).Returns(_outcomeString);
@@ -82,6 +83,19 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
         {
             _httpRequestHelper.GetDssTouchpointId(_request).Returns((string) null);
+
+            // Act
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
+
+            // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+        }
+
+        [Test]
+        public async Task PostOutcomesHttpTrigger_ReturnsStatusCodeBadRequest_WhenTSubcontractorIdIsNotProvided()
+        {
+            _httpRequestHelper.GetDssSubcontractorId(_request).Returns((string)null);
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
