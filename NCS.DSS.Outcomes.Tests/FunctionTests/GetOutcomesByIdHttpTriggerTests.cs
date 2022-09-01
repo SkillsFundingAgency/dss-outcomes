@@ -56,6 +56,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
 
             _getOutcomesByIdHttpTriggerService = Substitute.For<IGetOutcomesByIdHttpTriggerService>();
             _httpRequestHelper.GetDssTouchpointId(_request).Returns("0000000001");
+            _httpRequestHelper.GetDssSubcontractorId(_request).Returns("9999999999");
         }
 
         [Test]
@@ -65,6 +66,19 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
 
             _httpResponseMessageHelper
                 .BadRequest().Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
+
+            // Act
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
+
+            // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+        }
+
+        [Test]
+        public async Task PostOutcomesHttpTrigger_ReturnsStatusCodeBadRequest_WhenTSubcontractorIdIsNotProvided()
+        {
+            _httpRequestHelper.GetDssSubcontractorId(_request).Returns((string)null);
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
