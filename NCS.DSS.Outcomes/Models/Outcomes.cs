@@ -29,6 +29,8 @@ namespace NCS.DSS.Outcomes.Models
         [Example(Description = "2730af9c-fc34-4c2b-a905-c4b584b0f379")]
         public Guid? SessionId { get; set; }
 
+        // making subcontractor id as a mandatory field. 
+        [Required]
         [StringLength(50)]
         [Display(Description = "Identifier supplied by the touchpoint to indicate their subcontractor")]
         [Example(Description = "01234567899876543210")]
