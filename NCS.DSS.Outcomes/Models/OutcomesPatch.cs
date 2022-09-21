@@ -15,6 +15,7 @@ namespace NCS.DSS.Outcomes.Models
         public Guid? SessionId { get; set; }
 
 
+        [Required]
         [StringLength(8)]
         [Display(Description = "Identifier supplied by the touchpoint to indicate their subcontractor")]
         [RegularExpression(@"(?<!\d)\d{8}(?!\d)")]
