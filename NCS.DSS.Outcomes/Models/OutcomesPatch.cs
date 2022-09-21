@@ -17,6 +17,7 @@ namespace NCS.DSS.Outcomes.Models
 
         [StringLength(50)]
         [Display(Description = "Identifier supplied by the touchpoint to indicate their subcontractor")]
+        [RegularExpression(@"(?<!\d)\d{8}(?!\d)")]
         [Example(Description = "01234567899876543210")]
         public string SubcontractorId { get; set; }
 
