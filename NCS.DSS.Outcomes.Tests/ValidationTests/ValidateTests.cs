@@ -11,6 +11,8 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
     [TestFixture]
     public class ValidateTests
     {
+        private const string ValidSubContratorId = "12345678";
+        private const string InValidSubContractorId = "123";
 
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenOutcomesIsNotSuppliedForPost()
@@ -24,7 +26,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
             Assert.IsNotNull(result);
-            Assert.AreEqual(3, result.Count);
+            Assert.AreEqual(4, result.Count);
         }
 
         [Test]
@@ -33,7 +35,8 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             var outcomes = new Models.Outcomes
             {
                 OutcomeEffectiveDate = DateTime.UtcNow,
-                SessionId = Guid.Empty
+                SessionId = Guid.Empty,
+                SubcontractorId = ValidSubContratorId
             };
 
             var validation = new Validate();
@@ -52,7 +55,8 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             var outcomes = new Models.Outcomes
             {
                 OutcomeClaimedDate = DateTime.UtcNow,
-                SessionId = Guid.Empty
+                SessionId = Guid.Empty,
+                SubcontractorId = ValidSubContratorId
             };
 
             var validation = new Validate();
@@ -72,7 +76,8 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             {
                 OutcomeClaimedDate = DateTime.MaxValue,
                 OutcomeEffectiveDate = DateTime.UtcNow,
-                SessionId = Guid.Empty
+                SessionId = Guid.Empty,
+                SubcontractorId = ValidSubContratorId
             };
 
             var validation = new Validate();
@@ -92,7 +97,8 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             {
                 OutcomeClaimedDate = DateTime.UtcNow,
                 OutcomeEffectiveDate = DateTime.MaxValue,
-                SessionId = Guid.Empty
+                SessionId = Guid.Empty,
+                SubcontractorId = ValidSubContratorId
             };
 
             var validation = new Validate();
@@ -113,7 +119,8 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
                 OutcomeClaimedDate = DateTime.UtcNow,
                 OutcomeEffectiveDate = DateTime.UtcNow,
                 LastModifiedDate = DateTime.MaxValue,
-                SessionId = Guid.Empty
+                SessionId = Guid.Empty,
+                SubcontractorId = ValidSubContratorId
             };
 
             var validation = new Validate();
@@ -134,7 +141,8 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
                 OutcomeClaimedDate = DateTime.UtcNow,
                 OutcomeEffectiveDate = DateTime.UtcNow,
                 OutcomeType = (OutcomeType)100,
-                SessionId = Guid.Empty
+                SessionId = Guid.Empty,
+                SubcontractorId = ValidSubContratorId
             };
 
             var validation = new Validate();
@@ -155,7 +163,44 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
                 OutcomeClaimedDate = DateTime.UtcNow,
                 OutcomeEffectiveDate = DateTime.UtcNow,
                 LastModifiedDate = DateTime.MaxValue,
-                SessionId = Guid.Empty
+                SessionId = Guid.Empty,
+                SubcontractorId = ValidSubContratorId
+            };
+
+            var validation = new Validate();
+
+            var result = validation.ValidateResource(outcomes, Arg.Any<DateTime>());
+
+            // Assert
+            Assert.IsInstanceOf<List<ValidationResult>>(result);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(4, result.Count);
+        }
+
+        [Test]
+        public void ValidateTests_ReturnValidationResult_WhenSubcontractorIdNotValid()
+        {
+            var outcomes = new Models.Outcomes
+            {
+                SubcontractorId = ValidSubContratorId
+            };
+
+            var validation = new Validate();
+
+            var result = validation.ValidateResource(outcomes, Arg.Any<DateTime>());
+
+            // Assert
+            Assert.IsInstanceOf<List<ValidationResult>>(result);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result.Count);
+        }
+
+        [Test]
+        public void ValidateTests_ReturnValidationResult_WhenSubcontractorIdValid()
+        {
+            var outcomes = new Models.Outcomes
+            {
+                SubcontractorId = InValidSubContractorId
             };
 
             var validation = new Validate();
