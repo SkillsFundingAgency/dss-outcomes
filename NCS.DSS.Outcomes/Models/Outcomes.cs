@@ -32,7 +32,7 @@ namespace NCS.DSS.Outcomes.Models
 
         [Required]
         [StringLength(8)]
-        [RegularExpression(@"(?<!\d)\d{8}(?!\d)")]
+        [RegularExpression(@"(?<!\d)\d{8}(?!\d)", ErrorMessage = "The SubcontractorId should follow the UKPRN format of 8 digits")]
         [Display(Description = "Identifier supplied by the touchpoint to indicate their subcontractor")]
         [Example(Description = "01234567")]
         public string SubcontractorId { get; set; }
