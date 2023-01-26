@@ -80,6 +80,9 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         {
             _httpRequestHelper.GetDssSubcontractorId(_request).Returns((string)null);
 
+            _httpResponseMessageHelper
+                .BadRequest().Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
+
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
 
