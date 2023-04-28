@@ -295,7 +295,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
 
             var response = await client.DeleteDocumentAsync(documentUri);
 
-            return response.StatusCode == HttpStatusCode.OK;
+            return response.StatusCode == HttpStatusCode.NoContent;
         }
     }
 }
