@@ -8,6 +8,7 @@ using Microsoft.Azure.WebJobs.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using NCS.DSS.Outcomes.Cosmos.Helper;
 using NCS.DSS.Outcomes.Cosmos.Provider;
+using NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Service;
 using NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.Ioc;
@@ -34,6 +35,7 @@ namespace NCS.DSS.Outcomes.Ioc
             builder.Services.AddSingleton<IDocumentDBProvider, DocumentDBProvider>();
 
             builder.Services.AddScoped<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
+            builder.Services.AddScoped<IDeleteOutcomesHttpTriggerService, DeleteOutcomesHttpTriggerService>();
             builder.Services.AddScoped<IGetOutcomesHttpTriggerService, GetOutcomesHttpTriggerService>();
             builder.Services.AddScoped<IGetOutcomesByIdHttpTriggerService, GetOutcomesByIdHttpTriggerService>();
             builder.Services.AddScoped<IPostOutcomesHttpTriggerService, PostOutcomesHttpTriggerService>();
