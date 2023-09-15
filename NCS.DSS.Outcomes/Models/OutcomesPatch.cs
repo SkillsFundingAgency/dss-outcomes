@@ -40,6 +40,7 @@ namespace NCS.DSS.Outcomes.Models
         public bool? IsPriorityCustomer { get; set; }
 
         [StringLength(10, MinimumLength = 10)]
+        [RegularExpression(@"^[0-9]+$")]
         [Display(Description = "Identifier of the touchpoint claiming the outcome.")]
         [Example(Description = "0000000001")]
         public string TouchpointId { get; set; }
@@ -50,6 +51,7 @@ namespace NCS.DSS.Outcomes.Models
         public DateTime? LastModifiedDate { get; set; }
 
         [StringLength(10, MinimumLength = 10)]
+        [RegularExpression(@"^[0-9]+$")]
         [Display(Description = "Identifier of the touchpoint who made the last change to the record")]
         [Example(Description = "0000000001")]
         public string LastModifiedTouchpointId { get; set; }
