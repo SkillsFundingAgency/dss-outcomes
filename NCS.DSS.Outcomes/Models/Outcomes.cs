@@ -34,7 +34,7 @@ namespace NCS.DSS.Outcomes.Models
         [StringLength(8)]
         [RegularExpression(@"(?<!\d)\d{8}(?!\d)")]
         [Display(Description = "Identifier supplied by the touchpoint to indicate their subcontractor")]
-        [Example(Description = "01234567899876543210")]
+        [Example(Description = "01234567")]
         public string SubcontractorId { get; set; }
 
         [Required]
@@ -58,6 +58,7 @@ namespace NCS.DSS.Outcomes.Models
 
 
         [StringLength(10, MinimumLength = 10)]
+        [RegularExpression(@"^[0-9]+$")]
         [Display(Description = "Identifier of the touchpoint claiming the outcome.")]
         [Example(Description = "0000000001")]
         public string TouchpointId { get; set; }
@@ -68,6 +69,7 @@ namespace NCS.DSS.Outcomes.Models
         public DateTime? LastModifiedDate { get; set; }
 
         [StringLength(10, MinimumLength = 10)]
+        [RegularExpression(@"^[0-9]+$")]
         [Display(Description = "Identifier of the touchpoint who made the last change to the record")]
         [Example(Description = "0000000001")]
         public string LastModifiedTouchpointId { get; set; }
