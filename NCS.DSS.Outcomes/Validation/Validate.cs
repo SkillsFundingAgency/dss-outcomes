@@ -50,7 +50,6 @@ namespace NCS.DSS.Outcomes.Validation
                         case OutcomeType.CustomerSatisfaction:
                         case OutcomeType.CareersManagement:
                         case OutcomeType.AccreditedLearning:
-                        case OutcomeType.CareerProgression:
                             if (!(outcomesResource.OutcomeEffectiveDate.Value >= dateAndTimeSessionCreated &&
                                   outcomesResource.OutcomeEffectiveDate.Value <=
                                   dateAndTimeSessionCreated.Value.AddMonths(12)))
@@ -59,6 +58,7 @@ namespace NCS.DSS.Outcomes.Validation
                                     new[] { "OutcomeEffectiveDate" }));
                             break;
                         case OutcomeType.SustainableEmployment:
+                        case OutcomeType.CareerProgression:
                             if (!(outcomesResource.OutcomeEffectiveDate.Value >= dateAndTimeSessionCreated &&
                                   outcomesResource.OutcomeEffectiveDate.Value <=
                                   dateAndTimeSessionCreated.Value.AddMonths(13)))
