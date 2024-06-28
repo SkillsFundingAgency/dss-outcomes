@@ -277,8 +277,13 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             Assert.That(result.Count.Equals(1));
         }
 
-        [Test]
-        public void ValidateTests_ReturnValidationResult_WhenOutcomeClaimedDateWithin13MonthsForCareerProgressionOutcome()
+        [Theory]
+        [TestCase(OutcomeType.CustomerSatisfaction, 1)]
+        [TestCase(OutcomeType.CareersManagement, 1)]
+        [TestCase(OutcomeType.SustainableEmployment, 0)]
+        [TestCase(OutcomeType.AccreditedLearning, 1)]
+        [TestCase(OutcomeType.CareerProgression, 0)]
+        public void ValidateTests_ReturnValidationResult_WhenOutcomeClaimedDateWithin13Months(OutcomeType outcomeType,  int expectedResult)
         {
             var outcomes = new Models.Outcomes
             {
@@ -286,7 +291,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
                 ActionPlanId = Guid.NewGuid(),
                 SessionId = Guid.NewGuid(),
                 SubcontractorId = "01234567",
-                OutcomeType = OutcomeType.CareerProgression,
+                OutcomeType = outcomeType,
                 TouchpointId = "9999999999"
             };
 
@@ -294,7 +299,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
 
             Assert.IsInstanceOf<List<ValidationResult>>(result);
             Assert.IsNotNull(result);
-            Assert.That(result.Count.Equals(0));
+            Assert.That(result.Count.Equals(expectedResult));
         }
     }
 }
