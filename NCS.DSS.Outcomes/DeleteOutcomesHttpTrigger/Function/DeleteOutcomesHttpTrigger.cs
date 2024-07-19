@@ -14,11 +14,28 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.WebJobs;
+using NCS.DSS.Outcomes.Validation;
 
 namespace NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Function
 {
-    public static class DeleteOutcomesHttpTrigger
+    public class DeleteOutcomesHttpTrigger
     {
+        private readonly IResourceHelper _resourceHelper;
+        private readonly IHttpRequestHelper _httpRequestHelper;
+        private readonly IDeleteOutcomesHttpTriggerService _outcomesDeleteService;
+        private readonly IJsonHelper _jsonHelper;
+
+        public DeleteOutcomesHttpTrigger(IResourceHelper resourceHelper,
+            IHttpRequestHelper httpRequestHelper,
+            IDeleteOutcomesHttpTriggerService outcomesDeleteService,
+            IJsonHelper jsonHelper)
+        {
+            _resourceHelper = resourceHelper;
+            _httpRequestHelper = httpRequestHelper;
+            _outcomesDeleteService = outcomesDeleteService;
+            _jsonHelper = jsonHelper;
+        }
         [Disable]
         [Function("Delete")]
         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Outcome deleted", ShowSchema = true)]
@@ -27,48 +44,42 @@ namespace NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Display(Name = "Delete", Description = "Ability to remove a customers Outcome record.")]
-        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "Customers/{customerId}/Interactions/{interactionId}/actionplans/{actionplanId}/Outcomes/{outcomeId}")]HttpRequest req, ILogger log, string customerId, string interactionId, string actionplanId, string outcomeId,
-        [Inject]IResourceHelper resourceHelper,
-        [Inject]IDeleteOutcomesHttpTriggerService outcomesDeleteService,
-            [Inject]ILoggerHelper loggerHelper,
-            [Inject]IHttpRequestHelper httpRequestHelper,
-            [Inject]IHttpResponseMessageHelper httpResponseMessageHelper,
-            [Inject]IJsonHelper jsonHelper)
+        public async Task<IActionResult> RunAsync([Microsoft.Azure.Functions.Worker.HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "Customers/{customerId}/Interactions/{interactionId}/actionplans/{actionplanId}/Outcomes/{outcomeId}")] HttpRequest req, ILogger log, string customerId, string interactionId, string actionplanId, string outcomeId)
         {
             log.LogInformation("Delete Action Plan C# HTTP trigger function processed a request.");
 
             if (!Guid.TryParse(customerId, out var customerGuid))
-                return httpResponseMessageHelper.BadRequest(customerGuid);
+                return new BadRequestObjectResult(customerGuid);
 
             if (!Guid.TryParse(interactionId, out var interactionGuid))
-                return httpResponseMessageHelper.BadRequest(interactionGuid);
+                return new BadRequestObjectResult(interactionGuid);
 
             if (!Guid.TryParse(actionplanId, out var actionplanGuid))
-                return httpResponseMessageHelper.BadRequest(actionplanGuid);
+                return new BadRequestObjectResult(actionplanGuid);
 
             if (!Guid.TryParse(outcomeId, out var outcomesGuid))
-                return httpResponseMessageHelper.BadRequest(outcomesGuid);
+                return new BadRequestObjectResult(outcomesGuid);
 
-            var doesCustomerExist = await resourceHelper.DoesCustomerExist(customerGuid);
+            var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
-                return httpResponseMessageHelper.NoContent(customerGuid);
+                return new NoContentResult();
 
-            var doesActionPlanExist = resourceHelper.DoesActionPlanResourceExistAndBelongToCustomer(actionplanGuid, interactionGuid, customerGuid);
+            var doesActionPlanExist = _resourceHelper.DoesActionPlanResourceExistAndBelongToCustomer(actionplanGuid, interactionGuid, customerGuid);
 
             if (!doesActionPlanExist)
-                return httpResponseMessageHelper.NoContent(actionplanGuid);
+                return new NoContentResult();
 
-            var outcome = await outcomesDeleteService.GetOutcomeForCustomerAsync(customerGuid, interactionGuid, actionplanGuid, outcomesGuid);
+            var outcome = await _outcomesDeleteService.GetOutcomeForCustomerAsync(customerGuid, interactionGuid, actionplanGuid, outcomesGuid);
 
             if (outcome == null)
-                return httpResponseMessageHelper.NoContent(outcomesGuid);
+                return new NoContentResult();
 
-            var outcomeDeleted = await outcomesDeleteService.DeleteAsync(outcome.OutcomeId.GetValueOrDefault());
+            var outcomeDeleted = await _outcomesDeleteService.DeleteAsync(outcome.OutcomeId.GetValueOrDefault());
 
             return !outcomeDeleted ?
-                httpResponseMessageHelper.BadRequest(outcomesGuid) :
-                httpResponseMessageHelper.Ok();
+                new BadRequestObjectResult(outcomesGuid) :
+                new OkObjectResult(outcomesGuid);
 
         }
     }
