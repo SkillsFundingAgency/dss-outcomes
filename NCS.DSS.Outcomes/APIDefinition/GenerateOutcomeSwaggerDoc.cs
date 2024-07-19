@@ -4,8 +4,8 @@ using System.Reflection;
 using DFC.Functions.DI.Standard.Attributes;
 using DFC.Swagger.Standard;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.AspNetCore.Mvc;
 
 namespace NCS.DSS.Outcomes.APIDefinition
 {
@@ -18,8 +18,8 @@ namespace NCS.DSS.Outcomes.APIDefinition
             "has been added as a true/false value.";
         public const string ApiVersion = "3.0.0";
 
-        [FunctionName(ApiDefinitionName)]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = ApiDefRoute)]HttpRequest req,
+        [Function(ApiDefinitionName)]
+        public static IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = ApiDefRoute)]HttpRequest req,
             [Inject]ISwaggerDocumentGenerator swaggerDocumentGenerator)
         {
             var swagger = swaggerDocumentGenerator.GenerateSwaggerDocument(req, ApiTitle, ApiDescription,

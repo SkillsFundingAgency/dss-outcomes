@@ -1,7 +1,5 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
 using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
@@ -15,12 +13,13 @@ using DFC.Functions.DI.Standard.Attributes;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Azure.Functions.Worker;
 
 namespace NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Function
 {
     public static class GetOutcomesByIdHttpTrigger
     {
-        [FunctionName("GetById")]
+        [Function("GetById")]
         [ProducesResponseType(typeof(Models.Outcomes), 200)]
         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Outcome found", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Outcome does not exist", ShowSchema = false)]
@@ -28,7 +27,7 @@ namespace NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Display(Name = "Get", Description = "Ability to retrieve an individual Outcome for the given customer")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes/{outcomeId}")]HttpRequest req, ILogger log, string customerId, string interactionId, string actionplanId, string outcomeId,
+        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes/{outcomeId}")]HttpRequest req, ILogger log, string customerId, string interactionId, string actionplanId, string outcomeId,
             [Inject]IResourceHelper resourceHelper,
             [Inject]IGetOutcomesByIdHttpTriggerService outcomesGetService,
             [Inject]ILoggerHelper loggerHelper,

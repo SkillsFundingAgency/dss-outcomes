@@ -11,19 +11,18 @@ using DFC.JSON.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Outcomes.Cosmos.Helper;
 using NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.Validation;
 using Newtonsoft.Json;
+using Microsoft.Azure.Functions.Worker;
 
 namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
 {
     public static class PostOutcomesHttpTrigger
     {
-        [FunctionName("Post")]
+        [Function("Post")]
         [ProducesResponseType(typeof(Models.Outcomes),200)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Created, Description = "Outcome Created", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Outcome does not exist", ShowSchema = false)]
@@ -45,7 +44,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
                                               "<br><ul><li>Sustainable Employment </li> </ul><br>" +
                                               "Rule = OutcomeEffectiveDate >= Session.DateAndTimeOfSession AND <= Session.DateAndTimeOfSession + 13 months <br>" +
                                               "<br><b>ClaimedPriorityGroup:</b> This is mandatory if OutcomeClaimedDate has a value")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes")]HttpRequest req, ILogger log, string customerId, string interactionId, string actionplanId, 
+        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes")]HttpRequest req, ILogger log, string customerId, string interactionId, string actionplanId, 
             [Inject]IResourceHelper resourceHelper,
             [Inject]IPostOutcomesHttpTriggerService outcomesPostService,
             [Inject]IValidate validate,
