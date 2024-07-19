@@ -9,8 +9,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace NCS.DSS.Outcomes.APIDefinition
 {
-    public static class GenerateOutcomeSwaggerDoc
+    public class GenerateOutcomeSwaggerDoc
     {
+        private readonly ISwaggerDocumentGenerator _swaggerDocumentGenerator;
+        public GenerateOutcomeSwaggerDoc(ISwaggerDocumentGenerator swaggerDocumentGenerator) 
+        {
+            _swaggerDocumentGenerator = swaggerDocumentGenerator; 
+        }
         public const string ApiTitle = "Outcomes";
         public const string ApiDefinitionName = "API-Definition";
         public const string ApiDefRoute = ApiTitle + "/" + ApiDefinitionName;
@@ -19,19 +24,15 @@ namespace NCS.DSS.Outcomes.APIDefinition
         public const string ApiVersion = "3.0.0";
 
         [Function(ApiDefinitionName)]
-        public static IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = ApiDefRoute)]HttpRequest req,
-            [Inject]ISwaggerDocumentGenerator swaggerDocumentGenerator)
+        public IActionResult RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = ApiDefRoute)]HttpRequest req)
         {
-            var swagger = swaggerDocumentGenerator.GenerateSwaggerDocument(req, ApiTitle, ApiDescription,
+            var swagger = _swaggerDocumentGenerator.GenerateSwaggerDocument(req, ApiTitle, ApiDescription,
                 ApiDefinitionName, ApiVersion, Assembly.GetExecutingAssembly());
 
             if (string.IsNullOrEmpty(swagger))
-                return new HttpResponseMessage(HttpStatusCode.NoContent);
+                return new NoContentResult();
 
-            return new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(swagger)
-            };
+            return new OkObjectResult(new StringContent(swagger));
         }
     }
 }
