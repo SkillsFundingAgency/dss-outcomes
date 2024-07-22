@@ -86,21 +86,21 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             if (string.IsNullOrEmpty(touchpointId))
             {
                 log.LogInformation("Unable to locate 'APIM-TouchpointId' in request header.");
-                return new BadRequestObjectResult(400);
+                return new BadRequestObjectResult("Unable to locate 'APIM-TouchpointId' in request header.");
             }
 
             var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subcontractorId))
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubcontractorId' in request header");
-                return new BadRequestObjectResult(400);
+                return new BadRequestObjectResult("Unable to locate 'SubcontractorId' in request header");
             }
 
             var apimUrl = _httpRequestHelper.GetDssApimUrl(req);
             if (string.IsNullOrEmpty(apimUrl))
             {
                 log.LogInformation("Unable to locate 'apimurl' in request header");
-                return new BadRequestObjectResult(400);
+                return new BadRequestObjectResult("Unable to locate 'apimurl' in request header");
             }
 
             _loggerHelper.LogInformationMessage(log, correlationGuid,
