@@ -25,16 +25,19 @@ namespace NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Function
         private readonly IHttpRequestHelper _httpRequestHelper;
         private readonly IDeleteOutcomesHttpTriggerService _outcomesDeleteService;
         private readonly IJsonHelper _jsonHelper;
+        private readonly ILogger log;
 
         public DeleteOutcomesHttpTrigger(IResourceHelper resourceHelper,
             IHttpRequestHelper httpRequestHelper,
             IDeleteOutcomesHttpTriggerService outcomesDeleteService,
-            IJsonHelper jsonHelper)
+            IJsonHelper jsonHelper,
+            ILogger<DeleteOutcomesHttpTrigger> logger)
         {
             _resourceHelper = resourceHelper;
             _httpRequestHelper = httpRequestHelper;
             _outcomesDeleteService = outcomesDeleteService;
             _jsonHelper = jsonHelper;
+            log = logger;
         }
         [Disable]
         [Function("Delete")]
@@ -44,7 +47,7 @@ namespace NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Display(Name = "Delete", Description = "Ability to remove a customers Outcome record.")]
-        public async Task<IActionResult> RunAsync([Microsoft.Azure.Functions.Worker.HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "Customers/{customerId}/Interactions/{interactionId}/actionplans/{actionplanId}/Outcomes/{outcomeId}")] HttpRequest req, ILogger log, string customerId, string interactionId, string actionplanId, string outcomeId)
+        public async Task<IActionResult> RunAsync([Microsoft.Azure.Functions.Worker.HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "Customers/{customerId}/Interactions/{interactionId}/actionplans/{actionplanId}/Outcomes/{outcomeId}")] HttpRequest req, string customerId, string interactionId, string actionplanId, string outcomeId)
         {
             log.LogInformation("Delete Action Plan C# HTTP trigger function processed a request.");
 

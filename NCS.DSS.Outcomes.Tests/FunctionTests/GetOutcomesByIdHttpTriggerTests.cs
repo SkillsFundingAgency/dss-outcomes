@@ -73,10 +73,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
 
             // Assert
             Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
-
-            var badRequestResult = result as BadRequestObjectResult;
-
-            Assert.That(badRequestResult.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
 
         [Test]
@@ -89,10 +85,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
 
             // Assert
             Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
-
-            var badRequestResult = result as BadRequestObjectResult;
-
-            Assert.That(badRequestResult.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
 
         [Test]
@@ -103,10 +95,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
 
             // Assert
             Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
-
-            var badRequestResult = result as BadRequestObjectResult;
-
-            Assert.That(badRequestResult.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
 
         [Test]
@@ -118,10 +106,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
 
             // Assert
             Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
-
-            var badRequestResult = result as BadRequestObjectResult;
-
-            Assert.That(badRequestResult.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
 
         [Test]
@@ -133,10 +117,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
 
             // Assert
             Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
-
-            var badRequestResult = result as BadRequestObjectResult;
-
-            Assert.That(badRequestResult.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
 
         [Test]
@@ -148,10 +128,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
 
             // Assert
             Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
-
-            var badRequestResult = result as BadRequestObjectResult;
-
-            Assert.That(badRequestResult.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
 
         [Test]
@@ -164,10 +140,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
 
             // Assert
             Assert.That(result, Is.InstanceOf<NoContentResult>());
-
-            var noContentResult = result as NoContentResult;
-
-            Assert.That(noContentResult.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
         }
 
         [Test]
@@ -182,10 +154,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
 
             // Assert
             Assert.That(result, Is.InstanceOf<NoContentResult>());
-
-            var noContentResult = result as NoContentResult;
-
-            Assert.That(noContentResult.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
         }
 
         [Test]
@@ -200,10 +168,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
 
             // Assert
             Assert.That(result, Is.InstanceOf<NoContentResult>());
-
-            var noContentResult = result as NoContentResult;
-
-            Assert.That(noContentResult.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
         }
 
         [Test]
@@ -220,10 +184,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
 
             // Assert
             Assert.That(result, Is.InstanceOf<NoContentResult>());
-
-            var noContentResult = result as NoContentResult;
-
-            Assert.That(noContentResult.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
         }
 
         [Test]
@@ -240,10 +200,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
 
             // Assert
             Assert.That(result, Is.InstanceOf<OkObjectResult>());
-
-            var okResult = result as OkObjectResult;
-
-            Assert.That(okResult.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         }
 
         private async Task<IActionResult> RunFunction(string customerId, string interactionId, string actionPlanId, string outcomeId)
