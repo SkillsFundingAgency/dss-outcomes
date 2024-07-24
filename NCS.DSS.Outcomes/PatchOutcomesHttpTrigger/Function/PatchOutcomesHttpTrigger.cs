@@ -21,7 +21,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Microsoft.Azure.Functions.Worker;
 using NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Service;
-using System.Text;
 
 namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
 {
@@ -90,21 +89,21 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             if (string.IsNullOrEmpty(touchpointId))
             {
                 log.LogInformation("Unable to locate 'APIM-TouchpointId' in request header.");
-                return new BadRequestObjectResult(HttpStatusCode.BadRequest);
+                return new BadRequestObjectResult("Unable to locate 'APIM-TouchpointId' in request header.");
             }
 
             var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subcontractorId))
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubcontractorId' in request header");
-                return new BadRequestObjectResult(HttpStatusCode.BadRequest);
+                return new BadRequestObjectResult("Unable to locate 'SubcontractorId' in request header");
             }
 
             var apimUrl = _httpRequestHelper.GetDssApimUrl(req);
             if (string.IsNullOrEmpty(apimUrl))
             {
                 log.LogInformation("Unable to locate 'apimurl' in request header");
-                return new BadRequestObjectResult(HttpStatusCode.BadRequest);
+                return new BadRequestObjectResult("Unable to locate 'apimurl' in request header");
             }
 
             _loggerHelper.LogInformationMessage(log, correlationGuid,
@@ -114,25 +113,25 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'customerId' to a Guid: {0}", customerId));
-                return new BadRequestObjectResult(new StringContent(JsonConvert.SerializeObject(customerGuid), Encoding.UTF8, ContentApplicationType.ApplicationJSON));
+                return new BadRequestObjectResult(customerGuid);
             }
 
             if (!Guid.TryParse(interactionId, out var interactionGuid))
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'interactionId' to a Guid: {0}", interactionId));
-                return new BadRequestObjectResult(new StringContent(JsonConvert.SerializeObject(interactionGuid), Encoding.UTF8, ContentApplicationType.ApplicationJSON));
+                return new BadRequestObjectResult(interactionGuid);
             }
 
             if (!Guid.TryParse(actionplanId, out var actionPlanGuid))
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'actionplanId' to a Guid: {0}", actionplanId));
-                return new BadRequestObjectResult(new StringContent(JsonConvert.SerializeObject(actionPlanGuid), Encoding.UTF8, ContentApplicationType.ApplicationJSON));
+                return new BadRequestObjectResult(actionPlanGuid);
             }
 
             if (!Guid.TryParse(outcomeId, out var outcomesGuid))
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'outcomeId' to a Guid: {0}", outcomeId));
-                return new BadRequestObjectResult(new StringContent(JsonConvert.SerializeObject(outcomesGuid), Encoding.UTF8, ContentApplicationType.ApplicationJSON));
+                return new BadRequestObjectResult(outcomesGuid);
             }
 
             Models.OutcomesPatch outcomesPatchRequest;
@@ -179,15 +178,13 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             catch (JsonException ex)
             {
                 _loggerHelper.LogError(log, correlationGuid, "Unable to retrieve body from req", ex);
-                return new UnprocessableEntityObjectResult(new StringContent(JsonConvert.SerializeObject(ex), Encoding.UTF8,
-                    ContentApplicationType.ApplicationJSON));
+                return new UnprocessableEntityObjectResult(ex);
             }
             
             if (outcomesPatchRequest == null)
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, "outcome patch request is null");
-                return new UnprocessableEntityObjectResult(new StringContent(JsonConvert.SerializeObject(req),
-                    Encoding.UTF8, ContentApplicationType.ApplicationJSON));
+                return new UnprocessableEntityObjectResult(req);
             }
 
             _loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to set id's for action plan patch");
@@ -210,8 +207,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             if (isCustomerReadOnly && isADuplicateCustomer != 3)
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Customer is read only {0}", customerGuid));
-                return new ForbidResult(new StringContent(JsonConvert.SerializeObject(customerGuid),
-                    Encoding.UTF8, ContentApplicationType.ApplicationJSON).ToString());
+                return new ForbidResult(customerGuid.ToString());
             }
 
             if (isADuplicateCustomer == 3)
@@ -222,11 +218,11 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                     (requestCount == 2 && (!setOutcomeClaimedDateToNull ||
                                            !setOutcomeEffectiveDateToNull)))
                 {
-                    return new ForbidResult(new StringContent(JsonConvert.SerializeObject(new HttpErrorResponse(new List<string>
+                    return new ForbidResult(new HttpErrorResponse(new List<string>
                     {
                         "Duplicate Customer: This resource is read only. You may only remove values for Outcome Claimed and Effective date"
-                    }, correlationGuid)), Encoding.UTF8,
-                    ContentApplicationType.ApplicationJSON).ToString());
+                    }, correlationGuid).ToString());
+
                 }
             }
 
@@ -287,8 +283,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             if (outcomeValidationObject == null)
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, "Action Plan Validation Object is null");
-                return new UnprocessableEntityObjectResult(new StringContent(JsonConvert.SerializeObject(req),
-                    Encoding.UTF8, ContentApplicationType.ApplicationJSON));
+                return new UnprocessableEntityObjectResult(req);
             }
 
             _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get GetDateAndTimeOfSession for Session {0}", outcomeValidationObject.SessionId));
@@ -300,8 +295,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             if (errors != null && errors.Any())
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, "validation errors with resource");
-                return new UnprocessableEntityObjectResult(new StringContent(JsonConvert.SerializeObject(errors),
-                    Encoding.UTF8, ContentApplicationType.ApplicationJSON));
+                return new UnprocessableEntityObjectResult(errors);
             }
 
             _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to update Outcome {0}", outcomesGuid));
@@ -316,9 +310,8 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             _loggerHelper.LogMethodExit(log);
 
             return updatedOutcome == null ?
-                new BadRequestObjectResult(new StringContent(JsonConvert.SerializeObject(outcomesGuid), Encoding.UTF8, ContentApplicationType.ApplicationJSON)) :
-                new OkObjectResult(new StringContent(_jsonHelper.SerializeObjectAndRenameIdProperty(updatedOutcome, "id", "OutcomeId"),
-    Encoding.UTF8, ContentApplicationType.ApplicationJSON));
+                new BadRequestObjectResult(outcomesGuid) :
+                new OkObjectResult(_jsonHelper.SerializeObjectAndRenameIdProperty(updatedOutcome, "id", "OutcomeId"));
 
         }
 

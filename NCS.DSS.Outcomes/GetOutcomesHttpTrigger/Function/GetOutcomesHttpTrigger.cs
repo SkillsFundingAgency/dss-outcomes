@@ -15,8 +15,6 @@ using DFC.JSON.Standard;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Functions.Worker;
 using NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Service;
-using Newtonsoft.Json;
-using System.Text;
 
 namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Function
 {
@@ -69,14 +67,14 @@ namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Function
             if (string.IsNullOrEmpty(touchpointId))
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'TouchpointId' in request header");
-                return new BadRequestObjectResult(HttpStatusCode.BadRequest);
+                return new BadRequestObjectResult("Unable to locate 'TouchpointId' in request header");
             }
 
             var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subcontractorId))
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubcontractorId' in request header");
-                return new BadRequestObjectResult(HttpStatusCode.BadRequest);
+                return new BadRequestObjectResult("Unable to locate 'SubcontractorId' in request header");
             }
 
             _loggerHelper.LogInformationMessage(log, correlationGuid,
@@ -86,19 +84,19 @@ namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Function
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'customerId' to a Guid: {0}", customerId));
-                return new BadRequestObjectResult(new StringContent(JsonConvert.SerializeObject(customerGuid), Encoding.UTF8, ContentApplicationType.ApplicationJSON));
+                return new BadRequestObjectResult(customerGuid);
             }
 
             if (!Guid.TryParse(interactionId, out var interactionGuid))
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'interactionId' to a Guid: {0}", interactionId));
-                return new BadRequestObjectResult(new StringContent(JsonConvert.SerializeObject(interactionGuid), Encoding.UTF8, ContentApplicationType.ApplicationJSON));
+                return new BadRequestObjectResult(interactionGuid);
             }
 
             if (!Guid.TryParse(actionplanId, out var actionPlanGuid))
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'actionPlanId' to a Guid: {0}", actionplanId));
-                return new BadRequestObjectResult(new StringContent(JsonConvert.SerializeObject(actionPlanGuid), Encoding.UTF8, ContentApplicationType.ApplicationJSON));
+                return new BadRequestObjectResult(actionPlanGuid);
             }
 
             _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to see if customer exists {0}", customerGuid));
@@ -135,8 +133,7 @@ namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Function
 
             return outcomes == null ?
                 new NoContentResult() :
-                new OkObjectResult(new StringContent(_jsonHelper.SerializeObjectAndRenameIdProperty(outcomes, "id", "OutcomeId"),
-    Encoding.UTF8, ContentApplicationType.ApplicationJSON));
+                new OkObjectResult(_jsonHelper.SerializeObjectsAndRenameIdProperty(outcomes, "id", "OutcomeId"));
 
         }
     }

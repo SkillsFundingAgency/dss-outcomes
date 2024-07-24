@@ -16,8 +16,6 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using NCS.DSS.Outcomes.Validation;
-using Newtonsoft.Json;
-using System.Text;
 
 namespace NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Function
 {
@@ -54,16 +52,16 @@ namespace NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Function
             log.LogInformation("Delete Action Plan C# HTTP trigger function processed a request.");
 
             if (!Guid.TryParse(customerId, out var customerGuid))
-                return new BadRequestObjectResult(new StringContent(JsonConvert.SerializeObject(customerGuid), Encoding.UTF8, ContentApplicationType.ApplicationJSON));
+                return new BadRequestObjectResult(customerGuid);
 
             if (!Guid.TryParse(interactionId, out var interactionGuid))
-                return new BadRequestObjectResult(new StringContent(JsonConvert.SerializeObject(interactionGuid), Encoding.UTF8, ContentApplicationType.ApplicationJSON));
+                return new BadRequestObjectResult(interactionGuid);
 
             if (!Guid.TryParse(actionplanId, out var actionplanGuid))
-                return new BadRequestObjectResult(new StringContent(JsonConvert.SerializeObject(actionplanGuid), Encoding.UTF8, ContentApplicationType.ApplicationJSON));
+                return new BadRequestObjectResult(actionplanGuid);
 
             if (!Guid.TryParse(outcomeId, out var outcomesGuid))
-                return new BadRequestObjectResult(new StringContent(JsonConvert.SerializeObject(outcomesGuid), Encoding.UTF8, ContentApplicationType.ApplicationJSON));
+                return new BadRequestObjectResult(outcomesGuid);
 
             var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
@@ -83,9 +81,8 @@ namespace NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Function
             var outcomeDeleted = await _outcomesDeleteService.DeleteAsync(outcome.OutcomeId.GetValueOrDefault());
 
             return !outcomeDeleted ?
-                new BadRequestObjectResult(new StringContent(JsonConvert.SerializeObject(outcomesGuid), Encoding.UTF8, ContentApplicationType.ApplicationJSON)) :
-                new OkObjectResult(new StringContent(JsonConvert.SerializeObject(outcomesGuid),
-                    Encoding.UTF8, ContentApplicationType.ApplicationJSON));
+                new BadRequestObjectResult(outcomesGuid) :
+                new OkObjectResult(outcomesGuid);
 
         }
     }
