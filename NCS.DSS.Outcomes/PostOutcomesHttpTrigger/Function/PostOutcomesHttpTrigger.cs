@@ -18,6 +18,7 @@ using NCS.DSS.Outcomes.Validation;
 using Newtonsoft.Json;
 using Microsoft.Azure.Functions.Worker;
 using NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service;
+using System.Text;
 
 namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
 {
@@ -86,21 +87,21 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             if (string.IsNullOrEmpty(touchpointId))
             {
                 log.LogInformation("Unable to locate 'APIM-TouchpointId' in request header.");
-                return new BadRequestObjectResult("Unable to locate 'APIM-TouchpointId' in request header.");
+                return new BadRequestObjectResult(HttpStatusCode.BadRequest);
             }
 
             var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subcontractorId))
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubcontractorId' in request header");
-                return new BadRequestObjectResult("Unable to locate 'SubcontractorId' in request header");
+                return new BadRequestObjectResult(HttpStatusCode.BadRequest);
             }
 
             var apimUrl = _httpRequestHelper.GetDssApimUrl(req);
             if (string.IsNullOrEmpty(apimUrl))
             {
                 log.LogInformation("Unable to locate 'apimurl' in request header");
-                return new BadRequestObjectResult("Unable to locate 'apimurl' in request header");
+                return new BadRequestObjectResult(HttpStatusCode.BadRequest);
             }
 
             _loggerHelper.LogInformationMessage(log, correlationGuid,
@@ -110,19 +111,19 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'customerId' to a Guid: {0}", customerId));
-                return new BadRequestObjectResult(customerGuid);
+                return new BadRequestObjectResult(new StringContent(JsonConvert.SerializeObject(customerGuid), Encoding.UTF8, ContentApplicationType.ApplicationJSON));
             }
 
             if (!Guid.TryParse(interactionId, out var interactionGuid))
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'interactionId' to a Guid: {0}", interactionId));
-                return new BadRequestObjectResult(interactionGuid);
+                return new BadRequestObjectResult(new StringContent(JsonConvert.SerializeObject(interactionGuid), Encoding.UTF8, ContentApplicationType.ApplicationJSON));
             }
 
             if (!Guid.TryParse(actionplanId, out var actionplanGuid))
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'actionplanId' to a Guid: {0}", actionplanId));
-                return new BadRequestObjectResult(actionplanGuid);
+                return new BadRequestObjectResult(new StringContent(JsonConvert.SerializeObject(actionplanGuid), Encoding.UTF8, ContentApplicationType.ApplicationJSON));
             }
 
             Models.Outcomes outcomesRequest;
@@ -135,13 +136,15 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             catch (JsonException ex)
             {
                 _loggerHelper.LogError(log, correlationGuid, "Unable to retrieve body from req", ex);
-                return new UnprocessableEntityObjectResult(ex);
+                return new UnprocessableEntityObjectResult(new StringContent(JsonConvert.SerializeObject(ex), Encoding.UTF8,
+                    ContentApplicationType.ApplicationJSON));
             }
 
             if (outcomesRequest == null)
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, "Outcome request is null");
-                return new UnprocessableEntityObjectResult(req);
+                return new UnprocessableEntityObjectResult(new StringContent(JsonConvert.SerializeObject(req), Encoding.UTF8,
+                    ContentApplicationType.ApplicationJSON));
             }
 
             _loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to set id's for outcome");
@@ -162,7 +165,8 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             if (isCustomerReadOnly)
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Customer is read only {0}", customerGuid));
-                return new ForbidResult(customerGuid.ToString());
+                return new ForbidResult(new StringContent(JsonConvert.SerializeObject(customerGuid),
+                    Encoding.UTF8, ContentApplicationType.ApplicationJSON).ToString());
             }
 
             _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Interaction {0} for customer {1}", interactionGuid, customerGuid));
@@ -192,7 +196,8 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             if (errors != null && errors.Any())
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, "validation errors with resource");
-                return new UnprocessableEntityObjectResult(errors);
+                return new UnprocessableEntityObjectResult(new StringContent(JsonConvert.SerializeObject(errors),
+                    Encoding.UTF8, ContentApplicationType.ApplicationJSON));
             }
 
             _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to Create Outcome for customer {0}", customerGuid));
@@ -207,12 +212,12 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             _loggerHelper.LogMethodExit(log);
 
             return outcome == null
-                ? new BadRequestObjectResult(customerGuid)
-                : new ObjectResult(_jsonHelper.SerializeObjectAndRenameIdProperty(outcome, "id", "OutcomeId"))
+                ? new BadRequestObjectResult(new StringContent(JsonConvert.SerializeObject(customerGuid), Encoding.UTF8, ContentApplicationType.ApplicationJSON))
+                : new ObjectResult(new StringContent(_jsonHelper.SerializeObjectAndRenameIdProperty(outcome, "id", "OutcomeId"), Encoding.UTF8,
+                    ContentApplicationType.ApplicationJSON))
                 {
-                    StatusCode = 201
+                    StatusCode = StatusCodes.Status201Created
                 };
-
         }
     }
 }
