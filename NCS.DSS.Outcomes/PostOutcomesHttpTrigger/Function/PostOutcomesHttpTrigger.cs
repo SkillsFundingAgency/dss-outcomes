@@ -1,23 +1,20 @@
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 using DFC.Common.Standard.Logging;
-using DFC.Functions.DI.Standard.Attributes;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Outcomes.Cosmos.Helper;
 using NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.Validation;
 using Newtonsoft.Json;
-using Microsoft.Azure.Functions.Worker;
-using NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
 {
@@ -26,14 +23,12 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
         private readonly IResourceHelper _resourceHelper;
         private readonly IHttpRequestHelper _httpRequestHelper;
         private readonly IPostOutcomesHttpTriggerService _outcomesPostService;
-        private readonly IJsonHelper _jsonHelper;
         private readonly ILoggerHelper _loggerHelper;
         private readonly IValidate _validate;
         private readonly ILogger log;
         public PostOutcomesHttpTrigger(IResourceHelper resourceHelper,
             IHttpRequestHelper httpRequestHelper,
             IPostOutcomesHttpTriggerService outcomesPostService,
-            IJsonHelper jsonHelper,
             ILoggerHelper loggerHelper,
             IValidate validate,
             ILogger<PostOutcomesHttpTrigger> logger)
@@ -41,7 +36,6 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             _resourceHelper = resourceHelper;
             _httpRequestHelper = httpRequestHelper;
             _outcomesPostService = outcomesPostService;
-            _jsonHelper = jsonHelper;
             _loggerHelper = loggerHelper;
             _validate = validate;
             log = logger;
@@ -208,9 +202,9 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
 
             return outcome == null
                 ? new BadRequestObjectResult(customerGuid)
-                : new ObjectResult(_jsonHelper.SerializeObjectAndRenameIdProperty(outcome, "id", "OutcomeId"))
+                : new JsonResult(outcome, new JsonSerializerSettings())
                 {
-                    StatusCode = 201
+                    StatusCode = (int)HttpStatusCode.Created
                 };
 
         }

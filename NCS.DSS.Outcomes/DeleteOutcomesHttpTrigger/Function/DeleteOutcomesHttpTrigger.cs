@@ -1,44 +1,34 @@
-using DFC.Common.Standard.Logging;
-using DFC.Functions.DI.Standard.Attributes;
-using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Outcomes.Cosmos.Helper;
 using NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Service;
+using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Azure.Functions.Worker;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using NCS.DSS.Outcomes.Validation;
 
 namespace NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Function
 {
     public class DeleteOutcomesHttpTrigger
     {
         private readonly IResourceHelper _resourceHelper;
-        private readonly IHttpRequestHelper _httpRequestHelper;
         private readonly IDeleteOutcomesHttpTriggerService _outcomesDeleteService;
-        private readonly IJsonHelper _jsonHelper;
         private readonly ILogger log;
 
         public DeleteOutcomesHttpTrigger(IResourceHelper resourceHelper,
-            IHttpRequestHelper httpRequestHelper,
             IDeleteOutcomesHttpTriggerService outcomesDeleteService,
-            IJsonHelper jsonHelper,
             ILogger<DeleteOutcomesHttpTrigger> logger)
         {
             _resourceHelper = resourceHelper;
-            _httpRequestHelper = httpRequestHelper;
             _outcomesDeleteService = outcomesDeleteService;
-            _jsonHelper = jsonHelper;
             log = logger;
         }
+
         [Disable]
         [Function("Delete")]
         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Outcome deleted", ShowSchema = true)]
@@ -80,10 +70,12 @@ namespace NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Function
 
             var outcomeDeleted = await _outcomesDeleteService.DeleteAsync(outcome.OutcomeId.GetValueOrDefault());
 
-            return !outcomeDeleted ?
-                new BadRequestObjectResult(outcomesGuid) :
-                new OkObjectResult(outcomesGuid);
-
+            return !outcomeDeleted
+                ? new BadRequestObjectResult(outcomesGuid)
+                : new JsonResult(outcomesGuid, new JsonSerializerSettings())
+                {
+                    StatusCode = (int)HttpStatusCode.OK
+                };
         }
     }
 }

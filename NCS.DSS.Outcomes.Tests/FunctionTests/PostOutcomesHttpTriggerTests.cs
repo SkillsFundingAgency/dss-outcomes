@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using DFC.Common.Standard.Logging;
+﻿using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -17,6 +10,11 @@ using Newtonsoft.Json;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.Outcomes.Tests.FunctionTests
 {
@@ -34,8 +32,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         private IValidate _validate;
         private ILoggerHelper _loggerHelper;
         private IHttpRequestHelper _httpRequestHelper;
-        private IHttpResponseMessageHelper _httpResponseMessageHelper;
-        private IJsonHelper _jsonHelper;
 
         private IPostOutcomesHttpTriggerService _postOutcomesHttpTriggerService;
         private Models.Outcomes _outcome;
@@ -53,8 +49,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             _validate = Substitute.For<IValidate>();
             _loggerHelper = Substitute.For<ILoggerHelper>();
             _httpRequestHelper = Substitute.For<IHttpRequestHelper>();
-            _httpResponseMessageHelper = Substitute.For<IHttpResponseMessageHelper>();
-            _jsonHelper = Substitute.For<IJsonHelper>();
             _resourceHelper = Substitute.For<IResourceHelper>();
             _postOutcomesHttpTriggerService = Substitute.For<IPostOutcomesHttpTriggerService>();
 
@@ -74,7 +68,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 _resourceHelper, 
                 _httpRequestHelper,
                 _postOutcomesHttpTriggerService,
-                _jsonHelper,
                 _loggerHelper,
                 _validate,
                 _log);
@@ -230,13 +223,11 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             _postOutcomesHttpTriggerService.CreateAsync(Arg.Any<Models.Outcomes>()).Returns(Task.FromResult<Models.Outcomes>(_outcome).Result);
 
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
+            var responseResult = result as JsonResult;
 
-            // Assert
-            Assert.That(result, Is.InstanceOf<ObjectResult>());
-
-            var createdResult = result as ObjectResult;
-
-            Assert.That(createdResult.StatusCode, Is.EqualTo(201));
+            //Assert
+            Assert.That(result, Is.InstanceOf<JsonResult>());
+            Assert.That(responseResult.StatusCode, Is.EqualTo((int)HttpStatusCode.Created));
         }
 
         private async Task<IActionResult> RunFunction(string customerId, string interactionId, string actionPlanId)

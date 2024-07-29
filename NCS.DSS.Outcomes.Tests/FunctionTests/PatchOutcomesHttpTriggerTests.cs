@@ -292,9 +292,11 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 .Returns(Task.FromResult(_outcome).Result);
 
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
+            var responseResult = result as JsonResult;
 
-            // Assert
-            Assert.That(result, Is.InstanceOf<OkObjectResult>());
+            //Assert
+            Assert.That(result, Is.InstanceOf<JsonResult>());
+            Assert.That(responseResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
         }
 
         private async Task<IActionResult> RunFunction(string customerId, string interactionId,

@@ -1,21 +1,17 @@
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Net.Http;
-using System.Net;
-using System.Threading.Tasks;
 using DFC.Common.Standard.Logging;
+using DFC.HTTP.Standard;
+using DFC.JSON.Standard;
+using DFC.Swagger.Standard.Annotations;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Outcomes.Cosmos.Helper;
 using NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Service;
-using DFC.Swagger.Standard.Annotations;
-using Microsoft.AspNetCore.Mvc;
-using DFC.Functions.DI.Standard.Attributes;
-using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Azure.Functions.Worker;
-using NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Service;
-using Microsoft.AspNetCore.Mvc.Formatters;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Function
 {

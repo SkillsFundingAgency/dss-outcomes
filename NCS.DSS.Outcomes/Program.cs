@@ -1,10 +1,9 @@
-using Microsoft.Extensions.Hosting;
 using DFC.Common.Standard.Logging;
-using DFC.Functions.DI.Standard;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using DFC.Swagger.Standard;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using NCS.DSS.Outcomes.Cosmos.Helper;
 using NCS.DSS.Outcomes.Cosmos.Provider;
 using NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Service;
@@ -25,7 +24,6 @@ var host = new HostBuilder()
         services.AddSingleton<IHttpResponseMessageHelper, HttpResponseMessageHelper>();
         services.AddSingleton<IJsonHelper, JsonHelper>();
         services.AddSingleton<IDocumentDBProvider, DocumentDBProvider>();
-
         services.AddScoped<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
         services.AddScoped<IGetOutcomesHttpTriggerService, GetOutcomesHttpTriggerService>();
         services.AddScoped<IGetOutcomesByIdHttpTriggerService, GetOutcomesByIdHttpTriggerService>();

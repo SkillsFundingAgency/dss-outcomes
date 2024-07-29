@@ -1,20 +1,18 @@
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Net.Http;
-using System.Net;
-using System.Threading.Tasks;
 using DFC.Common.Standard.Logging;
+using DFC.HTTP.Standard;
+using DFC.JSON.Standard;
+using DFC.Swagger.Standard.Annotations;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Outcomes.Cosmos.Helper;
 using NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Service;
-using Microsoft.AspNetCore.Mvc;
-using DFC.Swagger.Standard.Annotations;
-using DFC.Functions.DI.Standard.Attributes;
-using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Azure.Functions.Worker;
-using NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Service;
+using Newtonsoft.Json;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Function
 {
@@ -23,20 +21,17 @@ namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Function
         private readonly IResourceHelper _resourceHelper;
         private readonly IHttpRequestHelper _httpRequestHelper;
         private readonly IGetOutcomesHttpTriggerService _outcomesGetService;
-        private readonly IJsonHelper _jsonHelper;
         private readonly ILoggerHelper _loggerHelper;
         private readonly ILogger log;
         public GetOutcomesHttpTrigger(IResourceHelper resourceHelper,
             IHttpRequestHelper httpRequestHelper,
             IGetOutcomesHttpTriggerService outcomesGetService,
-            IJsonHelper jsonHelper,
             ILoggerHelper loggerHelper,
             ILogger<GetOutcomesHttpTrigger> logger)
         {
             _resourceHelper = resourceHelper;
             _httpRequestHelper = httpRequestHelper;
             _outcomesGetService = outcomesGetService;
-            _jsonHelper = jsonHelper;
             _loggerHelper = loggerHelper;
             log = logger;
         }
@@ -131,10 +126,12 @@ namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Function
 
             _loggerHelper.LogMethodExit(log);
 
-            return outcomes == null ?
-                new NoContentResult() :
-                new OkObjectResult(_jsonHelper.SerializeObjectsAndRenameIdProperty(outcomes, "id", "OutcomeId"));
-
+            return outcomes == null
+                ? new NoContentResult()
+                : new JsonResult(outcomes, new JsonSerializerSettings())
+                {
+                    StatusCode = (int)HttpStatusCode.OK
+                };
         }
     }
 }

@@ -31,7 +31,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         private IResourceHelper _resourceHelper;
         private ILoggerHelper _loggerHelper;
         private IHttpRequestHelper _httpRequestHelper;
-        private IJsonHelper _jsonHelper;
         private GetOutcomesHttpTrigger.Function.GetOutcomesHttpTrigger _function;
 
         [SetUp]
@@ -41,7 +40,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
 
             _loggerHelper = Substitute.For<ILoggerHelper>();
             _httpRequestHelper = Substitute.For<IHttpRequestHelper>();
-            _jsonHelper = Substitute.For<IJsonHelper>();
             _log = Substitute.For<ILogger<GetOutcomesHttpTrigger.Function.GetOutcomesHttpTrigger>>();
             _resourceHelper = Substitute.For<IResourceHelper>();
 
@@ -52,7 +50,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 _resourceHelper,
                 _httpRequestHelper,
                 _getOutcomesHttpTriggerService,
-                _jsonHelper,
                 _loggerHelper,
                 _log
                 );
@@ -179,9 +176,11 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
-
-            // Assert
-            Assert.That(result, Is.InstanceOf<OkObjectResult>());
+            var responseResult = result as JsonResult;
+            
+            //Assert
+            Assert.That(result, Is.InstanceOf<JsonResult>());
+            Assert.That(responseResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
         }
 
         private async Task<IActionResult> RunFunction(string customerId, string interactionId, string actionPlanId)

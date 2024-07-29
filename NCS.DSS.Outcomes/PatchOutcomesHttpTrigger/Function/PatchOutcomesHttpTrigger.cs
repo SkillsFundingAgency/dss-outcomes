@@ -1,26 +1,23 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 using DFC.Common.Standard.Logging;
-using DFC.Functions.DI.Standard.Attributes;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Outcomes.Cosmos.Helper;
 using NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.Validation;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Microsoft.Azure.Functions.Worker;
-using NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Service;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
 {
@@ -50,7 +47,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             log = logger;
         }
         [Function("Patch")]
-        [ProducesResponseType(typeof(Models.Outcomes),200)]
+        [ProducesResponseType(typeof(Models.Outcomes), 200)]
         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Outcome Updated", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Outcome does not exist", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.BadRequest, Description = "Request was malformed", ShowSchema = false)]
@@ -71,7 +68,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                                                "<br><ul><li>Sustainable Employment </li> </ul><br>" +
                                                "Rule = OutcomeEffectiveDate >= Session.DateAndTimeOfSession AND <= Session.DateAndTimeOfSession + 13 months <br>" +
                                                "<br><b>ClaimedPriorityGroup:</b> This is mandatory if OutcomeClaimedDate has a value")]
-        public async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes/{outcomeId}")]HttpRequest req, string customerId, string interactionId, string actionplanId, string outcomeId)
+        public async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes/{outcomeId}")] HttpRequest req, string customerId, string interactionId, string actionplanId, string outcomeId)
         {
             _loggerHelper.LogMethodEnter(log);
 
@@ -135,7 +132,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             }
 
             Models.OutcomesPatch outcomesPatchRequest;
-            
+
             var setOutcomeClaimedDateToNull = false;
             var setOutcomeEffectiveDateToNull = false;
             int requestCount = 0;
@@ -180,7 +177,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                 _loggerHelper.LogError(log, correlationGuid, "Unable to retrieve body from req", ex);
                 return new UnprocessableEntityObjectResult(ex);
             }
-            
+
             if (outcomesPatchRequest == null)
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, "outcome patch request is null");
@@ -252,7 +249,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                 _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Outcome does not exist {0}", outcomesGuid));
                 return new NoContentResult();
             }
-            
+
             var patchedOutcomeResource = _outcomesPatchService.PatchResource(outcome, outcomesPatchRequest);
 
             if (patchedOutcomeResource == null)
@@ -309,11 +306,12 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
 
             _loggerHelper.LogMethodExit(log);
 
-            return updatedOutcome == null ?
-                new BadRequestObjectResult(outcomesGuid) :
-                new OkObjectResult(_jsonHelper.SerializeObjectAndRenameIdProperty(updatedOutcome, "id", "OutcomeId"));
-
+            return updatedOutcome == null
+                ? new BadRequestObjectResult(outcomesGuid)
+                : new JsonResult(updatedOutcome, new JsonSerializerSettings())
+                {
+                    StatusCode = (int)HttpStatusCode.OK
+                };
         }
-
     }
 }

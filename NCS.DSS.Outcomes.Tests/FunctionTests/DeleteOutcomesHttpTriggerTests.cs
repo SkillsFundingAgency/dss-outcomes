@@ -28,10 +28,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         private HttpRequest _request;
         private Mock<IDeleteOutcomesHttpTriggerService> _deleteOutcomesHttpTriggerService;
         private Mock<IResourceHelper> _resourceHelper;
-        private Mock<ILoggerHelper> _loggerHelper;
-        private IHttpRequestHelper _httpRequestHelper;
-        private IHttpResponseMessageHelper _httpResponseMessageHelper;
-        private IJsonHelper _jsonHelper;
         private DeleteOutcomesHttpTrigger.Function.DeleteOutcomesHttpTrigger _function;
         private ILogger<DeleteOutcomesHttpTrigger.Function.DeleteOutcomesHttpTrigger> _log;
 
@@ -39,18 +35,12 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         public void Setup()
         {
             _resourceHelper = new Mock<IResourceHelper>();
-            _loggerHelper = new Mock<ILoggerHelper>();
-            _httpRequestHelper = new HttpRequestHelper();
-            _httpResponseMessageHelper = new HttpResponseMessageHelper();
-            _jsonHelper = new JsonHelper();
             _log = Substitute.For<ILogger<DeleteOutcomesHttpTrigger.Function.DeleteOutcomesHttpTrigger>>();
             _deleteOutcomesHttpTriggerService = new Mock<IDeleteOutcomesHttpTriggerService>();
             _function = new DeleteOutcomesHttpTrigger.Function.DeleteOutcomesHttpTrigger
             (
                 _resourceHelper.Object,
-                _httpRequestHelper,
                 _deleteOutcomesHttpTriggerService.Object,
-                _jsonHelper,
                 _log
             );
         }
@@ -183,9 +173,11 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
+            var responseResult = result as JsonResult;
 
-            // Assert
-            Assert.That(result, Is.InstanceOf<OkObjectResult>());
+            //Assert
+            Assert.That(result, Is.InstanceOf<JsonResult>());
+            Assert.That(responseResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
         }
 
         private async Task<IActionResult> RunFunction(string customerId, string interactionId, string actionPlanId, string outcomeId)
