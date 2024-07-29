@@ -139,6 +139,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             var setOutcomeEffectiveDateToNull = false;
             int requestCount = 0;
             string requestBody;
+            req.EnableBuffering(); //Allows request to be read multiple times
 
             try
             {
