@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Outcomes.Cosmos.Helper;
 using NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Service;
-using NCS.DSS.Outcomes.Validation;
 using NSubstitute;
 using NUnit.Framework;
 using System;
@@ -27,10 +26,8 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         private ILogger<GetOutcomesByIdHttpTrigger.Function.GetOutcomesByIdHttpTrigger> _log;
         private HttpRequest _request;
         private IResourceHelper _resourceHelper;
-        private IValidate _validate;
         private ILoggerHelper _loggerHelper;
         private IHttpRequestHelper _httpRequestHelper;
-        private DFC.JSON.Standard.IJsonHelper _jsonHelper;
         private IGetOutcomesByIdHttpTriggerService _getOutcomesByIdHttpTriggerService;
         private Models.Outcomes _outcome;
         private GetOutcomesByIdHttpTrigger.Function.GetOutcomesByIdHttpTrigger _function;
@@ -44,10 +41,8 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
 
             _log = Substitute.For<ILogger<GetOutcomesByIdHttpTrigger.Function.GetOutcomesByIdHttpTrigger>>();
             _resourceHelper = Substitute.For<IResourceHelper>();
-            _validate = Substitute.For<IValidate>();
             _loggerHelper = Substitute.For<ILoggerHelper>();
             _httpRequestHelper = Substitute.For<IHttpRequestHelper>();
-            _jsonHelper = Substitute.For<DFC.JSON.Standard.IJsonHelper>();
             _resourceHelper = Substitute.For<IResourceHelper>();
 
             _getOutcomesByIdHttpTriggerService = Substitute.For<IGetOutcomesByIdHttpTriggerService>();
@@ -57,7 +52,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 _resourceHelper,
                 _httpRequestHelper,
                 _getOutcomesByIdHttpTriggerService,
-                _jsonHelper,
                 _loggerHelper,
                 _log
                 );
@@ -197,9 +191,11 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
+            var responseResult = result as JsonResult;
 
-            // Assert
-            Assert.That(result, Is.InstanceOf<OkObjectResult>());
+            //Assert
+            Assert.That(result, Is.InstanceOf<JsonResult>());
+            Assert.That(responseResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
         }
 
         private async Task<IActionResult> RunFunction(string customerId, string interactionId, string actionPlanId, string outcomeId)
