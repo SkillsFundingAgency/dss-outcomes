@@ -1,6 +1,5 @@
 using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,10 +7,10 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Outcomes.Cosmos.Helper;
 using NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Service;
-using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Function
@@ -128,7 +127,7 @@ namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Function
 
             return outcomes == null
                 ? new NoContentResult()
-                : new JsonResult(outcomes, new JsonSerializerSettings())
+                : new JsonResult(outcomes, new JsonSerializerOptions())
                 {
                     StatusCode = (int)HttpStatusCode.OK
                 };

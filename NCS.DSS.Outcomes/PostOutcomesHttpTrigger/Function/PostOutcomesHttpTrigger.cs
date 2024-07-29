@@ -1,6 +1,5 @@
 using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,12 +8,13 @@ using Microsoft.Extensions.Logging;
 using NCS.DSS.Outcomes.Cosmos.Helper;
 using NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.Validation;
-using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
+using JsonException = Newtonsoft.Json.JsonException;
 
 namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
 {
@@ -202,7 +202,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
 
             return outcome == null
                 ? new BadRequestObjectResult(customerGuid)
-                : new JsonResult(outcome, new JsonSerializerSettings())
+                : new JsonResult(outcome, new JsonSerializerOptions())
                 {
                     StatusCode = (int)HttpStatusCode.Created
                 };

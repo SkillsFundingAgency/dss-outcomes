@@ -17,7 +17,9 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
+using JsonException = Newtonsoft.Json.JsonException;
 
 namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
 {
@@ -308,7 +310,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
 
             return updatedOutcome == null
                 ? new BadRequestObjectResult(outcomesGuid)
-                : new JsonResult(updatedOutcome, new JsonSerializerSettings())
+                : new JsonResult(updatedOutcome, new JsonSerializerOptions())
                 {
                     StatusCode = (int)HttpStatusCode.OK
                 };

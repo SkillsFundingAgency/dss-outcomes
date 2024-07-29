@@ -1,6 +1,5 @@
 using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +10,7 @@ using NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Service;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Function
@@ -20,20 +20,17 @@ namespace NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Function
         private readonly IResourceHelper _resourceHelper;
         private readonly IHttpRequestHelper _httpRequestHelper;
         private readonly IGetOutcomesByIdHttpTriggerService _outcomesGetService;
-        private readonly IJsonHelper _jsonHelper;
         private readonly ILoggerHelper _loggerHelper;
         private readonly ILogger log;
         public GetOutcomesByIdHttpTrigger(IResourceHelper resourceHelper,
             IHttpRequestHelper httpRequestHelper,
             IGetOutcomesByIdHttpTriggerService outcomesGetService,
-            IJsonHelper jsonHelper,
             ILoggerHelper loggerHelper,
             ILogger<GetOutcomesByIdHttpTrigger> logger)
         {
             _resourceHelper = resourceHelper;
             _httpRequestHelper = httpRequestHelper;
             _outcomesGetService = outcomesGetService;
-            _jsonHelper = jsonHelper;
             _loggerHelper = loggerHelper;
             log = logger;
         }
@@ -137,10 +134,12 @@ namespace NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Function
 
             _loggerHelper.LogMethodExit(log);
 
-            return outcomes == null ?
-                new NoContentResult() :
-                new OkObjectResult(_jsonHelper.SerializeObjectAndRenameIdProperty(outcomes, "id", "OutcomeId"));
-
+            return outcomes == null
+                ? new NoContentResult()
+                : new JsonResult(outcomes, new JsonSerializerOptions())
+                {
+                    StatusCode = (int)HttpStatusCode.OK
+                };
         }
     }
 }
