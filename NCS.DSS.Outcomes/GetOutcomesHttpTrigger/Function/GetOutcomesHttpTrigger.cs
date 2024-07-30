@@ -125,12 +125,19 @@ namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Function
 
             _loggerHelper.LogMethodExit(log);
 
-            return outcomes == null
-                ? new NoContentResult()
-                : new JsonResult(outcomes, new JsonSerializerOptions())
+            if (outcomes == null) return new NoContentResult();
+
+            if (outcomes.Count == 1)
+            {
+                return new JsonResult(outcomes[0], new JsonSerializerOptions())
                 {
-                    StatusCode = (int)HttpStatusCode.OK
+                    StatusCode = (int)HttpStatusCode.OK,
                 };
+            }
+            return new JsonResult(outcomes, new JsonSerializerOptions())
+            {
+                StatusCode = (int)HttpStatusCode.OK,
+            };
         }
     }
 }
