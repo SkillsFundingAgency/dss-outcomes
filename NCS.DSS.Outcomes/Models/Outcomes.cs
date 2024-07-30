@@ -74,7 +74,7 @@ namespace NCS.DSS.Outcomes.Models
         public string LastModifiedTouchpointId { get; set; }
 
         [JsonIgnore]
-        public string CreatedBy { internal get; set; }
+        public string CreatedBy { get; set; }
 
         public void SetDefaultValues()
         {
