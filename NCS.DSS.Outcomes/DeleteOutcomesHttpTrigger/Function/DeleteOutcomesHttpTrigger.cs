@@ -29,7 +29,8 @@ namespace NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Function
             log = logger;
         }
 
-        [Disable]
+        //Disable attribute not working in .NET 8.0. See here for more information: https://github.com/Azure/azure-functions-host/issues/10216
+        /*[Disable]
         [Function("Delete")]
         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Outcome deleted", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Outcome does not exist", ShowSchema = false)]
@@ -76,6 +77,6 @@ namespace NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Function
                 {
                     StatusCode = (int)HttpStatusCode.OK
                 };
-        }
+        }*/
     }
 }
