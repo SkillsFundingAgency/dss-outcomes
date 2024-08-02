@@ -32,6 +32,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         private IValidate _validate;
         private ILoggerHelper _loggerHelper;
         private IHttpRequestHelper _httpRequestHelper;
+        private IDynamicHelper _dynamicHelper;
 
         private IPostOutcomesHttpTriggerService _postOutcomesHttpTriggerService;
         private Models.Outcomes _outcome;
@@ -50,6 +51,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             _loggerHelper = Substitute.For<ILoggerHelper>();
             _httpRequestHelper = Substitute.For<IHttpRequestHelper>();
             _resourceHelper = Substitute.For<IResourceHelper>();
+            _dynamicHelper = Substitute.For<IDynamicHelper>();
             _postOutcomesHttpTriggerService = Substitute.For<IPostOutcomesHttpTriggerService>();
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
@@ -70,7 +72,8 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 _postOutcomesHttpTriggerService,
                 _loggerHelper,
                 _validate,
-                _log);
+                _log,
+                _dynamicHelper);
         }
 
         [Test]

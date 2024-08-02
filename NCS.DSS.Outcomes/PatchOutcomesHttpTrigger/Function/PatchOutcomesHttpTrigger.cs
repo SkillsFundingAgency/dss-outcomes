@@ -32,13 +32,17 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
         private readonly ILoggerHelper _loggerHelper;
         private readonly IValidate _validate;
         private readonly ILogger log;
+        private readonly IDynamicHelper _dynamicHelper;
+        private static readonly string[] ExceptionToExclude = {"TargetSite"};
+
         public PatchOutcomesHttpTrigger(IResourceHelper resourceHelper,
             IHttpRequestHelper httpRequestHelper,
             IPatchOutcomesHttpTriggerService outcomesPatchService,
             IJsonHelper jsonHelper,
             ILoggerHelper loggerHelper,
             IValidate validate,
-            ILogger<PatchOutcomesHttpTrigger> logger)
+            ILogger<PatchOutcomesHttpTrigger> logger,
+            IDynamicHelper dynamicHelper)
         {
             _resourceHelper = resourceHelper;
             _httpRequestHelper = httpRequestHelper;
@@ -47,6 +51,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             _loggerHelper = loggerHelper;
             _validate = validate;
             log = logger;
+            _dynamicHelper = dynamicHelper;
         }
         [Function("Patch")]
         [ProducesResponseType(typeof(Models.Outcomes), 200)]
@@ -175,10 +180,10 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                 _loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to get resource from body of the request");
                 outcomesPatchRequest = await _httpRequestHelper.GetResourceFromRequest<Models.OutcomesPatch>(req);
             }
-            catch (JsonException ex)
+            catch (Exception ex)
             {
                 _loggerHelper.LogError(log, correlationGuid, "Unable to retrieve body from req", ex);
-                return new UnprocessableEntityObjectResult(ex);
+                return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ExceptionToExclude));
             }
 
             if (outcomesPatchRequest == null)
@@ -227,7 +232,6 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                     {
                         StatusCode = (int)HttpStatusCode.Forbidden
                     };
-
                 }
             }
 

@@ -36,6 +36,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         private ILoggerHelper _loggerHelper;
         private IHttpRequestHelper _httpRequestHelper;
         private IJsonHelper _jsonHelper;
+        private IDynamicHelper _dynamicHelper;
         private IPatchOutcomesHttpTriggerService _patchOutcomesHttpTriggerService;
         private Models.Outcomes _outcome;
         private OutcomesPatch _outcomePatch;
@@ -57,6 +58,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             _jsonHelper = Substitute.For<IJsonHelper>();
             _log = Substitute.For<ILogger<PatchOutcomesHttpTrigger.Function.PatchOutcomesHttpTrigger>>();
             _resourceHelper = Substitute.For<IResourceHelper>();
+            _dynamicHelper = Substitute.For<IDynamicHelper>();
             _patchOutcomesHttpTriggerService = Substitute.For<IPatchOutcomesHttpTriggerService>();
             _outcomeString = JsonConvert.SerializeObject(_outcome);
 
@@ -79,7 +81,8 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 _jsonHelper,
                 _loggerHelper,
                 _validate,
-                _log
+                _log,
+                _dynamicHelper
                 );
         }
 

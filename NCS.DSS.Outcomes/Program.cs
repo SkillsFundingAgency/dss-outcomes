@@ -1,4 +1,3 @@
-using System.Linq;
 using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
@@ -14,6 +13,7 @@ using NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.Validation;
+using System.Linq;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
@@ -28,6 +28,7 @@ var host = new HostBuilder()
         services.AddSingleton<IHttpRequestHelper, HttpRequestHelper>();
         services.AddSingleton<IHttpResponseMessageHelper, HttpResponseMessageHelper>();
         services.AddSingleton<IJsonHelper, JsonHelper>();
+        services.AddSingleton<IDynamicHelper, DynamicHelper>();
         services.AddSingleton<IDocumentDBProvider, DocumentDBProvider>();
         services.AddScoped<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
         services.AddScoped<IGetOutcomesHttpTriggerService, GetOutcomesHttpTriggerService>();

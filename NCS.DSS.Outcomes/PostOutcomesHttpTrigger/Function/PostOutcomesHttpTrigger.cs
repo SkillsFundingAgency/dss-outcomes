@@ -14,7 +14,6 @@ using System.Linq;
 using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
-using JsonException = Newtonsoft.Json.JsonException;
 
 namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
 {
@@ -26,12 +25,16 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
         private readonly ILoggerHelper _loggerHelper;
         private readonly IValidate _validate;
         private readonly ILogger log;
+        private readonly IDynamicHelper _dynamicHelper;
+        private static readonly string[] ExceptionToExclude = {"TargetSite"};
+
         public PostOutcomesHttpTrigger(IResourceHelper resourceHelper,
             IHttpRequestHelper httpRequestHelper,
             IPostOutcomesHttpTriggerService outcomesPostService,
             ILoggerHelper loggerHelper,
             IValidate validate,
-            ILogger<PostOutcomesHttpTrigger> logger)
+            ILogger<PostOutcomesHttpTrigger> logger,
+            IDynamicHelper dynamicHelper)
         {
             _resourceHelper = resourceHelper;
             _httpRequestHelper = httpRequestHelper;
@@ -39,6 +42,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             _loggerHelper = loggerHelper;
             _validate = validate;
             log = logger;
+            _dynamicHelper = dynamicHelper;
         }
         [Function("Post")]
         [ProducesResponseType(typeof(Models.Outcomes),200)]
@@ -126,10 +130,10 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
                 _loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to get resource from body of the request");
                 outcomesRequest = await _httpRequestHelper.GetResourceFromRequest<Models.Outcomes>(req);
             }
-            catch (JsonException ex)
+            catch (Exception ex)
             {
                 _loggerHelper.LogError(log, correlationGuid, "Unable to retrieve body from req", ex);
-                return new UnprocessableEntityObjectResult(ex);
+                return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ExceptionToExclude));
             }
 
             if (outcomesRequest == null)
