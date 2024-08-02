@@ -156,7 +156,10 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             if (isCustomerReadOnly)
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Customer is read only {0}", customerGuid));
-                return new ForbidResult(customerGuid.ToString());
+                return new ObjectResult(customerGuid.ToString())
+                {
+                    StatusCode = (int)HttpStatusCode.Forbidden
+                };
             }
 
             _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Interaction {0} for customer {1}", interactionGuid, customerGuid));

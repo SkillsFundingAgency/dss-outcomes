@@ -207,21 +207,26 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             if (isCustomerReadOnly && isADuplicateCustomer != 3)
             {
                 _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Customer is read only {0}", customerGuid));
-                return new ForbidResult(customerGuid.ToString());
+                return new ObjectResult(customerGuid.ToString())
+                {
+                    StatusCode = (int)HttpStatusCode.Forbidden
+                };
             }
 
             if (isADuplicateCustomer == 3)
             {
-                if (requestCount > 2 ||
-                    requestCount == 1 && !setOutcomeClaimedDateToNull &&
-                    requestCount == 1 && !setOutcomeEffectiveDateToNull ||
-                    (requestCount == 2 && (!setOutcomeClaimedDateToNull ||
-                                           !setOutcomeEffectiveDateToNull)))
+                if (requestCount > 2 
+                    || requestCount == 1 && !setOutcomeClaimedDateToNull && !setOutcomeEffectiveDateToNull 
+                    || (requestCount == 2 && (!setOutcomeClaimedDateToNull || !setOutcomeEffectiveDateToNull)))
                 {
-                    return new ForbidResult(new HttpErrorResponse(new List<string>
+                    return new ObjectResult(
+                        new HttpErrorResponse(new List<string>
+                        {
+                            "Duplicate Customer: This resource is read only. You may only remove values for Outcome Claimed and Effective date"
+                        }, correlationGuid).ToString())
                     {
-                        "Duplicate Customer: This resource is read only. You may only remove values for Outcome Claimed and Effective date"
-                    }, correlationGuid).ToString());
+                        StatusCode = (int)HttpStatusCode.Forbidden
+                    };
 
                 }
             }
