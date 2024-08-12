@@ -228,7 +228,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                         new HttpErrorResponse(new List<string>
                         {
                             "Duplicate Customer: This resource is read only. You may only remove values for Outcome Claimed and Effective date"
-                        }, correlationGuid).ToString())
+                        }, correlationGuid))
                     {
                         StatusCode = (int)HttpStatusCode.Forbidden
                     };
