@@ -21,7 +21,7 @@ namespace NCS.DSS.Outcomes.APIDefinition
         public const string ApiDefRoute = ApiTitle + "/" + ApiDefinitionName;
         public const string ApiDescription = "To support the Data Collections integration with DSS ClaimedPriorityGroup has been removed and IsPriorityCustomer " +
             "has been added as a true/false value.";
-        public const string ApiVersion = "3.0.0";
+        public const string ApiVersion = "4.0.0";
 
         [Function(ApiDefinitionName)]
         public IActionResult RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = ApiDefRoute)]HttpRequest req)
