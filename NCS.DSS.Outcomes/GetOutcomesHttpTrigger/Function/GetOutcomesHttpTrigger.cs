@@ -1,26 +1,40 @@
-using System;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using System.Net.Http;
-using System.Net;
-using System.Threading.Tasks;
 using DFC.Common.Standard.Logging;
+using DFC.HTTP.Standard;
+using DFC.Swagger.Standard.Annotations;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Outcomes.Cosmos.Helper;
 using NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Service;
-using Microsoft.AspNetCore.Mvc;
-using DFC.Swagger.Standard.Annotations;
-using DFC.Functions.DI.Standard.Attributes;
-using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Function
 {
-    public static class GetOutcomesHttpTrigger
+    public class GetOutcomesHttpTrigger
     {
-        [FunctionName("Get")]
+        private readonly IResourceHelper _resourceHelper;
+        private readonly IHttpRequestHelper _httpRequestHelper;
+        private readonly IGetOutcomesHttpTriggerService _outcomesGetService;
+        private readonly ILoggerHelper _loggerHelper;
+        private readonly ILogger log;
+        public GetOutcomesHttpTrigger(IResourceHelper resourceHelper,
+            IHttpRequestHelper httpRequestHelper,
+            IGetOutcomesHttpTriggerService outcomesGetService,
+            ILoggerHelper loggerHelper,
+            ILogger<GetOutcomesHttpTrigger> logger)
+        {
+            _resourceHelper = resourceHelper;
+            _httpRequestHelper = httpRequestHelper;
+            _outcomesGetService = outcomesGetService;
+            _loggerHelper = loggerHelper;
+            log = logger;
+        }
+        [Function("Get")]
         [ProducesResponseType(typeof(Models.Outcomes),200)]
         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Outcome found", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Outcome does not exist", ShowSchema = false)]
@@ -28,18 +42,12 @@ namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Display(Name = "Get", Description = "Ability to return all Outcome for the given Interactions.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes")]HttpRequest req, ILogger log, string customerId, string interactionId, string actionplanId, 
-            [Inject]IResourceHelper resourceHelper,
-            [Inject]IGetOutcomesHttpTriggerService outcomesGetService,
-            [Inject]ILoggerHelper loggerHelper,
-            [Inject]IHttpRequestHelper httpRequestHelper,
-            [Inject]IHttpResponseMessageHelper httpResponseMessageHelper,
-            [Inject]IJsonHelper jsonHelper)
+        public async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes")]HttpRequest req, string customerId, string interactionId, string actionplanId)
         {
 
-            loggerHelper.LogMethodEnter(log);
+            _loggerHelper.LogMethodEnter(log);
 
-            var correlationId = httpRequestHelper.GetDssCorrelationId(req);
+            var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
             if (string.IsNullOrEmpty(correlationId))
                 log.LogInformation("Unable to locate 'DssCorrelationId' in request header");
 
@@ -49,78 +57,87 @@ namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Function
                 correlationGuid = Guid.NewGuid();
             }
 
-            var touchpointId = httpRequestHelper.GetDssTouchpointId(req);
+            var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'TouchpointId' in request header");
-                return httpResponseMessageHelper.BadRequest();
+                _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'TouchpointId' in request header");
+                return new BadRequestObjectResult("Unable to locate 'TouchpointId' in request header");
             }
 
-            var subcontractorId = httpRequestHelper.GetDssSubcontractorId(req);
+            var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subcontractorId))
             {
-                loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubcontractorId' in request header");
-                return httpResponseMessageHelper.BadRequest();
+                _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubcontractorId' in request header");
+                return new BadRequestObjectResult("Unable to locate 'SubcontractorId' in request header");
             }
 
-            loggerHelper.LogInformationMessage(log, correlationGuid,
+            _loggerHelper.LogInformationMessage(log, correlationGuid,
                 string.Format("Get Outcomes C# HTTP trigger function  processed a request. By Touchpoint: {0}",
                     touchpointId));
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'customerId' to a Guid: {0}", customerId));
-                return httpResponseMessageHelper.BadRequest(customerGuid);
+                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'customerId' to a Guid: {0}", customerId));
+                return new BadRequestObjectResult(customerGuid);
             }
 
             if (!Guid.TryParse(interactionId, out var interactionGuid))
             {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'interactionId' to a Guid: {0}", interactionId));
-                return httpResponseMessageHelper.BadRequest(interactionGuid);
+                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'interactionId' to a Guid: {0}", interactionId));
+                return new BadRequestObjectResult(interactionGuid);
             }
 
             if (!Guid.TryParse(actionplanId, out var actionPlanGuid))
             {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'actionPlanId' to a Guid: {0}", actionplanId));
-                return httpResponseMessageHelper.BadRequest(actionPlanGuid);
+                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'actionPlanId' to a Guid: {0}", actionplanId));
+                return new BadRequestObjectResult(actionPlanGuid);
             }
 
-            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to see if customer exists {0}", customerGuid));
-            var doesCustomerExist = await resourceHelper.DoesCustomerExist(customerGuid);
+            _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to see if customer exists {0}", customerGuid));
+            var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
             {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Customer does not exist {0}", customerGuid));
-                return httpResponseMessageHelper.NoContent(customerGuid);
+                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Customer does not exist {0}", customerGuid));
+                return new NoContentResult();
             }
 
-            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Interaction {0} for customer {1}", interactionGuid, customerGuid));
-            var doesInteractionExist = resourceHelper.DoesInteractionExistAndBelongToCustomer(interactionGuid, customerGuid);
+            _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Interaction {0} for customer {1}", interactionGuid, customerGuid));
+            var doesInteractionExist = _resourceHelper.DoesInteractionExistAndBelongToCustomer(interactionGuid, customerGuid);
 
             if (!doesInteractionExist)
             {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Interaction does not exist {0}", interactionGuid));
-                return httpResponseMessageHelper.NoContent(interactionGuid);
+                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Interaction does not exist {0}", interactionGuid));
+                return new NoContentResult();
             }
 
-            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get ActionPlan {0} for customer {1}", actionPlanGuid, customerGuid));
-            var doesActionPlanExist = resourceHelper.DoesActionPlanResourceExistAndBelongToCustomer(actionPlanGuid, interactionGuid, customerGuid);
+            _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get ActionPlan {0} for customer {1}", actionPlanGuid, customerGuid));
+            var doesActionPlanExist = _resourceHelper.DoesActionPlanResourceExistAndBelongToCustomer(actionPlanGuid, interactionGuid, customerGuid);
 
             if (!doesActionPlanExist)
             {
-                loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("ActionPlan does not exist {0}", actionPlanGuid));
-                return httpResponseMessageHelper.NoContent(actionPlanGuid);
+                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("ActionPlan does not exist {0}", actionPlanGuid));
+                return new NoContentResult();
             }
 
-            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get outcomes for customer {0}", customerGuid));
-            var outcomes = await outcomesGetService.GetOutcomesAsync(customerGuid);
+            _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get outcomes for customer {0}", customerGuid));
+            var outcomes = await _outcomesGetService.GetOutcomesAsync(customerGuid);
 
-            loggerHelper.LogMethodExit(log);
+            _loggerHelper.LogMethodExit(log);
 
-            return outcomes == null ?
-                httpResponseMessageHelper.NoContent(customerGuid) :
-                httpResponseMessageHelper.Ok(jsonHelper.SerializeObjectsAndRenameIdProperty(outcomes, "id", "OutcomeId"));
+            if (outcomes == null) return new NoContentResult();
 
+            if (outcomes.Count == 1)
+            {
+                return new JsonResult(outcomes[0], new JsonSerializerOptions())
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                };
+            }
+            return new JsonResult(outcomes, new JsonSerializerOptions())
+            {
+                StatusCode = (int)HttpStatusCode.OK,
+            };
         }
     }
 }

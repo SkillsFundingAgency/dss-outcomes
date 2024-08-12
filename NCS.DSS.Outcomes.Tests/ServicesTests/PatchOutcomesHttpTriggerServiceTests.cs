@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Net;
 using System.Reflection;
@@ -43,7 +45,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             var result = _outcomePatchHttpTriggerService.PatchResource(null, Arg.Any<OutcomesPatch>());
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
 
@@ -54,7 +56,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             var result = _outcomePatchHttpTriggerService.PatchResource(Arg.Any<string>(), null);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -69,7 +71,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             var result = await _outcomePatchHttpTriggerService.UpdateCosmosAsync(json, _outcomeId);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -83,7 +85,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             var result = await _outcomePatchHttpTriggerService.UpdateCosmosAsync(json, _outcomeId);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -98,7 +100,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             var result = await _outcomePatchHttpTriggerService.UpdateCosmosAsync(json, _outcomeId);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -148,7 +150,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             var result = await _outcomePatchHttpTriggerService.GetOutcomesForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>());
 
             // Assert
-            Assert.Null(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -162,8 +164,8 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             var result = await _outcomePatchHttpTriggerService.GetOutcomesForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>());
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<string>(result);
+            Assert.That(result, Is.InstanceOf<string>());
+            Assert.That(result, Is.Not.Null);
         }
     }
 }
