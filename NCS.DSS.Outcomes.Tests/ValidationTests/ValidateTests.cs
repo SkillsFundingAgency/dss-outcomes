@@ -276,5 +276,30 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             Assert.IsNotNull(result);
             Assert.That(result.Count.Equals(1));
         }
+
+        [Theory]
+        [TestCase(OutcomeType.CustomerSatisfaction, 1)]
+        [TestCase(OutcomeType.CareersManagement, 1)]
+        [TestCase(OutcomeType.SustainableEmployment, 0)]
+        [TestCase(OutcomeType.AccreditedLearning, 1)]
+        [TestCase(OutcomeType.CareerProgression, 0)]
+        public void ValidateTests_ReturnValidationResult_WhenOutcomeClaimedDateWithin13Months(OutcomeType outcomeType,  int expectedResult)
+        {
+            var outcomes = new Models.Outcomes
+            {
+                OutcomeEffectiveDate = DateTime.UtcNow,
+                ActionPlanId = Guid.NewGuid(),
+                SessionId = Guid.NewGuid(),
+                SubcontractorId = "01234567",
+                OutcomeType = outcomeType,
+                TouchpointId = "9999999999"
+            };
+
+            var result = _validate.ValidateResource(outcomes, DateTime.UtcNow.AddMonths(-12).AddDays(-1));
+
+            Assert.IsInstanceOf<List<ValidationResult>>(result);
+            Assert.IsNotNull(result);
+            Assert.That(result.Count.Equals(expectedResult));
+        }
     }
 }
