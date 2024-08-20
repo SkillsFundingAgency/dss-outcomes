@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using DFC.Common.Standard.Logging;
+﻿using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Outcomes.Cosmos.Helper;
 using NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service;
@@ -17,6 +10,11 @@ using Newtonsoft.Json;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.Outcomes.Tests.FunctionTests
 {
@@ -28,34 +26,32 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         private const string ValidActionPlanId = "cff8080e-1da2-42bd-9b63-8f235aad9d86";
         private const string InValidId = "1111111-2222-3333-4444-555555555555";
 
-        private ILogger _log;
+        private ILogger<PostOutcomesHttpTrigger.Function.PostOutcomesHttpTrigger> _log;
         private HttpRequest _request;
         private IResourceHelper _resourceHelper;
         private IValidate _validate;
         private ILoggerHelper _loggerHelper;
         private IHttpRequestHelper _httpRequestHelper;
-        private IHttpResponseMessageHelper _httpResponseMessageHelper;
-        private IJsonHelper _jsonHelper;
+        private IDynamicHelper _dynamicHelper;
 
         private IPostOutcomesHttpTriggerService _postOutcomesHttpTriggerService;
         private Models.Outcomes _outcome;
+        private PostOutcomesHttpTrigger.Function.PostOutcomesHttpTrigger _function;
 
         [SetUp]
         public void Setup()
         {
             _outcome = Substitute.For<Models.Outcomes>();
 
-            _request = new DefaultHttpRequest(new DefaultHttpContext());
+            _request = new DefaultHttpContext().Request;
 
-            _log = Substitute.For<ILogger>();
+            _log = Substitute.For<ILogger<PostOutcomesHttpTrigger.Function.PostOutcomesHttpTrigger>>();
             _resourceHelper = Substitute.For<IResourceHelper>();
             _validate = Substitute.For<IValidate>();
             _loggerHelper = Substitute.For<ILoggerHelper>();
             _httpRequestHelper = Substitute.For<IHttpRequestHelper>();
-            _httpResponseMessageHelper = Substitute.For<IHttpResponseMessageHelper>();
-            _jsonHelper = Substitute.For<IJsonHelper>();
-            _log = Substitute.For<ILogger>();
             _resourceHelper = Substitute.For<IResourceHelper>();
+            _dynamicHelper = Substitute.For<IDynamicHelper>();
             _postOutcomesHttpTriggerService = Substitute.For<IPostOutcomesHttpTriggerService>();
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
@@ -70,7 +66,14 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             _httpRequestHelper.GetDssApimUrl(_request).Returns("http://localhost:7071/");
             _httpRequestHelper.GetResourceFromRequest<Models.Outcomes>(_request).Returns(Task.FromResult(_outcome).Result);
 
-            SetUpHttpResponseMessageHelper();
+            _function = new PostOutcomesHttpTrigger.Function.PostOutcomesHttpTrigger(
+                _resourceHelper, 
+                _httpRequestHelper,
+                _postOutcomesHttpTriggerService,
+                _loggerHelper,
+                _validate,
+                _log,
+                _dynamicHelper);
         }
 
         [Test]
@@ -82,8 +85,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
@@ -95,8 +97,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
@@ -106,8 +107,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             var result = await RunFunction(InValidId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
@@ -117,8 +117,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, InValidId, ValidActionPlanId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
@@ -128,8 +127,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, InValidId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
         
         [Test]
@@ -141,8 +139,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual((HttpStatusCode)422, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<UnprocessableEntityObjectResult>());
         }
 
         [Test]
@@ -153,8 +150,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual((HttpStatusCode)422, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<UnprocessableEntityObjectResult>());
         }
 
         [Test]
@@ -165,8 +161,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.NoContent, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<NoContentResult>());
         }
 
         [Test]
@@ -177,8 +172,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.NoContent, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<NoContentResult>());
         }
 
         [Test]
@@ -189,8 +183,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
@@ -202,8 +195,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.NoContent, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<NoContentResult>());
         }
 
         [Test]
@@ -214,8 +206,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
@@ -226,8 +217,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
@@ -236,48 +226,20 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             _postOutcomesHttpTriggerService.CreateAsync(Arg.Any<Models.Outcomes>()).Returns(Task.FromResult<Models.Outcomes>(_outcome).Result);
 
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
+            var responseResult = result as JsonResult;
 
-            // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.Created, result.StatusCode);
+            //Assert
+            Assert.That(result, Is.InstanceOf<JsonResult>());
+            Assert.That(responseResult.StatusCode, Is.EqualTo((int)HttpStatusCode.Created));
         }
 
-        private async Task<HttpResponseMessage> RunFunction(string customerId, string interactionId, string actionPlanId)
+        private async Task<IActionResult> RunFunction(string customerId, string interactionId, string actionPlanId)
         {
-            return await PostOutcomesHttpTrigger.Function.PostOutcomesHttpTrigger.Run(
+            return await _function.RunAsync(
                 _request,
-                _log,
                 customerId,
                 interactionId,
-                actionPlanId,
-                _resourceHelper,
-                _postOutcomesHttpTriggerService,
-                _validate,
-                _loggerHelper,
-                _httpRequestHelper,
-                _httpResponseMessageHelper,
-                _jsonHelper).ConfigureAwait(false);
-        }
-
-        private void SetUpHttpResponseMessageHelper()
-        {
-            _httpResponseMessageHelper.BadRequest().Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
-
-            _httpResponseMessageHelper
-                .UnprocessableEntity(Arg.Any<List<ValidationResult>>()).Returns(x => new HttpResponseMessage((HttpStatusCode)422));
-
-            _httpResponseMessageHelper
-                .UnprocessableEntity(Arg.Any<JsonException>()).Returns(x => new HttpResponseMessage((HttpStatusCode)422));
-
-            _httpResponseMessageHelper
-                .NoContent(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.NoContent));
-
-            _httpResponseMessageHelper
-                .BadRequest(Arg.Any<Guid>()).Returns(x => new HttpResponseMessage(HttpStatusCode.BadRequest));
-
-            _httpResponseMessageHelper
-                .Created(Arg.Any<string>()).Returns(x => new HttpResponseMessage(HttpStatusCode.Created));
-
+                actionPlanId).ConfigureAwait(false);
         }
     }
 }

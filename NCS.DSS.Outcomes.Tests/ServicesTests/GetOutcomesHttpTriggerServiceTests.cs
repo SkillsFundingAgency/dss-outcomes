@@ -33,7 +33,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             var result = await _outcomeHttpTriggerService.GetOutcomesAsync(_customerId);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -46,8 +46,8 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             var result = await _outcomeHttpTriggerService.GetOutcomesAsync(_customerId);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf< List<Models.Outcomes>>(result);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Is.InstanceOf<List<Models.Outcomes>>());
         }
     }
 }
