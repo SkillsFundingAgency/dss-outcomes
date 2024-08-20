@@ -297,8 +297,8 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
 
             var result = _validate.ValidateResource(outcomes, DateTime.UtcNow.AddMonths(-12).AddDays(-1));
 
-            Assert.IsInstanceOf<List<ValidationResult>>(result);
-            Assert.IsNotNull(result);
+            Assert.That(result, Is.InstanceOf<List<ValidationResult>>());
+            Assert.That(result, Is.Not.Null);
             Assert.That(result.Count.Equals(expectedResult));
         }
     }
