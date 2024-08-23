@@ -74,7 +74,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             _httpRequestHelper.GetDssApimUrl(_request).Returns("http://localhost:7071/");
             _httpRequestHelper.GetResourceFromRequest<OutcomesPatch>(_request).Returns(Task.FromResult(_outcomePatch).Result);
             _patchOutcomesHttpTriggerService.PatchResource(Arg.Any<string>(), _outcomePatch).Returns(_outcomeString);
-            _function = new PatchOutcomesHttpTrigger.Function.PatchOutcomesHttpTrigger( 
+            _function = new PatchOutcomesHttpTrigger.Function.PatchOutcomesHttpTrigger(
                 _resourceHelper,
                 _httpRequestHelper,
                 _patchOutcomesHttpTriggerService,
@@ -89,7 +89,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         [Test]
         public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
         {
-            _httpRequestHelper.GetDssTouchpointId(_request).Returns((string) null);
+            _httpRequestHelper.GetDssTouchpointId(_request).Returns((string)null);
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
@@ -167,7 +167,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         [Test]
         public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenOutcomesHasFailedValidation()
         {
-            var validationResults = new List<ValidationResult> {new ValidationResult("interaction Id is Required")};
+            var validationResults = new List<ValidationResult> { new ValidationResult("interaction Id is Required") };
             _validate.ValidateResource(Arg.Any<OutcomesPatch>(), Arg.Any<DateTime>()).ReturnsForAnyArgs(validationResults);
 
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
@@ -289,7 +289,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             _patchOutcomesHttpTriggerService
                 .GetOutcomesForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>())
                 .Returns(Task.FromResult(_outcomeString).Result);
-            
+
             _patchOutcomesHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>())
                 .Returns(Task.FromResult(_outcome).Result);
 

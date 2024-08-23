@@ -81,7 +81,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         public async Task DeleteOutcomesHttpTriggerTests_ReturnsStatusCodeNoContent_WhenCustomerDoesNotExist()
         {
             // Arrange
-            _resourceHelper.Setup(x=>x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(false));
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(false));
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
@@ -95,8 +95,8 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         public async Task DeleteOutcomesHttpTriggerTests_ReturnsStatusCodeNoContent_WhenInteractionDoesNotExist()
         {
             //Arrange
-            _resourceHelper.Setup(x=>x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
-            _resourceHelper.Setup(x=>x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(false);
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
+            _resourceHelper.Setup(x => x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(false);
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
@@ -109,10 +109,10 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         public async Task DeleteOutcomesHttpTriggerTests_ReturnsStatusCodeNoContent_WhenActionPlanDoesNotExist()
         {
             // Arrange
-            _resourceHelper.Setup(x=>x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
-            _resourceHelper.Setup(x=>x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
-            _resourceHelper.Setup(x=>x.DoesActionPlanResourceExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(false);
-            _deleteOutcomesHttpTriggerService.Setup(x=>x.GetOutcomeForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult<Models.Outcomes>(null));
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
+            _resourceHelper.Setup(x => x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
+            _resourceHelper.Setup(x => x.DoesActionPlanResourceExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(false);
+            _deleteOutcomesHttpTriggerService.Setup(x => x.GetOutcomeForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult<Models.Outcomes>(null));
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
@@ -126,10 +126,10 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         public async Task DeleteOutcomesHttpTriggerTests_ReturnsStatusCodeNoContent_WhenOutcomesDoesNotExist()
         {
             // Arrange
-            _resourceHelper.Setup(x=>x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
-            _resourceHelper.Setup(x=>x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
-            _resourceHelper.Setup(x=>x.DoesActionPlanResourceExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
-            _deleteOutcomesHttpTriggerService.Setup(x=>x.GetOutcomeForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult<Models.Outcomes>(null));
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
+            _resourceHelper.Setup(x => x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
+            _resourceHelper.Setup(x => x.DoesActionPlanResourceExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
+            _deleteOutcomesHttpTriggerService.Setup(x => x.GetOutcomeForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult<Models.Outcomes>(null));
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
@@ -143,11 +143,11 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         {
             // Arrange
             var outcome = new Models.Outcomes() { CustomerId = new Guid(ValidCustomerId) };
-            _resourceHelper.Setup(x=>x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
-            _resourceHelper.Setup(x=>x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
-            _resourceHelper.Setup(x=>x.DoesActionPlanResourceExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
-            _deleteOutcomesHttpTriggerService.Setup(x=>x.GetOutcomeForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(outcome));
-            _deleteOutcomesHttpTriggerService.Setup(x=>x.DeleteAsync(It.IsAny<Guid>())).Returns(Task.FromResult(false));
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
+            _resourceHelper.Setup(x => x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
+            _resourceHelper.Setup(x => x.DoesActionPlanResourceExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
+            _deleteOutcomesHttpTriggerService.Setup(x => x.GetOutcomeForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(outcome));
+            _deleteOutcomesHttpTriggerService.Setup(x => x.DeleteAsync(It.IsAny<Guid>())).Returns(Task.FromResult(false));
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);
@@ -161,11 +161,11 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         {
             // Arrange
             var outcome = new Models.Outcomes() { CustomerId = new Guid(ValidCustomerId) };
-            _resourceHelper.Setup(x=>x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
-            _resourceHelper.Setup(x=>x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
-            _resourceHelper.Setup(x=>x.DoesActionPlanResourceExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
-            _deleteOutcomesHttpTriggerService.Setup(x=>x.GetOutcomeForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(outcome));
-            _deleteOutcomesHttpTriggerService.Setup(x=>x.DeleteAsync(It.IsAny<Guid>())).Returns(Task.FromResult(true));
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
+            _resourceHelper.Setup(x => x.DoesInteractionExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
+            _resourceHelper.Setup(x => x.DoesActionPlanResourceExistAndBelongToCustomer(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(true);
+            _deleteOutcomesHttpTriggerService.Setup(x => x.GetOutcomeForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(outcome));
+            _deleteOutcomesHttpTriggerService.Setup(x => x.DeleteAsync(It.IsAny<Guid>())).Returns(Task.FromResult(true));
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId, ValidOutcomeId);

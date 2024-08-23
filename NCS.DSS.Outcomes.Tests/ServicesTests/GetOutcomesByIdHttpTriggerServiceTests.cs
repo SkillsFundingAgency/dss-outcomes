@@ -41,7 +41,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         public async Task GetOutcomesByIdHttpTriggerServiceTests_GetOutcomesForCustomerAsync_ReturnsResource()
         {
             // Arrange
-            _documentDbProvider.Setup(x=>x.GetOutcomesForCustomerAsync(_customerId, _interactionId, _actionPlanId, _outcomeId)).Returns(Task.FromResult(new Models.Outcomes()));
+            _documentDbProvider.Setup(x => x.GetOutcomesForCustomerAsync(_customerId, _interactionId, _actionPlanId, _outcomeId)).Returns(Task.FromResult(new Models.Outcomes()));
 
             // Act
             var result = await _outcomeHttpTriggerService.GetOutcomesForCustomerAsync(_customerId, _interactionId, _actionPlanId, _outcomeId);

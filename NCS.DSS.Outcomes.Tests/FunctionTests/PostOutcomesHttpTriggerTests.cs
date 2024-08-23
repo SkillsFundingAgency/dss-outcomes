@@ -67,7 +67,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             _httpRequestHelper.GetResourceFromRequest<Models.Outcomes>(_request).Returns(Task.FromResult(_outcome).Result);
 
             _function = new PostOutcomesHttpTrigger.Function.PostOutcomesHttpTrigger(
-                _resourceHelper, 
+                _resourceHelper,
                 _httpRequestHelper,
                 _postOutcomesHttpTriggerService,
                 _loggerHelper,
@@ -129,7 +129,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             // Assert
             Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
-        
+
         [Test]
         public async Task PostOutcomesHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenOutcomesHasFailedValidation()
         {

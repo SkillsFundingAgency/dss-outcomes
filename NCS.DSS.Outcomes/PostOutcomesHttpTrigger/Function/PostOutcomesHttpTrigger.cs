@@ -8,12 +8,9 @@ using Microsoft.Extensions.Logging;
 using NCS.DSS.Outcomes.Cosmos.Helper;
 using NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.Validation;
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
 {
@@ -26,7 +23,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
         private readonly IValidate _validate;
         private readonly ILogger log;
         private readonly IDynamicHelper _dynamicHelper;
-        private static readonly string[] ExceptionToExclude = {"TargetSite"};
+        private static readonly string[] ExceptionToExclude = { "TargetSite" };
 
         public PostOutcomesHttpTrigger(IResourceHelper resourceHelper,
             IHttpRequestHelper httpRequestHelper,
@@ -45,7 +42,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             _dynamicHelper = dynamicHelper;
         }
         [Function("Post")]
-        [ProducesResponseType(typeof(Models.Outcomes),200)]
+        [ProducesResponseType(typeof(Models.Outcomes), 200)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Created, Description = "Outcome Created", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Outcome does not exist", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.BadRequest, Description = "Request was malformed", ShowSchema = false)]
@@ -66,7 +63,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
                                               "<br><ul><li>Sustainable Employment </li> </ul><br>" +
                                               "Rule = OutcomeEffectiveDate >= Session.DateAndTimeOfSession AND <= Session.DateAndTimeOfSession + 13 months <br>" +
                                               "<br><b>ClaimedPriorityGroup:</b> This is mandatory if OutcomeClaimedDate has a value")]
-        public async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes")]HttpRequest req, string customerId, string interactionId, string actionplanId)
+        public async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes")] HttpRequest req, string customerId, string interactionId, string actionplanId)
         {
             _loggerHelper.LogMethodEnter(log);
 

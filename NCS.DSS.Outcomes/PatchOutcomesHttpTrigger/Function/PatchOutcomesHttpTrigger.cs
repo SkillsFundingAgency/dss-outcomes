@@ -11,14 +11,9 @@ using NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.Validation;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 using JsonException = Newtonsoft.Json.JsonException;
 
 namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
@@ -33,7 +28,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
         private readonly IValidate _validate;
         private readonly ILogger log;
         private readonly IDynamicHelper _dynamicHelper;
-        private static readonly string[] ExceptionToExclude = {"TargetSite"};
+        private static readonly string[] ExceptionToExclude = { "TargetSite" };
 
         public PatchOutcomesHttpTrigger(IResourceHelper resourceHelper,
             IHttpRequestHelper httpRequestHelper,
@@ -220,8 +215,8 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
 
             if (isADuplicateCustomer == 3)
             {
-                if (requestCount > 2 
-                    || requestCount == 1 && !setOutcomeClaimedDateToNull && !setOutcomeEffectiveDateToNull 
+                if (requestCount > 2
+                    || requestCount == 1 && !setOutcomeClaimedDateToNull && !setOutcomeEffectiveDateToNull
                     || (requestCount == 2 && (!setOutcomeClaimedDateToNull || !setOutcomeEffectiveDateToNull)))
                 {
                     return new ObjectResult(
