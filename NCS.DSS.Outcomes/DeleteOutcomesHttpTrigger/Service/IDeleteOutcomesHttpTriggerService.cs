@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Service
+﻿namespace NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Service
 {
     public interface IDeleteOutcomesHttpTriggerService
     {

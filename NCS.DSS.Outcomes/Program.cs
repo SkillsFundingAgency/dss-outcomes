@@ -13,7 +13,6 @@ using NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.Validation;
-using System.Linq;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()

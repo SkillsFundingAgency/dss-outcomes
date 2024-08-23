@@ -40,7 +40,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             // Assert
             Assert.That(result, Is.Null);
         }
-        
+
         [Test]
         public async Task PostOutcomesHttpTriggerServiceTests_CreateAsync_ReturnsResourceWhenUpdated()
         {
@@ -67,7 +67,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
 
             responseField?.SetValue(resourceResponse, documentServiceResponse);
 
-            _documentDbProvider.Setup(x=>x.CreateOutcomesAsync(It.IsAny<Models.Outcomes>())).Returns(Task.FromResult(resourceResponse));
+            _documentDbProvider.Setup(x => x.CreateOutcomesAsync(It.IsAny<Models.Outcomes>())).Returns(Task.FromResult(resourceResponse));
 
             // Act
             var result = await _postOutcomesHttpTriggerService.CreateAsync(_outcome);

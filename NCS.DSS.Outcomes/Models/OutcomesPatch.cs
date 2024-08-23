@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using DFC.Swagger.Standard.Annotations;
+﻿using DFC.Swagger.Standard.Annotations;
 using NCS.DSS.Outcomes.ReferenceData;
+using System.ComponentModel.DataAnnotations;
 
 namespace NCS.DSS.Outcomes.Models
 {
@@ -55,7 +53,7 @@ namespace NCS.DSS.Outcomes.Models
         [Display(Description = "Identifier of the touchpoint who made the last change to the record")]
         [Example(Description = "0000000001")]
         public string LastModifiedTouchpointId { get; set; }
-    
+
         public void SetDefaultValues()
         {
             if (!LastModifiedDate.HasValue)

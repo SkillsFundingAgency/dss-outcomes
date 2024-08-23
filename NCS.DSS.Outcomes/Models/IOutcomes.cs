@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using NCS.DSS.Outcomes.ReferenceData;
+﻿using NCS.DSS.Outcomes.ReferenceData;
 
 namespace NCS.DSS.Outcomes.Models
 {

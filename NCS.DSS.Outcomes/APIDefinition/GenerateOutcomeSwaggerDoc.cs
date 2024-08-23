@@ -1,20 +1,17 @@
-﻿using System.Net;
-using System.Net.Http;
-using System.Reflection;
-using DFC.Functions.DI.Standard.Attributes;
-using DFC.Swagger.Standard;
+﻿using DFC.Swagger.Standard;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Azure.Functions.Worker;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
+using System.Reflection;
 
 namespace NCS.DSS.Outcomes.APIDefinition
 {
     public class GenerateOutcomeSwaggerDoc
     {
         private readonly ISwaggerDocumentGenerator _swaggerDocumentGenerator;
-        public GenerateOutcomeSwaggerDoc(ISwaggerDocumentGenerator swaggerDocumentGenerator) 
+        public GenerateOutcomeSwaggerDoc(ISwaggerDocumentGenerator swaggerDocumentGenerator)
         {
-            _swaggerDocumentGenerator = swaggerDocumentGenerator; 
+            _swaggerDocumentGenerator = swaggerDocumentGenerator;
         }
         public const string ApiTitle = "Outcomes";
         public const string ApiDefinitionName = "API-Definition";
@@ -24,7 +21,7 @@ namespace NCS.DSS.Outcomes.APIDefinition
         public const string ApiVersion = "4.0.0";
 
         [Function(ApiDefinitionName)]
-        public IActionResult RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = ApiDefRoute)]HttpRequest req)
+        public IActionResult RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = ApiDefRoute)] HttpRequest req)
         {
             var swagger = _swaggerDocumentGenerator.GenerateSwaggerDocument(req, ApiTitle, ApiDescription,
                 ApiDefinitionName, ApiVersion, Assembly.GetExecutingAssembly());

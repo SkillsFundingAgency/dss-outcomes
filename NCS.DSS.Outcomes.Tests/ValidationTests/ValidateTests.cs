@@ -212,7 +212,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
                 LastModifiedTouchpointId = "0000000001"
             };
 
-            var result = _validate.ValidateResource(outcomes , Arg.Any<DateTime>());
+            var result = _validate.ValidateResource(outcomes, Arg.Any<DateTime>());
 
             Assert.That(result, Is.InstanceOf<List<ValidationResult>>());
             Assert.That(result, Is.Not.Null);
@@ -245,7 +245,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
             var outcomes = new Models.Outcomes
             {
                 ActionPlanId = Guid.NewGuid(),
-                SessionId= Guid.NewGuid(),
+                SessionId = Guid.NewGuid(),
                 SubcontractorId = "01234567",
                 OutcomeType = OutcomeType.CareersManagement,
                 TouchpointId = "0000000001"
@@ -283,7 +283,7 @@ namespace NCS.DSS.Outcomes.Tests.ValidationTests
         [TestCase(OutcomeType.SustainableEmployment, 0)]
         [TestCase(OutcomeType.AccreditedLearning, 1)]
         [TestCase(OutcomeType.CareerProgression, 0)]
-        public void ValidateTests_ReturnValidationResult_WhenOutcomeClaimedDateWithin13Months(OutcomeType outcomeType,  int expectedResult)
+        public void ValidateTests_ReturnValidationResult_WhenOutcomeClaimedDateWithin13Months(OutcomeType outcomeType, int expectedResult)
         {
             var outcomes = new Models.Outcomes
             {

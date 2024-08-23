@@ -1,7 +1,6 @@
 ﻿using Moq;
 using NCS.DSS.Outcomes.Cosmos.Provider;
 using NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Service;
-using NSubstitute;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -27,7 +26,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         public async Task GetOutcomesByIdHttpTriggerServiceTests_GetOutcomesForCustomerAsyncc_ReturnsNullWhenResourceCannotBeFound()
         {
             // Arrange
-            _documentDbProvider.Setup(x=>x.GetOutcomesForCustomerAsync(It.IsAny<Guid>())).Returns(Task.FromResult<List<Models.Outcomes>>(null));
+            _documentDbProvider.Setup(x => x.GetOutcomesForCustomerAsync(It.IsAny<Guid>())).Returns(Task.FromResult<List<Models.Outcomes>>(null));
 
             // Act
             var result = await _outcomeHttpTriggerService.GetOutcomesAsync(_customerId);
@@ -40,7 +39,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         public async Task GetOutcomesByIdHttpTriggerServiceTests_GetOutcomesForCustomerAsync_ReturnsResource()
         {
             // Arrange
-            _documentDbProvider.Setup(x=>x.GetOutcomesForCustomerAsync(It.IsAny<Guid>())).Returns(Task.FromResult(new List<Models.Outcomes>()));
+            _documentDbProvider.Setup(x => x.GetOutcomesForCustomerAsync(It.IsAny<Guid>())).Returns(Task.FromResult(new List<Models.Outcomes>()));
 
             // Act
             var result = await _outcomeHttpTriggerService.GetOutcomesAsync(_customerId);

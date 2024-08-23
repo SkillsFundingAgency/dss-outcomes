@@ -59,7 +59,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             // Act
             var patchedOutcomes = _outcomePatchService.Patch(json, outcomePatch);
             var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
-            
+
             // Assert
             Assert.That(outcome.OutcomeType, Is.EqualTo(OutcomeType.CareerProgression));
         }
@@ -153,6 +153,6 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             // Assert
             Assert.That(outcome.LastModifiedTouchpointId, Is.EqualTo("0000000111"));
         }
-        
+
     }
 }

@@ -1,6 +1,6 @@
-﻿using System;
-using NSubstitute;
+﻿using NSubstitute;
 using NUnit.Framework;
+using System;
 
 namespace NCS.DSS.Outcomes.Tests.ModelTests
 {
@@ -82,7 +82,7 @@ namespace NCS.DSS.Outcomes.Tests.ModelTests
         {
             var diversity = new Models.Outcomes();
 
-            diversity.SetIds(Arg.Any<Guid>(), Arg.Any<Guid>(),  Arg.Any<string>(), "0000000000");
+            diversity.SetIds(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<string>(), "0000000000");
 
             // Assert
             Assert.That(diversity.SubcontractorId, Is.EqualTo("0000000000"));
