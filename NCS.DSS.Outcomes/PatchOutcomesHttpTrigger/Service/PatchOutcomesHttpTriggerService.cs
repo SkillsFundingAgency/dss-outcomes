@@ -1,4 +1,5 @@
-﻿using NCS.DSS.Outcomes.Cosmos.Provider;
+﻿using Microsoft.Azure.ServiceBus;
+using NCS.DSS.Outcomes.Cosmos.Provider;
 using NCS.DSS.Outcomes.Models;
 using NCS.DSS.Outcomes.ServiceBus;
 using System.Net;
@@ -9,11 +10,13 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
     {
         private readonly IOutcomePatchService _outcomePatchService;
         private readonly IDocumentDBProvider _documentDbProvider;
+        private readonly IQueueClient _queueClient;
 
-        public PatchOutcomesHttpTriggerService(IDocumentDBProvider documentDbProvider, IOutcomePatchService outcomePatchService)
+        public PatchOutcomesHttpTriggerService(IDocumentDBProvider documentDbProvider, IOutcomePatchService outcomePatchService, IQueueClient queueClient)
         {
             _documentDbProvider = documentDbProvider;
             _outcomePatchService = outcomePatchService;
+            _queueClient = queueClient;
         }
 
         public string UpdateOutcomeClaimedDateOutcomeEffectiveDateValue(string outcomeJson, bool setOutcomeClaimedDateToNull, bool setOutcomeEffectiveDateToNull)
@@ -58,7 +61,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
 
         public async Task SendToServiceBusQueueAsync(Models.Outcomes outcomes, Guid customerId, string reqUrl)
         {
-            await ServiceBusClient.SendPatchMessageAsync(outcomes, customerId, reqUrl);
+            await ServiceBusClient.SendPatchMessageAsync(outcomes, customerId, reqUrl, _queueClient);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+using Microsoft.Azure.ServiceBus;
 using Moq;
 using NCS.DSS.Outcomes.Cosmos.Provider;
 using NCS.DSS.Outcomes.Models;
@@ -18,6 +19,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         private IPatchOutcomesHttpTriggerService _outcomePatchHttpTriggerService;
         private Mock<IOutcomePatchService> _outcomePatchService;
         private Mock<IDocumentDBProvider> _documentDbProvider;
+        private Mock<IQueueClient> _queueClient;
 
         private readonly Guid _outcomeId = Guid.Parse("7E467BDB-213F-407A-B86A-1954053D3C24");
 
@@ -26,7 +28,8 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         {
             _documentDbProvider = new Mock<IDocumentDBProvider>();
             _outcomePatchService = new Mock<IOutcomePatchService>();
-            _outcomePatchHttpTriggerService = new PatchOutcomesHttpTriggerService(_documentDbProvider.Object, _outcomePatchService.Object);
+            _queueClient = new Mock<IQueueClient>();
+            _outcomePatchHttpTriggerService = new PatchOutcomesHttpTriggerService(_documentDbProvider.Object, _outcomePatchService.Object, _queueClient.Object);
         }
 
 

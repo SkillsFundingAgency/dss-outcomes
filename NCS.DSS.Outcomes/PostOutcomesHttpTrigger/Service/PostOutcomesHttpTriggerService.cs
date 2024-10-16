@@ -1,4 +1,5 @@
-﻿using NCS.DSS.Outcomes.Cosmos.Provider;
+﻿using Microsoft.Azure.ServiceBus;
+using NCS.DSS.Outcomes.Cosmos.Provider;
 using NCS.DSS.Outcomes.ServiceBus;
 using System.Net;
 
@@ -7,10 +8,12 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service
     public class PostOutcomesHttpTriggerService : IPostOutcomesHttpTriggerService
     {
         private readonly IDocumentDBProvider _documentDbProvider;
+        private readonly IQueueClient _queueClient;
 
-        public PostOutcomesHttpTriggerService(IDocumentDBProvider documentDbProvider)
+        public PostOutcomesHttpTriggerService(IDocumentDBProvider documentDbProvider, IQueueClient queueClient)
         {
             _documentDbProvider = documentDbProvider;
+            _queueClient = queueClient;
         }
 
         public async Task<Models.Outcomes> CreateAsync(Models.Outcomes outcomes)
@@ -27,7 +30,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service
 
         public async Task SendToServiceBusQueueAsync(Models.Outcomes outcomes, string reqUrl)
         {
-            await ServiceBusClient.SendPostMessageAsync(outcomes, reqUrl);
+            await ServiceBusClient.SendPostMessageAsync(outcomes, reqUrl, _queueClient);
         }
     }
 }
