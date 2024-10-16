@@ -1,7 +1,6 @@
-﻿using System.Net;
-using System.Threading.Tasks;
-using NCS.DSS.Outcomes.Cosmos.Provider;
+﻿using NCS.DSS.Outcomes.Cosmos.Provider;
 using NCS.DSS.Outcomes.ServiceBus;
+using System.Net;
 
 namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service
 {

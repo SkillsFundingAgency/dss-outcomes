@@ -1,10 +1,7 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
-using NCS.DSS.Outcomes.Cosmos.Provider;
+﻿using NCS.DSS.Outcomes.Cosmos.Provider;
 using NCS.DSS.Outcomes.Models;
 using NCS.DSS.Outcomes.ServiceBus;
-using Newtonsoft.Json;
+using System.Net;
 
 namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
 {
@@ -23,7 +20,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
         {
             if (string.IsNullOrEmpty(outcomeJson))
                 return null;
-            
+
             return _outcomePatchService.SetOutcomeClaimedDateOrOutcomeEffectiveDateToNull(outcomeJson, setOutcomeClaimedDateToNull, setOutcomeEffectiveDateToNull);
         }
 

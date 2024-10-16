@@ -56,7 +56,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
                     _jsonHelper.UpdatePropertyValue(obj["IsPriorityCustomer"], outcomePatch.IsPriorityCustomer);
                 }
             }
-            
+
             if (!string.IsNullOrEmpty(outcomePatch.TouchpointId))
                 _jsonHelper.UpdatePropertyValue(obj["TouchpointId"], outcomePatch.TouchpointId);
 
@@ -69,7 +69,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
             return obj.ToString();
 
         }
-        
+
         public string SetOutcomeClaimedDateOrOutcomeEffectiveDateToNull(string outcomeJson, bool setOutcomeClaimedDateToNull, bool setOutcomeEffectiveDateToNull)
         {
             if (string.IsNullOrEmpty(outcomeJson))
@@ -77,10 +77,10 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
 
             var obj = JObject.Parse(outcomeJson);
 
-            if(setOutcomeClaimedDateToNull)
-             _jsonHelper.UpdatePropertyValue(obj["OutcomeClaimedDate"], null);
+            if (setOutcomeClaimedDateToNull)
+                _jsonHelper.UpdatePropertyValue(obj["OutcomeClaimedDate"], null);
 
-            if(setOutcomeEffectiveDateToNull)
+            if (setOutcomeEffectiveDateToNull)
                 _jsonHelper.UpdatePropertyValue(obj["OutcomeEffectiveDate"], null);
 
             return obj.ToString();

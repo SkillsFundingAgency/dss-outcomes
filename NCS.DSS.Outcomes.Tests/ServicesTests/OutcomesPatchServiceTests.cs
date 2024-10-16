@@ -31,7 +31,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             var result = _outcomePatchService.Patch(string.Empty, It.IsAny<OutcomesPatch>());
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -46,7 +46,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
 
             // Assert
-            Assert.AreEqual("0000000111", outcome.SubcontractorId);
+            Assert.That(outcome.SubcontractorId, Is.EqualTo("0000000111"));
         }
 
         [Test]
@@ -59,9 +59,9 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             // Act
             var patchedOutcomes = _outcomePatchService.Patch(json, outcomePatch);
             var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
-            
+
             // Assert
-            Assert.AreEqual(OutcomeType.CareerProgression, outcome.OutcomeType);
+            Assert.That(outcome.OutcomeType, Is.EqualTo(OutcomeType.CareerProgression));
         }
 
         [Test]
@@ -76,7 +76,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
 
             // Assert
-            Assert.AreEqual(DateTime.MaxValue, outcome.OutcomeClaimedDate);
+            Assert.That(outcome.OutcomeClaimedDate, Is.EqualTo(DateTime.MaxValue));
         }
 
         [Test]
@@ -91,7 +91,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
 
             // Assert
-            Assert.AreEqual(DateTime.MaxValue, outcome.OutcomeEffectiveDate);
+            Assert.That(outcome.OutcomeEffectiveDate, Is.EqualTo(DateTime.MaxValue));
         }
 
         [Test]
@@ -106,7 +106,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
 
             // Assert
-            Assert.AreEqual(true, outcome.IsPriorityCustomer);
+            Assert.That(outcome.IsPriorityCustomer, Is.True);
         }
 
         [Test]
@@ -121,7 +121,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
 
             // Assert
-            Assert.AreEqual("0000000111", outcome.TouchpointId);
+            Assert.That(outcome.TouchpointId, Is.EqualTo("0000000111"));
         }
 
         [Test]
@@ -134,9 +134,9 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             // Act
             var patchedOutcomes = _outcomePatchService.Patch(json, outcomePatch);
             var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
-            
+
             // Assert
-            Assert.AreEqual(DateTime.MaxValue, outcome.LastModifiedDate);
+            Assert.That(outcome.LastModifiedDate, Is.EqualTo(DateTime.MaxValue));
         }
 
         [Test]
@@ -151,8 +151,8 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(patchedOutcomes);
 
             // Assert
-            Assert.AreEqual("0000000111", outcome.LastModifiedTouchpointId);
+            Assert.That(outcome.LastModifiedTouchpointId, Is.EqualTo("0000000111"));
         }
-        
+
     }
 }

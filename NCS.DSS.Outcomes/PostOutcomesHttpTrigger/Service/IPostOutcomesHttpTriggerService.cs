@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service
+﻿namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service
 {
     public interface IPostOutcomesHttpTriggerService
     {

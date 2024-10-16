@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Specialized;
-using System.IO;
-using System.Net;
-using System.Reflection;
-using System.Threading.Tasks;
-using Microsoft.Azure.Documents;
+﻿using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Moq;
 using NCS.DSS.Outcomes.Cosmos.Provider;
@@ -12,9 +6,9 @@ using NCS.DSS.Outcomes.Models;
 using NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service;
 using Newtonsoft.Json;
 using NSubstitute;
-using NSubstitute.ClearExtensions;
-using NSubstitute.ReturnsExtensions;
 using NUnit.Framework;
+using System;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.Outcomes.Tests.ServicesTests
 {
@@ -43,7 +37,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             var result = _outcomePatchHttpTriggerService.PatchResource(null, Arg.Any<OutcomesPatch>());
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
 
@@ -54,11 +48,11 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             var result = _outcomePatchHttpTriggerService.PatchResource(Arg.Any<string>(), null);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
-        public async Task  PatchOutcomesHttpTriggerServiceTests_UpdateCosmosAsync_ReturnsNullWhenOutcomePatchServicePatchJsonIsNullOrEmpty()
+        public async Task PatchOutcomesHttpTriggerServiceTests_UpdateCosmosAsync_ReturnsNullWhenOutcomePatchServicePatchJsonIsNullOrEmpty()
         {
             // Arrange
             var outcomePatch = new Models.OutcomesPatch { OutcomeEffectiveDate = DateTime.MaxValue };
@@ -69,11 +63,11 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             var result = await _outcomePatchHttpTriggerService.UpdateCosmosAsync(json, _outcomeId);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
-        public async Task  PatchOutcomesHttpTriggerServiceTests_UpdateCosmosAsync_ReturnsNullWhenResourceCannotBeUpdated()
+        public async Task PatchOutcomesHttpTriggerServiceTests_UpdateCosmosAsync_ReturnsNullWhenResourceCannotBeUpdated()
         {
             // Arrange
             var outcomePatch = new Models.OutcomesPatch { OutcomeEffectiveDate = DateTime.MaxValue };
@@ -83,26 +77,26 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             var result = await _outcomePatchHttpTriggerService.UpdateCosmosAsync(json, _outcomeId);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
-        public async Task  PatchOutcomesHttpTriggerServiceTests_UpdateCosmosAsync_ReturnsNullWhenResourceCannotBeFound()
+        public async Task PatchOutcomesHttpTriggerServiceTests_UpdateCosmosAsync_ReturnsNullWhenResourceCannotBeFound()
         {
             // Arrange
             var outcomePatch = new Models.OutcomesPatch { OutcomeEffectiveDate = DateTime.MaxValue };
             var json = JsonConvert.SerializeObject(outcomePatch);
-            _documentDbProvider.Setup(x=>x.CreateOutcomesAsync(It.IsAny<Models.Outcomes>())).Returns(Task.FromResult(new ResourceResponse<Document>(null)));
+            _documentDbProvider.Setup(x => x.CreateOutcomesAsync(It.IsAny<Models.Outcomes>())).Returns(Task.FromResult(new ResourceResponse<Document>(null)));
 
             // Act
             var result = await _outcomePatchHttpTriggerService.UpdateCosmosAsync(json, _outcomeId);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
-        public async Task  PatchOutcomesHttpTriggerServiceTests_UpdateCosmosAsync_ReturnsResourceWhenUpdated()
+        public async Task PatchOutcomesHttpTriggerServiceTests_UpdateCosmosAsync_ReturnsResourceWhenUpdated()
         {
             //var _outcome = Substitute.For<Models.Outcomes>();
             //const string documentServiceResponseClass = "Microsoft.Azure.Documents.DocumentServiceResponse, Microsoft.Azure.DocumentDB.Core, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
@@ -139,7 +133,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         }
 
         [Test]
-        public async Task  PatchOutcomesHttpTriggerServiceTests_GetActionPlanForCustomerAsync_ReturnsNullWhenResourceHasNotBeenFound()
+        public async Task PatchOutcomesHttpTriggerServiceTests_GetActionPlanForCustomerAsync_ReturnsNullWhenResourceHasNotBeenFound()
         {
             // Arrange
             _documentDbProvider.Setup(x => x.GetOutcomesForCustomerAsyncToUpdateAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult<string>(null));
@@ -148,22 +142,22 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             var result = await _outcomePatchHttpTriggerService.GetOutcomesForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>());
 
             // Assert
-            Assert.Null(result);
+            Assert.That(result, Is.Null);
         }
 
         [Test]
-        public async Task  PatchOutcomesHttpTriggerServiceTests_GetActionPlanForCustomerAsync_ReturnsResourceWhenResourceHasBeenFound()
+        public async Task PatchOutcomesHttpTriggerServiceTests_GetActionPlanForCustomerAsync_ReturnsResourceWhenResourceHasBeenFound()
         {
             var outcomePatch = new Models.OutcomesPatch { OutcomeEffectiveDate = DateTime.MaxValue };
             var json = JsonConvert.SerializeObject(outcomePatch);
-            _documentDbProvider.Setup(x=>x.GetOutcomesForCustomerAsyncToUpdateAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(json));
+            _documentDbProvider.Setup(x => x.GetOutcomesForCustomerAsyncToUpdateAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(json));
 
             // Act
             var result = await _outcomePatchHttpTriggerService.GetOutcomesForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>());
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<string>(result);
+            Assert.That(result, Is.InstanceOf<string>());
+            Assert.That(result, Is.Not.Null);
         }
     }
 }

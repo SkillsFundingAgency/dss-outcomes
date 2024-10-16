@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using NCS.DSS.Outcomes.Models;
 using System.ComponentModel.DataAnnotations;
-using NCS.DSS.Outcomes.Models;
 
 namespace NCS.DSS.Outcomes.Validation
 {

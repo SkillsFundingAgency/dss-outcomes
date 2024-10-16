@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using DFC.JSON.Standard.Attributes;
-using DFC.Swagger.Standard.Annotations;
+﻿using DFC.Swagger.Standard.Annotations;
 using NCS.DSS.Outcomes.ReferenceData;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace NCS.DSS.Outcomes.Models
 {
@@ -74,7 +72,7 @@ namespace NCS.DSS.Outcomes.Models
         [Example(Description = "0000000001")]
         public string LastModifiedTouchpointId { get; set; }
 
-        [JsonIgnoreOnSerialize]
+        [JsonIgnore]
         public string CreatedBy { get; set; }
 
         public void SetDefaultValues()

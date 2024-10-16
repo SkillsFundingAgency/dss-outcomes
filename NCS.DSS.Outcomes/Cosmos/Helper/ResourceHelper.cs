@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using DFC.JSON.Standard;
+﻿using DFC.JSON.Standard;
 using NCS.DSS.Outcomes.Cosmos.Provider;
 
 namespace NCS.DSS.Outcomes.Cosmos.Helper
@@ -24,10 +22,10 @@ namespace NCS.DSS.Outcomes.Cosmos.Helper
         public bool IsCustomerReadOnly()
         {
             var customerJson = _documentDbProvider.GetCustomerJson();
-            
+
             if (string.IsNullOrWhiteSpace(customerJson))
                 return false;
-            
+
             var dateOfTermination = _jsonHelper.GetValue(customerJson, "DateOfTermination");
 
             return !string.IsNullOrWhiteSpace(dateOfTermination);
@@ -36,10 +34,10 @@ namespace NCS.DSS.Outcomes.Cosmos.Helper
         public int GetCustomerReasonForTermination()
         {
             var customerJson = _documentDbProvider.GetCustomerJson();
-            
+
             if (string.IsNullOrWhiteSpace(customerJson))
                 return 99;
-            
+
             var reasonForTermination = _jsonHelper.GetValue(customerJson, "ReasonForTermination");
 
             return string.IsNullOrWhiteSpace(reasonForTermination) ? 99 : int.Parse(reasonForTermination);
@@ -47,7 +45,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Helper
 
         public bool DoesInteractionExistAndBelongToCustomer(Guid interactionId, Guid customerId)
         {
-            return _documentDbProvider.DoesInteractionResourceExistAndBelongToCustomer(interactionId, customerId); 
+            return _documentDbProvider.DoesInteractionResourceExistAndBelongToCustomer(interactionId, customerId);
         }
 
         public bool DoesActionPlanResourceExistAndBelongToCustomer(Guid actionplanId, Guid interactionId, Guid customerId)

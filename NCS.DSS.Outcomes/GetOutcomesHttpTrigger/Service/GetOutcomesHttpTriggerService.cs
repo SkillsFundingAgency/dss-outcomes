@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using NCS.DSS.Outcomes.Cosmos.Provider;
+﻿using NCS.DSS.Outcomes.Cosmos.Provider;
 
 namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Service
 {
