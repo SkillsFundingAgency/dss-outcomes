@@ -6,13 +6,9 @@ namespace NCS.DSS.Outcomes.ServiceBus
 {
     public static class ServiceBusClient
     {
-        public static readonly string QueueName = Environment.GetEnvironmentVariable("QueueName");
-        public static readonly string ServiceBusConnectionString = Environment.GetEnvironmentVariable("ServiceBusConnectionString");
-
-        public static async Task SendPostMessageAsync(Models.Outcomes outcomes, string reqUrl)
+        public static async Task SendPostMessageAsync(Models.Outcomes outcomes, string reqUrl, IQueueClient queueClient)
         {
-            var queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
-
+            
             var messageModel = new MessageModel()
             {
                 TitleMessage = "New Outcome record {" + outcomes.OutcomeId + "} added at " + DateTime.UtcNow,
@@ -32,9 +28,8 @@ namespace NCS.DSS.Outcomes.ServiceBus
             await queueClient.SendAsync(msg);
         }
 
-        public static async Task SendPatchMessageAsync(Models.Outcomes outcomes, Guid customerId, string reqUrl)
+        public static async Task SendPatchMessageAsync(Models.Outcomes outcomes, Guid customerId, string reqUrl, IQueueClient queueClient)
         {
-            var queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
 
             var messageModel = new MessageModel
             {

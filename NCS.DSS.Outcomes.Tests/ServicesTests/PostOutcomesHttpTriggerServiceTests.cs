@@ -1,5 +1,6 @@
 ﻿using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+using Microsoft.Azure.ServiceBus;
 using Moq;
 using NCS.DSS.Outcomes.Cosmos.Provider;
 using NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service;
@@ -19,13 +20,15 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
     {
         private IPostOutcomesHttpTriggerService _postOutcomesHttpTriggerService;
         private Mock<IDocumentDBProvider> _documentDbProvider;
+        private Mock<IQueueClient> _queueClient;
         private Models.Outcomes _outcome;
 
         [SetUp]
         public void Setup()
         {
             _documentDbProvider = new Mock<IDocumentDBProvider>();
-            _postOutcomesHttpTriggerService = new PostOutcomesHttpTriggerService(_documentDbProvider.Object);
+            _queueClient = new Mock<IQueueClient>();
+            _postOutcomesHttpTriggerService = new PostOutcomesHttpTriggerService(_documentDbProvider.Object,_queueClient.Object);
             _outcome = Substitute.For<Models.Outcomes>();
         }
 

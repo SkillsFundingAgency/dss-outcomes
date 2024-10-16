@@ -3,6 +3,7 @@ using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using DFC.Swagger.Standard;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -29,6 +30,9 @@ var host = new HostBuilder()
         services.AddSingleton<IJsonHelper, JsonHelper>();
         services.AddSingleton<IDynamicHelper, DynamicHelper>();
         services.AddSingleton<IDocumentDBProvider, DocumentDBProvider>();
+        services.AddSingleton<IQueueClient>(_ =>
+            new QueueClient(Environment.GetEnvironmentVariable("ServiceBusConnectionString"), Environment.GetEnvironmentVariable("QueueName"))
+            );
         services.AddScoped<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
         services.AddScoped<IGetOutcomesHttpTriggerService, GetOutcomesHttpTriggerService>();
         services.AddScoped<IGetOutcomesByIdHttpTriggerService, GetOutcomesByIdHttpTriggerService>();
