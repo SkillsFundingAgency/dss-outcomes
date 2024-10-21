@@ -1,75 +1,80 @@
-using DFC.Common.Standard.Logging;
-using DFC.Functions.DI.Standard.Attributes;
-using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Outcomes.Cosmos.Helper;
 using NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Service;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Function
 {
-    public static class DeleteOutcomesHttpTrigger
+    public class DeleteOutcomesHttpTrigger
     {
+        private readonly IResourceHelper _resourceHelper;
+        private readonly IDeleteOutcomesHttpTriggerService _outcomesDeleteService;
+        private readonly ILogger log;
+
+        public DeleteOutcomesHttpTrigger(IResourceHelper resourceHelper,
+            IDeleteOutcomesHttpTriggerService outcomesDeleteService,
+            ILogger<DeleteOutcomesHttpTrigger> logger)
+        {
+            _resourceHelper = resourceHelper;
+            _outcomesDeleteService = outcomesDeleteService;
+            log = logger;
+        }
+
+        //Disable attribute not working in .NET 8.0. See here for more information: https://github.com/Azure/azure-functions-host/issues/10216
         [Disable]
-        [FunctionName("Delete")]
+        [Function("Delete")]
         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Outcome deleted", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Outcome does not exist", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.BadRequest, Description = "Request was malformed", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Display(Name = "Delete", Description = "Ability to remove a customers Outcome record.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "Customers/{customerId}/Interactions/{interactionId}/actionplans/{actionplanId}/Outcomes/{outcomeId}")]HttpRequest req, ILogger log, string customerId, string interactionId, string actionplanId, string outcomeId,
-        [Inject]IResourceHelper resourceHelper,
-        [Inject]IDeleteOutcomesHttpTriggerService outcomesDeleteService,
-            [Inject]ILoggerHelper loggerHelper,
-            [Inject]IHttpRequestHelper httpRequestHelper,
-            [Inject]IHttpResponseMessageHelper httpResponseMessageHelper,
-            [Inject]IJsonHelper jsonHelper)
+        public async Task<IActionResult> RunAsync([Microsoft.Azure.Functions.Worker.HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "Customers/{customerId}/Interactions/{interactionId}/actionplans/{actionplanId}/Outcomes/{outcomeId}")] HttpRequest req, string customerId, string interactionId, string actionplanId, string outcomeId)
         {
             log.LogInformation("Delete Action Plan C# HTTP trigger function processed a request.");
 
             if (!Guid.TryParse(customerId, out var customerGuid))
-                return httpResponseMessageHelper.BadRequest(customerGuid);
+                return new BadRequestObjectResult(customerGuid);
 
             if (!Guid.TryParse(interactionId, out var interactionGuid))
-                return httpResponseMessageHelper.BadRequest(interactionGuid);
+                return new BadRequestObjectResult(interactionGuid);
 
             if (!Guid.TryParse(actionplanId, out var actionplanGuid))
-                return httpResponseMessageHelper.BadRequest(actionplanGuid);
+                return new BadRequestObjectResult(actionplanGuid);
 
             if (!Guid.TryParse(outcomeId, out var outcomesGuid))
-                return httpResponseMessageHelper.BadRequest(outcomesGuid);
+                return new BadRequestObjectResult(outcomesGuid);
 
-            var doesCustomerExist = await resourceHelper.DoesCustomerExist(customerGuid);
+            var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
-                return httpResponseMessageHelper.NoContent(customerGuid);
+                return new NoContentResult();
 
-            var doesActionPlanExist = resourceHelper.DoesActionPlanResourceExistAndBelongToCustomer(actionplanGuid, interactionGuid, customerGuid);
+            var doesActionPlanExist = _resourceHelper.DoesActionPlanResourceExistAndBelongToCustomer(actionplanGuid, interactionGuid, customerGuid);
 
             if (!doesActionPlanExist)
-                return httpResponseMessageHelper.NoContent(actionplanGuid);
+                return new NoContentResult();
 
-            var outcome = await outcomesDeleteService.GetOutcomeForCustomerAsync(customerGuid, interactionGuid, actionplanGuid, outcomesGuid);
+            var outcome = await _outcomesDeleteService.GetOutcomeForCustomerAsync(customerGuid, interactionGuid, actionplanGuid, outcomesGuid);
 
             if (outcome == null)
-                return httpResponseMessageHelper.NoContent(outcomesGuid);
+                return new NoContentResult();
 
-            var outcomeDeleted = await outcomesDeleteService.DeleteAsync(outcome.OutcomeId.GetValueOrDefault());
+            var outcomeDeleted = await _outcomesDeleteService.DeleteAsync(outcome.OutcomeId.GetValueOrDefault());
 
-            return !outcomeDeleted ?
-                httpResponseMessageHelper.BadRequest(outcomesGuid) :
-                httpResponseMessageHelper.Ok();
-
+            return !outcomeDeleted
+                ? new BadRequestObjectResult(outcomesGuid)
+                : new JsonResult(outcomesGuid, new JsonSerializerOptions())
+                {
+                    StatusCode = (int)HttpStatusCode.OK
+                };
         }
     }
 }

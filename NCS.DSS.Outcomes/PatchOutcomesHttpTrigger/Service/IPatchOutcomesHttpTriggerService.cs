@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using NCS.DSS.Outcomes.Models;
+﻿using NCS.DSS.Outcomes.Models;
 
 namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
 {

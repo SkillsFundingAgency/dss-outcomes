@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using NCS.DSS.Outcomes.Cosmos.Provider;
+﻿using NCS.DSS.Outcomes.Cosmos.Provider;
 
 namespace NCS.DSS.Outcomes.DeleteOutcomesHttpTrigger.Service
 {

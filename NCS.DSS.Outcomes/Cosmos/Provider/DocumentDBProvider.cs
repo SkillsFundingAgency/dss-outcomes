@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Microsoft.Azure.Documents;
+﻿using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
 using NCS.DSS.Outcomes.Cosmos.Client;
 using NCS.DSS.Outcomes.Cosmos.Helper;
 using Newtonsoft.Json.Linq;
+using System.Net;
 
 namespace NCS.DSS.Outcomes.Cosmos.Provider
 {
@@ -215,8 +211,8 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
 
             var outcomesForCustomerQuery = client
                 ?.CreateDocumentQuery<Models.Outcomes>(collectionUri, new FeedOptions { MaxItemCount = 1 })
-                .Where(x => x.CustomerId == customerId && 
-                        x.ActionPlanId == actionplanId && 
+                .Where(x => x.CustomerId == customerId &&
+                        x.ActionPlanId == actionplanId &&
                         x.OutcomeId == outcomeId)
                 .AsDocumentQuery();
 

@@ -1,6 +1,6 @@
-﻿using System;
-using NSubstitute;
+﻿using NSubstitute;
 using NUnit.Framework;
+using System;
 
 namespace NCS.DSS.Outcomes.Tests.ModelTests
 {
@@ -16,8 +16,8 @@ namespace NCS.DSS.Outcomes.Tests.ModelTests
             diversity.SetDefaultValues();
 
             // Assert
-            Assert.AreEqual(false, diversity.IsPriorityCustomer);
-            Assert.IsNotNull(diversity.LastModifiedDate);
+            Assert.That(diversity.IsPriorityCustomer, Is.False);
+            Assert.That(diversity.LastModifiedDate, Is.Not.Null);
         }
 
         [Test]
@@ -28,7 +28,7 @@ namespace NCS.DSS.Outcomes.Tests.ModelTests
             diversity.SetDefaultValues();
 
             // Assert
-            Assert.AreEqual(DateTime.MaxValue, diversity.LastModifiedDate);
+            Assert.That(diversity.LastModifiedDate, Is.EqualTo(DateTime.MaxValue));
         }
 
         [Test]
@@ -39,7 +39,7 @@ namespace NCS.DSS.Outcomes.Tests.ModelTests
             diversity.SetIds(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<string>());
 
             // Assert
-            Assert.AreNotSame(Guid.Empty, diversity.OutcomeId);
+            Assert.That(diversity.OutcomeId, Is.Not.EqualTo(Guid.Empty));
         }
 
         [Test]
@@ -51,7 +51,7 @@ namespace NCS.DSS.Outcomes.Tests.ModelTests
             diversity.SetIds(customerId, Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<string>());
 
             // Assert
-            Assert.AreEqual(customerId, diversity.CustomerId);
+            Assert.That(diversity.CustomerId, Is.EqualTo(customerId));
         }
 
         [Test]
@@ -63,7 +63,7 @@ namespace NCS.DSS.Outcomes.Tests.ModelTests
             diversity.SetIds(Arg.Any<Guid>(), actionPlanId, Arg.Any<string>(), Arg.Any<string>());
 
             // Assert
-            Assert.AreEqual(actionPlanId, diversity.ActionPlanId);
+            Assert.That(diversity.ActionPlanId, Is.EqualTo(actionPlanId));
         }
 
         [Test]
@@ -74,7 +74,7 @@ namespace NCS.DSS.Outcomes.Tests.ModelTests
             diversity.SetIds(Arg.Any<Guid>(), Arg.Any<Guid>(), "0000000000", Arg.Any<string>());
 
             // Assert
-            Assert.AreEqual("0000000000", diversity.LastModifiedTouchpointId);
+            Assert.That(diversity.LastModifiedTouchpointId, Is.EqualTo("0000000000"));
         }
 
         [Test]
@@ -82,10 +82,10 @@ namespace NCS.DSS.Outcomes.Tests.ModelTests
         {
             var diversity = new Models.Outcomes();
 
-            diversity.SetIds(Arg.Any<Guid>(), Arg.Any<Guid>(),  Arg.Any<string>(), "0000000000");
+            diversity.SetIds(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<string>(), "0000000000");
 
             // Assert
-            Assert.AreEqual("0000000000", diversity.SubcontractorId);
+            Assert.That(diversity.SubcontractorId, Is.EqualTo("0000000000"));
         }
 
     }
