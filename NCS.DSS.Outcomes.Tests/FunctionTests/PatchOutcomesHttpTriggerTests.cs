@@ -33,7 +33,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         private HttpRequest _request;
         private IResourceHelper _resourceHelper;
         private IValidate _validate;
-        private ILoggerHelper _loggerHelper;
         private IHttpRequestHelper _httpRequestHelper;
         private IJsonHelper _jsonHelper;
         private IDynamicHelper _dynamicHelper;
@@ -53,7 +52,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
 
             _resourceHelper = Substitute.For<IResourceHelper>();
             _validate = Substitute.For<IValidate>();
-            _loggerHelper = Substitute.For<ILoggerHelper>();
             _httpRequestHelper = Substitute.For<IHttpRequestHelper>();
             _jsonHelper = Substitute.For<IJsonHelper>();
             _log = Substitute.For<ILogger<PatchOutcomesHttpTrigger.Function.PatchOutcomesHttpTrigger>>();
@@ -79,11 +77,10 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 _httpRequestHelper,
                 _patchOutcomesHttpTriggerService,
                 _jsonHelper,
-                _loggerHelper,
                 _validate,
                 _log,
                 _dynamicHelper
-                );
+            );
         }
 
         [Test]

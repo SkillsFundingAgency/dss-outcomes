@@ -26,7 +26,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         private ILogger<GetOutcomesByIdHttpTrigger.Function.GetOutcomesByIdHttpTrigger> _log;
         private HttpRequest _request;
         private IResourceHelper _resourceHelper;
-        private ILoggerHelper _loggerHelper;
         private IHttpRequestHelper _httpRequestHelper;
         private IGetOutcomesByIdHttpTriggerService _getOutcomesByIdHttpTriggerService;
         private Models.Outcomes _outcome;
@@ -41,7 +40,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
 
             _log = Substitute.For<ILogger<GetOutcomesByIdHttpTrigger.Function.GetOutcomesByIdHttpTrigger>>();
             _resourceHelper = Substitute.For<IResourceHelper>();
-            _loggerHelper = Substitute.For<ILoggerHelper>();
             _httpRequestHelper = Substitute.For<IHttpRequestHelper>();
             _resourceHelper = Substitute.For<IResourceHelper>();
 
@@ -52,9 +50,8 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 _resourceHelper,
                 _httpRequestHelper,
                 _getOutcomesByIdHttpTriggerService,
-                _loggerHelper,
                 _log
-                );
+            );
         }
 
         [Test]
