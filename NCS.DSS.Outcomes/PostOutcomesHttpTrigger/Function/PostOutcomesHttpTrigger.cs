@@ -1,4 +1,3 @@
-using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
@@ -19,16 +18,14 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
         private readonly IResourceHelper _resourceHelper;
         private readonly IHttpRequestHelper _httpRequestHelper;
         private readonly IPostOutcomesHttpTriggerService _outcomesPostService;
-        private readonly ILoggerHelper _loggerHelper;
         private readonly IValidate _validate;
-        private readonly ILogger log;
+        private readonly ILogger<PostOutcomesHttpTrigger> _logger;
         private readonly IDynamicHelper _dynamicHelper;
         private static readonly string[] ExceptionToExclude = { "TargetSite" };
 
         public PostOutcomesHttpTrigger(IResourceHelper resourceHelper,
             IHttpRequestHelper httpRequestHelper,
             IPostOutcomesHttpTriggerService outcomesPostService,
-            ILoggerHelper loggerHelper,
             IValidate validate,
             ILogger<PostOutcomesHttpTrigger> logger,
             IDynamicHelper dynamicHelper)
@@ -36,11 +33,11 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             _resourceHelper = resourceHelper;
             _httpRequestHelper = httpRequestHelper;
             _outcomesPostService = outcomesPostService;
-            _loggerHelper = loggerHelper;
             _validate = validate;
-            log = logger;
+            _logger = logger;
             _dynamicHelper = dynamicHelper;
         }
+
         [Function("Post")]
         [ProducesResponseType(typeof(Models.Outcomes), 200)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Created, Description = "Outcome Created", ShowSchema = true)]
@@ -49,168 +46,176 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Outcome validation error(s)", ShowSchema = false)]
-        [Display(Name = "Post", Description = "Ability to create a new Outcome for a customer. <br>" +
-                                              "<br> <b>Validation Rules:</b> <br>" +
-                                              "<br><b>OutcomeClaimedDate:</b> OutcomeClaimedDate >= OutcomeEffectiveDate <br>" +
-                                              "<br><b>OutcomeEffectiveDate:</b> <br>" +
-                                              "When OutcomeType of: <br>" +
-                                              "<ul><li>Customer Satisfaction</li> <br>" +
-                                              "<li>Career Management, </li> <br>" +
-                                              "<li>Accredited Learning, </li> <br>" +
-                                              "<li>Career Progression </li></ul> <br>" +
-                                              "Rule = OutcomeEffectiveDate >= Session.DateAndTimeOfSession AND <= Session.DateAndTimeOfSession + 12 months <br>" +
-                                              "<br> When OutcomeType of: <br>" +
-                                              "<br><ul><li>Sustainable Employment </li> </ul><br>" +
-                                              "Rule = OutcomeEffectiveDate >= Session.DateAndTimeOfSession AND <= Session.DateAndTimeOfSession + 13 months <br>" +
-                                              "<br><b>ClaimedPriorityGroup:</b> This is mandatory if OutcomeClaimedDate has a value")]
+        [Display(Name = "Post", Description =
+            @"Ability to create a new Outcome for a customer. <br> <br> <b>Validation Rules:</b> <br> 
+               <br><b>OutcomeClaimedDate:</b> OutcomeClaimedDate >= OutcomeEffectiveDate <br> <br>
+               <b>OutcomeEffectiveDate:</b> <br> When OutcomeType of: <br> <ul><li>Customer Satisfaction</li> 
+               <br> <li>Career Management, </li> <br> <li>Accredited Learning, </li> <br> <li>Career Progression </li>
+               </ul> <br> Rule = OutcomeEffectiveDate >= Session.DateAndTimeOfSession AND <= Session.DateAndTimeOfSession + 12 months <br>
+               <br> When OutcomeType of: <br> <br><ul><li>Sustainable Employment </li> </ul><br> Rule = OutcomeEffectiveDate >= Session.DateAndTimeOfSession 
+               AND <= Session.DateAndTimeOfSession + 13 months <br> <br><b>ClaimedPriorityGroup:</b> This is mandatory if OutcomeClaimedDate has a value"
+        )]
         public async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes")] HttpRequest req, string customerId, string interactionId, string actionplanId)
         {
-            _loggerHelper.LogMethodEnter(log);
+            _logger.LogInformation($"Function {nameof(PostOutcomesHttpTrigger)} has been invoked");
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
             if (string.IsNullOrEmpty(correlationId))
-                log.LogInformation("Unable to locate 'DssCorrelationId' in request header");
+                _logger.LogInformation("Unable to locate 'DssCorrelationId' in request header");
 
             if (!Guid.TryParse(correlationId, out var correlationGuid))
             {
-                log.LogInformation("Unable to parse 'DssCorrelationId' to a Guid");
+                _logger.LogInformation("Unable to parse 'DssCorrelationId' to a Guid");
                 correlationGuid = Guid.NewGuid();
             }
 
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                log.LogInformation("Unable to locate 'APIM-TouchpointId' in request header.");
-                return new BadRequestObjectResult("Unable to locate 'APIM-TouchpointId' in request header.");
+                _logger.LogInformation($"Unable to locate 'TouchpointId' in request header. Correlation GUID: {correlationGuid}");
+                return new BadRequestObjectResult("Unable to locate 'TouchpointId' in request header.");
             }
 
             var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subcontractorId))
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubcontractorId' in request header");
+                _logger.LogInformation($"Unable to locate 'SubcontractorId' in request header. Correlation GUID: {correlationGuid}");
                 return new BadRequestObjectResult("Unable to locate 'SubcontractorId' in request header");
             }
 
             var apimUrl = _httpRequestHelper.GetDssApimUrl(req);
             if (string.IsNullOrEmpty(apimUrl))
             {
-                log.LogInformation("Unable to locate 'apimurl' in request header");
+                _logger.LogInformation($"Unable to locate 'apimurl' in request header. Correlation GUID: {correlationGuid}");
                 return new BadRequestObjectResult("Unable to locate 'apimurl' in request header");
             }
 
-            _loggerHelper.LogInformationMessage(log, correlationGuid,
-                string.Format("Post Outcome C# HTTP trigger function  processed a request. By Touchpoint: {0}",
-                    touchpointId));
+            _logger.LogInformation($"Header validation successful. Associated Touchpoint ID: {touchpointId}");
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'customerId' to a Guid: {0}", customerId));
+                _logger.LogInformation($"Unable to parse 'customerId' to a GUID. Customer ID: {customerId}");
                 return new BadRequestObjectResult(customerGuid);
             }
 
             if (!Guid.TryParse(interactionId, out var interactionGuid))
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'interactionId' to a Guid: {0}", interactionId));
+                _logger.LogInformation($"Unable to parse 'interactionId' to a GUID. Interaction ID: {interactionId}");
                 return new BadRequestObjectResult(interactionGuid);
             }
 
             if (!Guid.TryParse(actionplanId, out var actionplanGuid))
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Unable to parse 'actionplanId' to a Guid: {0}", actionplanId));
+                _logger.LogInformation($"Unable to parse 'actionPlanId' to a GUID. Action Plan ID: {actionplanId}");
                 return new BadRequestObjectResult(actionplanGuid);
             }
 
             Models.Outcomes outcomesRequest;
 
+            _logger.LogInformation($"Attempting to get resource from the request body. Correlation GUID: {correlationGuid}");
+
             try
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to get resource from body of the request");
                 outcomesRequest = await _httpRequestHelper.GetResourceFromRequest<Models.Outcomes>(req);
             }
             catch (Exception ex)
             {
-                _loggerHelper.LogError(log, correlationGuid, "Unable to retrieve body from req", ex);
+                _logger.LogError($"Unable to retrieve request body. Correlation GUID: {correlationGuid}", ex);
                 return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ExceptionToExclude));
             }
 
             if (outcomesRequest == null)
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, "Outcome request is null");
+                _logger.LogInformation($"Outcome post request is NULL. Correlation GUID: {correlationGuid}");
                 return new UnprocessableEntityObjectResult(req);
             }
 
-            _loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to set id's for outcome");
+            _logger.LogInformation($"Attempting to set IDs for Outcome POST. Correlation GUID: {correlationGuid}");
             outcomesRequest.SetIds(customerGuid, actionplanGuid, touchpointId, subcontractorId);
+            _logger.LogInformation($"IDs successfully set for Outcome POST. Correlation GUID: {correlationGuid}");
 
-            _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to see if customer exists {0}", customerGuid));
+            _logger.LogInformation($"Attempting to see if customer exists. Customer GUID: {customerGuid}");
             var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Customer does not exist {0}", customerGuid));
+                _logger.LogInformation($"Customer does not exist. Customer GUID: {customerGuid}");
                 return new NoContentResult();
             }
+            else
+            {
+                _logger.LogInformation($"Customer does exist. Customer GUID: {customerGuid}");
+            }
 
-            _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to see if this is a read only customer {0}", customerGuid));
+            _logger.LogInformation($"Attempting to see if this customer ({customerGuid}) is read-only");
             var isCustomerReadOnly = _resourceHelper.IsCustomerReadOnly();
 
             if (isCustomerReadOnly)
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Customer is read only {0}", customerGuid));
+                _logger.LogInformation($"Customer ({customerGuid}) is read-only");
                 return new ObjectResult(customerGuid.ToString())
                 {
                     StatusCode = (int)HttpStatusCode.Forbidden
                 };
             }
 
-            _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get Interaction {0} for customer {1}", interactionGuid, customerGuid));
+            _logger.LogInformation($"Attempting to get Interaction ({interactionGuid}) for Customer ({customerGuid})");
             var doesInteractionExist = _resourceHelper.DoesInteractionExistAndBelongToCustomer(interactionGuid, customerGuid);
 
             if (!doesInteractionExist)
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Interaction does not exist {0}", interactionGuid));
+                _logger.LogInformation($"Interaction does not exist. Interaction GUID: {interactionGuid}");
                 return new NoContentResult();
             }
+            else
+            {
+                _logger.LogInformation($"Interaction does exist. Interaction GUID: {interactionGuid}");
+            }
 
-            _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get GetDateAndTimeOfSession for Session {0}", outcomesRequest.SessionId));
+            _logger.LogInformation($"Attempting to get GetDateAndTimeOfSession for Session. Session ID: {outcomesRequest.SessionId}");
             var dateAndTimeOfSession = await _resourceHelper.GetDateAndTimeOfSession(outcomesRequest.SessionId.GetValueOrDefault());
 
-            _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get ActionPlan {0} for customer {1}", interactionGuid, customerGuid));
+            _logger.LogInformation($"Attempting to get Action Plan ({actionplanGuid}) for Customer ({customerGuid}). Interaction GUID: {interactionGuid}");
             var doesActionPlanExist = _resourceHelper.DoesActionPlanResourceExistAndBelongToCustomer(actionplanGuid, interactionGuid, customerGuid);
 
             if (!doesActionPlanExist)
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("ActionPlan does not exist {0}", actionplanGuid));
+                _logger.LogInformation($"Action Plan does not exist. Action Plan GUID: {actionplanGuid}");
                 return new NoContentResult();
             }
+            else
+            {
+                _logger.LogInformation($"Action Plan does exist. Action Plan GUID: {actionplanGuid}");
+            }
 
-            _loggerHelper.LogInformationMessage(log, correlationGuid, "Attempt to validate resource");
+            _logger.LogInformation($"Attempting to validate resource. Correlation GUID: {correlationGuid}");
             var errors = _validate.ValidateResource(outcomesRequest, dateAndTimeOfSession);
 
             if (errors != null && errors.Any())
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, "validation errors with resource");
+                _logger.LogInformation("Validation errors present with the resource.");
                 return new UnprocessableEntityObjectResult(errors);
             }
 
-            _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to Create Outcome for customer {0}", customerGuid));
+            _logger.LogInformation($"Attempting to POST Outcome to Cosmos DB. Customer GUID: {customerGuid}");
             var outcome = await _outcomesPostService.CreateAsync(outcomesRequest);
 
             if (outcome != null)
             {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("attempting to send to service bus {0}", outcome.OutcomeId));
+                _logger.LogInformation($"Successfully POSTed Outcome to Cosmos DB. Outcome ID: {outcome.OutcomeId}");
+                _logger.LogInformation($"Attempting to send message to Service Bus Namespace. Outcome ID: {outcome.OutcomeId}");
                 await _outcomesPostService.SendToServiceBusQueueAsync(outcome, apimUrl);
             }
 
-            _loggerHelper.LogMethodExit(log);
+            _logger.LogInformation($"Function {nameof(PostOutcomesHttpTrigger)} has finished invocation");
 
-            return outcome == null
-                ? new BadRequestObjectResult(customerGuid)
-                : new JsonResult(outcome, new JsonSerializerOptions())
-                {
-                    StatusCode = (int)HttpStatusCode.Created
-                };
+            if (outcome == null)
+                return new BadRequestObjectResult(customerGuid);
 
+            return new JsonResult(outcome, new JsonSerializerOptions())
+            {
+                StatusCode = (int)HttpStatusCode.Created
+            };
         }
     }
 }

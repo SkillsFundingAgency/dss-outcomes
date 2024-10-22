@@ -1,5 +1,4 @@
-﻿using DFC.Common.Standard.Logging;
-using DFC.HTTP.Standard;
+﻿using DFC.HTTP.Standard;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -30,7 +29,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         private HttpRequest _request;
         private IResourceHelper _resourceHelper;
         private IValidate _validate;
-        private ILoggerHelper _loggerHelper;
         private IHttpRequestHelper _httpRequestHelper;
         private IDynamicHelper _dynamicHelper;
 
@@ -48,7 +46,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             _log = Substitute.For<ILogger<PostOutcomesHttpTrigger.Function.PostOutcomesHttpTrigger>>();
             _resourceHelper = Substitute.For<IResourceHelper>();
             _validate = Substitute.For<IValidate>();
-            _loggerHelper = Substitute.For<ILoggerHelper>();
             _httpRequestHelper = Substitute.For<IHttpRequestHelper>();
             _resourceHelper = Substitute.For<IResourceHelper>();
             _dynamicHelper = Substitute.For<IDynamicHelper>();
@@ -70,10 +67,10 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 _resourceHelper,
                 _httpRequestHelper,
                 _postOutcomesHttpTriggerService,
-                _loggerHelper,
                 _validate,
                 _log,
-                _dynamicHelper);
+                _dynamicHelper
+            );
         }
 
         [Test]

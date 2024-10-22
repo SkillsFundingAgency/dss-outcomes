@@ -1,5 +1,4 @@
-﻿using DFC.Common.Standard.Logging;
-using DFC.HTTP.Standard;
+﻿using DFC.HTTP.Standard;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -27,7 +26,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         private HttpRequest _request;
         private IGetOutcomesHttpTriggerService _getOutcomesHttpTriggerService;
         private IResourceHelper _resourceHelper;
-        private ILoggerHelper _loggerHelper;
         private IHttpRequestHelper _httpRequestHelper;
         private GetOutcomesHttpTrigger.Function.GetOutcomesHttpTrigger _function;
 
@@ -36,7 +34,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         {
             _request = new DefaultHttpContext().Request;
 
-            _loggerHelper = Substitute.For<ILoggerHelper>();
             _httpRequestHelper = Substitute.For<IHttpRequestHelper>();
             _log = Substitute.For<ILogger<GetOutcomesHttpTrigger.Function.GetOutcomesHttpTrigger>>();
             _resourceHelper = Substitute.For<IResourceHelper>();
@@ -48,9 +45,8 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 _resourceHelper,
                 _httpRequestHelper,
                 _getOutcomesHttpTriggerService,
-                _loggerHelper,
                 _log
-                );
+            );
         }
 
         [Test]
