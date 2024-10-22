@@ -19,7 +19,6 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
         Task<Models.Outcomes> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionplanId, Guid outcomeId);
         Task<ResourceResponse<Document>> CreateOutcomesAsync(Models.Outcomes outcomes);
         Task<ResourceResponse<Document>> UpdateOutcomesAsync(string outcomeJson, Guid outcomeId);
-        Task<bool> DeleteAsync(Guid outcomeId);
         Task<DateTime?> GetDateAndTimeOfSessionFromSessionResource(Guid sessionId);
     }
 }

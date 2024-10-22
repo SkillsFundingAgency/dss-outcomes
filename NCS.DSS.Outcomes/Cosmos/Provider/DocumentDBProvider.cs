@@ -279,19 +279,5 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
 
             return response;
         }
-
-        public async Task<bool> DeleteAsync(Guid outcomeId)
-        {
-            var documentUri = DocumentDBHelper.CreateDocumentUri(outcomeId);
-
-            var client = DocumentDBClient.CreateDocumentClient();
-
-            if (client == null)
-                return false;
-
-            var response = await client.DeleteDocumentAsync(documentUri);
-
-            return response.StatusCode == HttpStatusCode.OK;
-        }
     }
 }
