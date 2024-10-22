@@ -46,7 +46,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Outcome validation error(s)", ShowSchema = false)]
-        [Display(Name = "Post", Description = 
+        [Display(Name = "Post", Description =
             @"Ability to create a new Outcome for a customer. <br> <br> <b>Validation Rules:</b> <br> 
                <br><b>OutcomeClaimedDate:</b> OutcomeClaimedDate >= OutcomeEffectiveDate <br> <br>
                <b>OutcomeEffectiveDate:</b> <br> When OutcomeType of: <br> <ul><li>Customer Satisfaction</li> 
@@ -158,7 +158,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
                     StatusCode = (int)HttpStatusCode.Forbidden
                 };
             }
-            
+
             _logger.LogInformation($"Attempting to get Interaction ({interactionGuid}) for Customer ({customerGuid})");
             var doesInteractionExist = _resourceHelper.DoesInteractionExistAndBelongToCustomer(interactionGuid, customerGuid);
 

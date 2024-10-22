@@ -18,7 +18,7 @@ namespace NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Function
         private readonly IHttpRequestHelper _httpRequestHelper;
         private readonly IGetOutcomesByIdHttpTriggerService _outcomesGetService;
         private readonly ILogger<GetOutcomesByIdHttpTrigger> _logger;
-        
+
         public GetOutcomesByIdHttpTrigger(IResourceHelper resourceHelper,
             IHttpRequestHelper httpRequestHelper,
             IGetOutcomesByIdHttpTriggerService outcomesGetService,
@@ -99,7 +99,7 @@ namespace NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Function
             {
                 _logger.LogInformation($"Customer does not exist. Customer GUID: {customerGuid}");
                 return new NoContentResult();
-            } 
+            }
             else
             {
                 _logger.LogInformation($"Customer does exist. Customer GUID: {customerGuid}");
@@ -112,7 +112,7 @@ namespace NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Function
             {
                 _logger.LogInformation($"Interaction does not exist. Interaction GUID: {interactionGuid}");
                 return new NoContentResult();
-            } 
+            }
             else
             {
                 _logger.LogInformation($"Interaction does exist. Interaction GUID: {interactionGuid}");
@@ -125,7 +125,7 @@ namespace NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Function
             {
                 _logger.LogInformation($"Action Plan does not exist. Action Plan GUID: {actionPlanGuid}");
                 return new NoContentResult();
-            } 
+            }
             else
             {
                 _logger.LogInformation($"Action Plan does exist. Action Plan GUID: {actionPlanGuid}");

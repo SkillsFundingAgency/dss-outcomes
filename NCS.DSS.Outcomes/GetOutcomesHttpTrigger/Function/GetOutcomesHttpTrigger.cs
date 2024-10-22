@@ -92,7 +92,7 @@ namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Function
             {
                 _logger.LogInformation($"Customer does not exist. Customer GUID: {customerGuid}");
                 return new NoContentResult();
-            } 
+            }
             else
             {
                 _logger.LogInformation($"Customer does exist. Customer GUID: {customerGuid}");
@@ -118,7 +118,7 @@ namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Function
             {
                 _logger.LogInformation($"Action Plan does not exist. Action Plan GUID: {actionPlanGuid}");
                 return new NoContentResult();
-            } 
+            }
             else
             {
                 _logger.LogInformation($"Action Plan does exist. Action Plan GUID: {actionPlanGuid}");
@@ -138,7 +138,7 @@ namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Function
                 {
                     StatusCode = (int)HttpStatusCode.OK,
                 };
-            } 
+            }
             else
             {
                 return new JsonResult(outcomes, new JsonSerializerOptions())

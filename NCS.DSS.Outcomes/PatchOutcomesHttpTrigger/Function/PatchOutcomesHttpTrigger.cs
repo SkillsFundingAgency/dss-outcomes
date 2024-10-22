@@ -53,7 +53,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Outcome validation error(s)", ShowSchema = false)]
-        [Display(Name = "Patch", Description = 
+        [Display(Name = "Patch", Description =
             @"Ability to modify/update a customers Outcome record. <br> <br> <b>Validation Rules:</b> <br> 
               <br><b>OutcomeClaimedDate:</b> OutcomeClaimedDate >= OutcomeEffectiveDate <br> <br> <b>OutcomeEffectiveDate:</b> 
               <br> When OutcomeType of: <br> <ul><li>Customer Satisfaction</li> <br> <li>Career Management, </li> <br> 
@@ -217,7 +217,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                 {
                     _logger.LogInformation($"Duplicate Customer ({customerGuid}): This resource is read only. You may only remove values for Outcome Claimed and Effective date. Correlation GUID: {correlationGuid}");
 
-                    return new ObjectResult(new HttpErrorResponse(new List<string> {"Duplicate Customer: This resource is read only. You may only remove values for Outcome Claimed and Effective date"}, correlationGuid))
+                    return new ObjectResult(new HttpErrorResponse(new List<string> { "Duplicate Customer: This resource is read only. You may only remove values for Outcome Claimed and Effective date" }, correlationGuid))
                     {
                         StatusCode = (int)HttpStatusCode.Forbidden
                     };
@@ -231,7 +231,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             {
                 _logger.LogInformation($"Interaction does not exist. Interaction GUID: {interactionGuid}");
                 return new NoContentResult();
-            } 
+            }
             else
             {
                 _logger.LogInformation($"Interaction does exist. Interaction GUID: {interactionGuid}");
@@ -244,7 +244,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             {
                 _logger.LogInformation($"Action Plan does not exist. Action Plan GUID: {actionPlanGuid}");
                 return new NoContentResult();
-            } 
+            }
             else
             {
                 _logger.LogInformation($"Action Plan does exist. Action Plan GUID: {actionPlanGuid}");
