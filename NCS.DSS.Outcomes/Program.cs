@@ -1,4 +1,3 @@
-using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using DFC.Swagger.Standard;
@@ -23,7 +22,6 @@ var host = new HostBuilder()
         services.ConfigureFunctionsApplicationInsights();
         services.AddSingleton<IResourceHelper, ResourceHelper>();
         services.AddSingleton<IValidate, Validate>();
-        services.AddSingleton<ILoggerHelper, LoggerHelper>();
         services.AddSingleton<IHttpRequestHelper, HttpRequestHelper>();
         services.AddSingleton<IHttpResponseMessageHelper, HttpResponseMessageHelper>();
         services.AddSingleton<IJsonHelper, JsonHelper>();
