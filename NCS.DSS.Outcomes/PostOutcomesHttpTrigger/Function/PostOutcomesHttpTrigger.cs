@@ -41,8 +41,8 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
         [Function("Post")]
         [ProducesResponseType(typeof(Models.Outcomes), 200)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Created, Description = "Outcome Created", ShowSchema = true)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Outcome does not exist", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.BadRequest, Description = "Request was malformed", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Customer, action plan or interaction do not exist", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Outcome validation error(s)", ShowSchema = false)]
@@ -95,19 +95,19 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
                 _logger.LogInformation($"Unable to parse 'customerId' to a GUID. Customer ID: {customerId}");
-                return new BadRequestObjectResult(customerGuid);
+                return new BadRequestObjectResult("Unable to parse 'customerId' to a GUID. Customer ID: " +customerGuid);
             }
 
             if (!Guid.TryParse(interactionId, out var interactionGuid))
             {
                 _logger.LogInformation($"Unable to parse 'interactionId' to a GUID. Interaction ID: {interactionId}");
-                return new BadRequestObjectResult(interactionGuid);
+                return new BadRequestObjectResult("Unable to parse 'interactionId' to a GUID. Interaction ID: " + interactionGuid);
             }
 
             if (!Guid.TryParse(actionplanId, out var actionplanGuid))
             {
                 _logger.LogInformation($"Unable to parse 'actionPlanId' to a GUID. Action Plan ID: {actionplanId}");
-                return new BadRequestObjectResult(actionplanGuid);
+                return new BadRequestObjectResult("Unable to parse 'actionPlanId' to a GUID. Action Plan ID: " + actionplanGuid);
             }
 
             Models.Outcomes outcomesRequest;
@@ -121,13 +121,13 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             catch (Exception ex)
             {
                 _logger.LogError($"Unable to retrieve request body. Correlation GUID: {correlationGuid}", ex);
-                return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ExceptionToExclude));
+                return new UnprocessableEntityObjectResult($"Unable to retrieve request body. Correlation GUID: {correlationGuid}" + _dynamicHelper.ExcludeProperty(ex, ExceptionToExclude));
             }
 
             if (outcomesRequest == null)
             {
                 _logger.LogInformation($"Outcome post request is NULL. Correlation GUID: {correlationGuid}");
-                return new UnprocessableEntityObjectResult(req);
+                return new UnprocessableEntityObjectResult($"Outcome post request is NULL. Correlation GUID: {correlationGuid}");
             }
 
             _logger.LogInformation($"Attempting to set IDs for Outcome POST. Correlation GUID: {correlationGuid}");
@@ -139,8 +139,8 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
 
             if (!doesCustomerExist)
             {
-                _logger.LogInformation($"Customer does not exist. Customer GUID: {customerGuid}");
-                return new NoContentResult();
+                _logger.LogInformation($"Failed to POST outcome. Customer does not exist. Customer GUID: {customerGuid}");
+                return new NotFoundObjectResult("Failed to POST outcome. Customer does not exist. Customer GUID: " + customerGuid);
             }
             else
             {
@@ -164,8 +164,8 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
 
             if (!doesInteractionExist)
             {
-                _logger.LogInformation($"Interaction does not exist. Interaction GUID: {interactionGuid}");
-                return new NoContentResult();
+                _logger.LogInformation($"Failed to POST outcome. Interaction does not exist. Interaction GUID: {interactionGuid}");
+                return new NotFoundObjectResult("Failed to POST outcome. Interaction does not exist. Interaction GUID: " + interactionGuid);
             }
             else
             {
@@ -180,8 +180,8 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
 
             if (!doesActionPlanExist)
             {
-                _logger.LogInformation($"Action Plan does not exist. Action Plan GUID: {actionplanGuid}");
-                return new NoContentResult();
+                _logger.LogInformation($"Failed to POST outcome. Action Plan does not exist. Action Plan GUID: {actionplanGuid}");
+                return new NotFoundObjectResult("Failed to POST outcome. Action Plan does not exist. Action Plan GUID: " + actionplanGuid);
             }
             else
             {
@@ -210,7 +210,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             _logger.LogInformation($"Function {nameof(PostOutcomesHttpTrigger)} has finished invocation");
 
             if (outcome == null)
-                return new BadRequestObjectResult(customerGuid);
+                return new BadRequestObjectResult("Failed to POST outcome in Cosmos DB for customer " + customerGuid + ". Outcome is NULL after creation attempt.");
 
             return new JsonResult(outcome, new JsonSerializerOptions())
             {
