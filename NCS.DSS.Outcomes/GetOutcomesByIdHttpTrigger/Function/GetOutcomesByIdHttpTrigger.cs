@@ -137,7 +137,7 @@ namespace NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Function
             _logger.LogInformation($"Function {nameof(GetOutcomesByIdHttpTrigger)} has finished invocation");
 
             if (outcomes == null)
-                return new NotFoundObjectResult($"Failed to GET outcome. Outcome ({outcomesGuid}) for Customer ({customerGuid} was not found");
+                return new NotFoundObjectResult($"Failed to GET outcome. Outcome ({outcomesGuid}) for Customer ({customerGuid}) was not found");
 
             return new JsonResult(outcomes, new JsonSerializerOptions())
             {
