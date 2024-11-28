@@ -5,23 +5,23 @@ namespace NCS.DSS.Outcomes.Cosmos.Helper
 {
     public class ResourceHelper : IResourceHelper
     {
-        private readonly IDocumentDBProvider _documentDbProvider;
+        private readonly ICosmosDBProvider _cosmosDbProvider;
         private readonly IJsonHelper _jsonHelper;
 
-        public ResourceHelper(IDocumentDBProvider documentDbProvider, IJsonHelper jsonHelper)
+        public ResourceHelper(ICosmosDBProvider documentDbProvider, IJsonHelper jsonHelper)
         {
-            _documentDbProvider = documentDbProvider;
+            _cosmosDbProvider = documentDbProvider;
             _jsonHelper = jsonHelper;
         }
 
         public async Task<bool> DoesCustomerExist(Guid customerId)
         {
-            return await _documentDbProvider.DoesCustomerResourceExist(customerId);
+            return await _cosmosDbProvider.DoesCustomerResourceExist(customerId);
         }
 
         public bool IsCustomerReadOnly()
         {
-            var customerJson = _documentDbProvider.GetCustomerJson();
+            var customerJson = _cosmosDbProvider.GetCustomerJson();
 
             if (string.IsNullOrWhiteSpace(customerJson))
                 return false;
@@ -33,7 +33,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Helper
 
         public int GetCustomerReasonForTermination()
         {
-            var customerJson = _documentDbProvider.GetCustomerJson();
+            var customerJson = _cosmosDbProvider.GetCustomerJson();
 
             if (string.IsNullOrWhiteSpace(customerJson))
                 return 99;
@@ -45,22 +45,22 @@ namespace NCS.DSS.Outcomes.Cosmos.Helper
 
         public bool DoesInteractionExistAndBelongToCustomer(Guid interactionId, Guid customerId)
         {
-            return _documentDbProvider.DoesInteractionResourceExistAndBelongToCustomer(interactionId, customerId);
+            return _cosmosDbProvider.DoesInteractionResourceExistAndBelongToCustomer(interactionId, customerId);
         }
 
         public bool DoesActionPlanResourceExistAndBelongToCustomer(Guid actionplanId, Guid interactionId, Guid customerId)
         {
-            return _documentDbProvider.DoesActionPlanResourceExistAndBelongToCustomer(actionplanId, interactionId, customerId);
+            return _cosmosDbProvider.DoesActionPlanResourceExistAndBelongToCustomer(actionplanId, interactionId, customerId);
         }
 
         public bool DoesSessionExistAndBelongToCustomer(Guid sessionId, Guid interactionId, Guid customerId)
         {
-            return _documentDbProvider.DoesSessionResourceExistAndBelongToCustomer(sessionId, interactionId, customerId);
+            return _cosmosDbProvider.DoesSessionResourceExistAndBelongToCustomer(sessionId, interactionId, customerId);
         }
 
         public async Task<DateTime?> GetDateAndTimeOfSession(Guid sessionId)
         {
-            var dateAndTimeOfSession = await _documentDbProvider.GetDateAndTimeOfSessionFromSessionResource(sessionId);
+            var dateAndTimeOfSession = await _cosmosDbProvider.GetDateAndTimeOfSessionFromSessionResource(sessionId);
 
             return dateAndTimeOfSession;
         }

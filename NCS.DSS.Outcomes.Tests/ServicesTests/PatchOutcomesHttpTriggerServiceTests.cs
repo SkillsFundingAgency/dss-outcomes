@@ -17,16 +17,16 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
     {
         private IPatchOutcomesHttpTriggerService _outcomePatchHttpTriggerService;
         private Mock<IOutcomePatchService> _outcomePatchService;
-        private Mock<IDocumentDBProvider> _documentDbProvider;
+        private Mock<ICosmosDBProvider> _cosmosDbProvider;
 
         private readonly Guid _outcomeId = Guid.Parse("7E467BDB-213F-407A-B86A-1954053D3C24");
 
         [SetUp]
         public void Setup()
         {
-            _documentDbProvider = new Mock<IDocumentDBProvider>();
+            _cosmosDbProvider = new Mock<ICosmosDBProvider>();
             _outcomePatchService = new Mock<IOutcomePatchService>();
-            _outcomePatchHttpTriggerService = new PatchOutcomesHttpTriggerService(_documentDbProvider.Object, _outcomePatchService.Object);
+            _outcomePatchHttpTriggerService = new PatchOutcomesHttpTriggerService(_cosmosDbProvider.Object, _outcomePatchService.Object);
         }
 
 
@@ -86,7 +86,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             // Arrange
             var outcomePatch = new Models.OutcomesPatch { OutcomeEffectiveDate = DateTime.MaxValue };
             var json = JsonConvert.SerializeObject(outcomePatch);
-            _documentDbProvider.Setup(x => x.CreateOutcomesAsync(It.IsAny<Models.Outcomes>())).Returns(Task.FromResult(new ResourceResponse<Document>(null)));
+            _cosmosDbProvider.Setup(x => x.CreateOutcomesAsync(It.IsAny<Models.Outcomes>())).Returns(Task.FromResult(new ResourceResponse<Document>(null)));
 
             // Act
             var result = await _outcomePatchHttpTriggerService.UpdateCosmosAsync(json, _outcomeId);
@@ -136,7 +136,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         public async Task PatchOutcomesHttpTriggerServiceTests_GetActionPlanForCustomerAsync_ReturnsNullWhenResourceHasNotBeenFound()
         {
             // Arrange
-            _documentDbProvider.Setup(x => x.GetOutcomesForCustomerAsyncToUpdateAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult<string>(null));
+            _cosmosDbProvider.Setup(x => x.GetOutcomesForCustomerAsyncToUpdateAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult<string>(null));
 
             // Act
             var result = await _outcomePatchHttpTriggerService.GetOutcomesForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>());
@@ -150,7 +150,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         {
             var outcomePatch = new Models.OutcomesPatch { OutcomeEffectiveDate = DateTime.MaxValue };
             var json = JsonConvert.SerializeObject(outcomePatch);
-            _documentDbProvider.Setup(x => x.GetOutcomesForCustomerAsyncToUpdateAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(json));
+            _cosmosDbProvider.Setup(x => x.GetOutcomesForCustomerAsyncToUpdateAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(json));
 
             // Act
             var result = await _outcomePatchHttpTriggerService.GetOutcomesForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>());

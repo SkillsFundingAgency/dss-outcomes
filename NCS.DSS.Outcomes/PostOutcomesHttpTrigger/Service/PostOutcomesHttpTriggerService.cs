@@ -6,11 +6,11 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service
 {
     public class PostOutcomesHttpTriggerService : IPostOutcomesHttpTriggerService
     {
-        private readonly IDocumentDBProvider _documentDbProvider;
+        private readonly ICosmosDBProvider _cosmosDbProvider;
 
-        public PostOutcomesHttpTriggerService(IDocumentDBProvider documentDbProvider)
+        public PostOutcomesHttpTriggerService(ICosmosDBProvider cosmosDbProvider)
         {
-            _documentDbProvider = documentDbProvider;
+            _cosmosDbProvider = cosmosDbProvider;
         }
 
         public async Task<Models.Outcomes> CreateAsync(Models.Outcomes outcomes)
@@ -20,7 +20,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service
 
             outcomes.SetDefaultValues();
 
-            var response = await _documentDbProvider.CreateOutcomesAsync(outcomes);
+            var response = await _cosmosDbProvider.CreateOutcomesAsync(outcomes);
 
             return response.StatusCode == HttpStatusCode.Created ? (dynamic)response.Resource : null;
         }

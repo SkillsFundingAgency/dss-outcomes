@@ -8,11 +8,11 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
     public class PatchOutcomesHttpTriggerService : IPatchOutcomesHttpTriggerService
     {
         private readonly IOutcomePatchService _outcomePatchService;
-        private readonly IDocumentDBProvider _documentDbProvider;
+        private readonly ICosmosDBProvider _cosmosDbProvider;
 
-        public PatchOutcomesHttpTriggerService(IDocumentDBProvider documentDbProvider, IOutcomePatchService outcomePatchService)
+        public PatchOutcomesHttpTriggerService(ICosmosDBProvider cosmosDbProvider, IOutcomePatchService outcomePatchService)
         {
-            _documentDbProvider = documentDbProvider;
+            _cosmosDbProvider = cosmosDbProvider;
             _outcomePatchService = outcomePatchService;
         }
 
@@ -42,7 +42,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
             if (string.IsNullOrEmpty(outcomeJson))
                 return null;
 
-            var response = await _documentDbProvider.UpdateOutcomesAsync(outcomeJson, outcomeId);
+            var response = await _cosmosDbProvider.UpdateOutcomesAsync(outcomeJson, outcomeId);
 
             var responseStatusCode = response?.StatusCode;
 
@@ -51,7 +51,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
 
         public async Task<string> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionPlanId, Guid outcomeId)
         {
-            var outcomes = await _documentDbProvider.GetOutcomesForCustomerAsyncToUpdateAsync(customerId, interactionsId, actionPlanId, outcomeId);
+            var outcomes = await _cosmosDbProvider.GetOutcomesForCustomerAsyncToUpdateAsync(customerId, interactionsId, actionPlanId, outcomeId);
 
             return outcomes;
         }

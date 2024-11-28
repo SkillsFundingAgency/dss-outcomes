@@ -32,7 +32,7 @@ namespace NCS.DSS.Outcomes
                     services.AddSingleton<IHttpResponseMessageHelper, HttpResponseMessageHelper>();
                     services.AddSingleton<IJsonHelper, JsonHelper>();
                     services.AddSingleton<IDynamicHelper, DynamicHelper>();
-                    services.AddSingleton<IDocumentDBProvider, DocumentDBProvider>();
+                    services.AddSingleton<ICosmosDBProvider, CosmosDBProvider>();
                     services.AddScoped<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
                     services.AddScoped<IGetOutcomesHttpTriggerService, GetOutcomesHttpTriggerService>();
                     services.AddScoped<IGetOutcomesByIdHttpTriggerService, GetOutcomesByIdHttpTriggerService>();

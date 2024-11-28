@@ -18,14 +18,14 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
     public class PostOutcomesHttpTriggerServiceTests
     {
         private IPostOutcomesHttpTriggerService _postOutcomesHttpTriggerService;
-        private Mock<IDocumentDBProvider> _documentDbProvider;
+        private Mock<ICosmosDBProvider> _cosmosDbProvider;
         private Models.Outcomes _outcome;
 
         [SetUp]
         public void Setup()
         {
-            _documentDbProvider = new Mock<IDocumentDBProvider>();
-            _postOutcomesHttpTriggerService = new PostOutcomesHttpTriggerService(_documentDbProvider.Object);
+            _cosmosDbProvider = new Mock<ICosmosDBProvider>();
+            _postOutcomesHttpTriggerService = new PostOutcomesHttpTriggerService(_cosmosDbProvider.Object);
             _outcome = Substitute.For<Models.Outcomes>();
         }
 
@@ -67,7 +67,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
 
             responseField?.SetValue(resourceResponse, documentServiceResponse);
 
-            _documentDbProvider.Setup(x => x.CreateOutcomesAsync(It.IsAny<Models.Outcomes>())).Returns(Task.FromResult(resourceResponse));
+            _cosmosDbProvider.Setup(x => x.CreateOutcomesAsync(It.IsAny<Models.Outcomes>())).Returns(Task.FromResult(resourceResponse));
 
             // Act
             var result = await _postOutcomesHttpTriggerService.CreateAsync(_outcome);
