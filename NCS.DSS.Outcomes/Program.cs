@@ -13,41 +13,48 @@ using NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.Validation;
 
-var host = new HostBuilder()
-    .ConfigureFunctionsWebApplication()
-    .ConfigureServices(services =>
+namespace NCS.DSS.Outcomes
+{
+    internal class Program
     {
-        services.AddLogging();
-        services.AddApplicationInsightsTelemetryWorkerService();
-        services.ConfigureFunctionsApplicationInsights();
-        services.AddSingleton<IResourceHelper, ResourceHelper>();
-        services.AddSingleton<IValidate, Validate>();
-        services.AddSingleton<IHttpRequestHelper, HttpRequestHelper>();
-        services.AddSingleton<IHttpResponseMessageHelper, HttpResponseMessageHelper>();
-        services.AddSingleton<IJsonHelper, JsonHelper>();
-        services.AddSingleton<IDynamicHelper, DynamicHelper>();
-        services.AddSingleton<IDocumentDBProvider, DocumentDBProvider>();
-        services.AddScoped<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
-        services.AddScoped<IGetOutcomesHttpTriggerService, GetOutcomesHttpTriggerService>();
-        services.AddScoped<IGetOutcomesByIdHttpTriggerService, GetOutcomesByIdHttpTriggerService>();
-        services.AddScoped<IPostOutcomesHttpTriggerService, PostOutcomesHttpTriggerService>();
-        services.AddScoped<IPatchOutcomesHttpTriggerService, PatchOutcomesHttpTriggerService>();
-        services.AddScoped<IOutcomePatchService, OutcomePatchService>();
-    })
-    .ConfigureLogging(logging =>
-    {
-        // The Application Insights SDK adds a default logging filter that instructs ILogger to capture only Warning and more severe logs. Application Insights requires an explicit override.
-        // For more information, see https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide?tabs=windows#application-insights
-        logging.Services.Configure<LoggerFilterOptions>(options =>
+        private static async Task Main(string[] args)
         {
-            LoggerFilterRule defaultRule = options.Rules.FirstOrDefault(rule => rule.ProviderName
-                == "Microsoft.Extensions.Logging.ApplicationInsights.ApplicationInsightsLoggerProvider");
-            if (defaultRule is not null)
-            {
-                options.Rules.Remove(defaultRule);
-            }
-        });
-    })
-    .Build();
+            var host = new HostBuilder()
+                .ConfigureFunctionsWebApplication()
+                .ConfigureServices(services =>
+                {
+                    services.AddLogging();
+                    services.AddApplicationInsightsTelemetryWorkerService();
+                    services.ConfigureFunctionsApplicationInsights();
+                    services.AddSingleton<IResourceHelper, ResourceHelper>();
+                    services.AddSingleton<IValidate, Validate>();
+                    services.AddSingleton<IHttpRequestHelper, HttpRequestHelper>();
+                    services.AddSingleton<IHttpResponseMessageHelper, HttpResponseMessageHelper>();
+                    services.AddSingleton<IJsonHelper, JsonHelper>();
+                    services.AddSingleton<IDynamicHelper, DynamicHelper>();
+                    services.AddSingleton<IDocumentDBProvider, DocumentDBProvider>();
+                    services.AddScoped<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
+                    services.AddScoped<IGetOutcomesHttpTriggerService, GetOutcomesHttpTriggerService>();
+                    services.AddScoped<IGetOutcomesByIdHttpTriggerService, GetOutcomesByIdHttpTriggerService>();
+                    services.AddScoped<IPostOutcomesHttpTriggerService, PostOutcomesHttpTriggerService>();
+                    services.AddScoped<IPatchOutcomesHttpTriggerService, PatchOutcomesHttpTriggerService>();
+                    services.AddScoped<IOutcomePatchService, OutcomePatchService>();
 
-host.Run();
+                    services.Configure<LoggerFilterOptions>(options =>
+                    {
+                        // The Application Insights SDK adds a default logging filter that instructs ILogger to capture only Warning and more severe logs. Application Insights requires an explicit override.
+                        // Log levels can also be configured using appsettings.json. For more information, see https://learn.microsoft.com/en-us/azure/azure-monitor/app/worker-service#ilogger-logs
+                        LoggerFilterRule toRemove = options.Rules.FirstOrDefault(rule => rule.ProviderName
+                            == "Microsoft.Extensions.Logging.ApplicationInsights.ApplicationInsightsLoggerProvider");
+                        if (toRemove is not null)
+                        {
+                            options.Rules.Remove(toRemove);
+                        }
+                    });
+                })                
+                .Build();
+
+            await host.RunAsync();
+        }
+    }
+}

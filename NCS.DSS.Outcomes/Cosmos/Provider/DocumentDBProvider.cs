@@ -4,7 +4,6 @@ using Microsoft.Azure.Documents.Linq;
 using NCS.DSS.Outcomes.Cosmos.Client;
 using NCS.DSS.Outcomes.Cosmos.Helper;
 using Newtonsoft.Json.Linq;
-using System.Net;
 
 namespace NCS.DSS.Outcomes.Cosmos.Provider
 {
