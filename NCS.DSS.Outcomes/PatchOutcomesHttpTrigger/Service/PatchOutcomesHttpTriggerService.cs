@@ -9,11 +9,13 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
     {
         private readonly IOutcomePatchService _outcomePatchService;
         private readonly ICosmosDBProvider _cosmosDbProvider;
+        private readonly IOutcomesServiceBusClient _outcomesServiceBusClient;
 
-        public PatchOutcomesHttpTriggerService(ICosmosDBProvider cosmosDbProvider, IOutcomePatchService outcomePatchService)
+        public PatchOutcomesHttpTriggerService(ICosmosDBProvider cosmosDbProvider, IOutcomePatchService outcomePatchService, IOutcomesServiceBusClient outcomesServiceBusClient)
         {
             _cosmosDbProvider = cosmosDbProvider;
             _outcomePatchService = outcomePatchService;
+            _outcomesServiceBusClient = outcomesServiceBusClient;
         }
 
         public string UpdateOutcomeClaimedDateOutcomeEffectiveDateValue(string outcomeJson, bool setOutcomeClaimedDateToNull, bool setOutcomeEffectiveDateToNull)
@@ -58,7 +60,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
 
         public async Task SendToServiceBusQueueAsync(Models.Outcomes outcomes, Guid customerId, string reqUrl)
         {
-            await ServiceBusClient.SendPatchMessageAsync(outcomes, customerId, reqUrl);
+            await _outcomesServiceBusClient.SendPatchMessageAsync(outcomes, customerId, reqUrl);
         }
     }
 }

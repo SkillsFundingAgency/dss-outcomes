@@ -2,6 +2,7 @@
 using Moq;
 using NCS.DSS.Outcomes.Cosmos.Provider;
 using NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service;
+using NCS.DSS.Outcomes.ServiceBus;
 using NSubstitute;
 using NUnit.Framework;
 using System;
@@ -19,12 +20,14 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         private IPostOutcomesHttpTriggerService _postOutcomesHttpTriggerService;
         private Mock<ICosmosDBProvider> _cosmosDbProvider;
         private Models.Outcomes _outcome;
+        private Mock<IOutcomesServiceBusClient> _outcomesServiceBusClient;
 
         [SetUp]
         public void Setup()
         {
             _cosmosDbProvider = new Mock<ICosmosDBProvider>();
-            _postOutcomesHttpTriggerService = new PostOutcomesHttpTriggerService(_cosmosDbProvider.Object);
+            _outcomesServiceBusClient = new Mock<IOutcomesServiceBusClient>();
+            _postOutcomesHttpTriggerService = new PostOutcomesHttpTriggerService(_cosmosDbProvider.Object, _outcomesServiceBusClient.Object);
             _outcome = Substitute.For<Models.Outcomes>();
         }
 

@@ -1,3 +1,4 @@
+using Azure.Messaging.ServiceBus;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using DFC.Swagger.Standard;
@@ -12,6 +13,7 @@ using NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Service;
 using NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service;
+using NCS.DSS.Outcomes.ServiceBus;
 using NCS.DSS.Outcomes.Validation;
 
 namespace NCS.DSS.Outcomes
@@ -40,6 +42,7 @@ namespace NCS.DSS.Outcomes
                     services.AddScoped<IPostOutcomesHttpTriggerService, PostOutcomesHttpTriggerService>();
                     services.AddScoped<IPatchOutcomesHttpTriggerService, PatchOutcomesHttpTriggerService>();
                     services.AddScoped<IOutcomePatchService, OutcomePatchService>();
+                    services.AddScoped<IOutcomesServiceBusClient, OutcomesServiceBusClient>();
 
                     services.AddSingleton(s =>
                     {
@@ -47,6 +50,12 @@ namespace NCS.DSS.Outcomes
                         var outcomeConnectionString = Environment.GetEnvironmentVariable("OutcomeConnectionString");
 
                         return new CosmosClient(outcomeConnectionString, options);
+                    });
+
+                    services.AddSingleton(s =>
+                    {
+                        var serviceBusConnectionString = Environment.GetEnvironmentVariable("ServiceBusConnectionString");
+                        return new ServiceBusClient(serviceBusConnectionString);
                     });
 
                     services.Configure<LoggerFilterOptions>(options =>

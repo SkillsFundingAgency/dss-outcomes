@@ -1,17 +1,22 @@
-﻿using Microsoft.Azure.ServiceBus;
+﻿using Azure.Messaging.ServiceBus;
 using Newtonsoft.Json;
 using System.Text;
 
 namespace NCS.DSS.Outcomes.ServiceBus
 {
-    public static class ServiceBusClient
+    public class OutcomesServiceBusClient : IOutcomesServiceBusClient
     {
+        private readonly ServiceBusClient _serviceBusClient;
         public static readonly string QueueName = Environment.GetEnvironmentVariable("QueueName");
-        public static readonly string ServiceBusConnectionString = Environment.GetEnvironmentVariable("ServiceBusConnectionString");
 
-        public static async Task SendPostMessageAsync(Models.Outcomes outcomes, string reqUrl)
+        public OutcomesServiceBusClient(ServiceBusClient serviceBusClient)
         {
-            var queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
+            _serviceBusClient = serviceBusClient;
+        }
+
+        public async Task SendPostMessageAsync(Models.Outcomes outcomes, string reqUrl)
+        {
+            var serviceBusSender = _serviceBusClient.CreateSender(QueueName);
 
             var messageModel = new MessageModel()
             {
@@ -23,18 +28,18 @@ namespace NCS.DSS.Outcomes.ServiceBus
                 TouchpointId = outcomes.LastModifiedTouchpointId
             };
 
-            var msg = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(messageModel)))
+            var msg = new ServiceBusMessage(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(messageModel)))
             {
                 ContentType = "application/json",
                 MessageId = outcomes.CustomerId + " " + DateTime.UtcNow
             };
 
-            await queueClient.SendAsync(msg);
+            await serviceBusSender.SendMessageAsync(msg);
         }
 
-        public static async Task SendPatchMessageAsync(Models.Outcomes outcomes, Guid customerId, string reqUrl)
+        public async Task SendPatchMessageAsync(Models.Outcomes outcomes, Guid customerId, string reqUrl)
         {
-            var queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
+            var serviceBusSender = _serviceBusClient.CreateSender(QueueName);
 
             var messageModel = new MessageModel
             {
@@ -46,23 +51,13 @@ namespace NCS.DSS.Outcomes.ServiceBus
                 TouchpointId = outcomes.LastModifiedTouchpointId
             };
 
-            var msg = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(messageModel)))
+            var msg = new ServiceBusMessage(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(messageModel)))
             {
                 ContentType = "application/json",
                 MessageId = customerId + " " + DateTime.UtcNow
             };
 
-            await queueClient.SendAsync(msg);
+            await serviceBusSender.SendMessageAsync(msg);
         }
-    }
-
-    public class MessageModel
-    {
-        public string TitleMessage { get; set; }
-        public Guid? CustomerGuid { get; set; }
-        public DateTime? LastModifiedDate { get; set; }
-        public string URL { get; set; }
-        public bool IsNewCustomer { get; set; }
-        public string TouchpointId { get; set; }
     }
 }
