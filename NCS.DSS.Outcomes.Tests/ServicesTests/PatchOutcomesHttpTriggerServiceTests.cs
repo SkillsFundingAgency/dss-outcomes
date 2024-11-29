@@ -1,5 +1,4 @@
-﻿using Microsoft.Azure.Documents;
-using Microsoft.Azure.Documents.Client;
+﻿using Microsoft.Azure.Cosmos;
 using Moq;
 using NCS.DSS.Outcomes.Cosmos.Provider;
 using NCS.DSS.Outcomes.Models;
@@ -8,6 +7,7 @@ using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 using System;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace NCS.DSS.Outcomes.Tests.ServicesTests
@@ -84,9 +84,9 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         public async Task PatchOutcomesHttpTriggerServiceTests_UpdateCosmosAsync_ReturnsNullWhenResourceCannotBeFound()
         {
             // Arrange
-            var outcomePatch = new Models.OutcomesPatch { OutcomeEffectiveDate = DateTime.MaxValue };
+            var outcomePatch = new OutcomesPatch { OutcomeEffectiveDate = DateTime.MaxValue };
             var json = JsonConvert.SerializeObject(outcomePatch);
-            _cosmosDbProvider.Setup(x => x.CreateOutcomesAsync(It.IsAny<Models.Outcomes>())).Returns(Task.FromResult(new ResourceResponse<Document>(null)));
+            _cosmosDbProvider.Setup(x => x.CreateOutcomesAsync(It.IsAny<Models.Outcomes>())).Returns(Task.FromResult(new Mock<ItemResponse<Models.Outcomes>>().Object));
 
             // Act
             var result = await _outcomePatchHttpTriggerService.UpdateCosmosAsync(json, _outcomeId);
@@ -98,38 +98,44 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         [Test]
         public async Task PatchOutcomesHttpTriggerServiceTests_UpdateCosmosAsync_ReturnsResourceWhenUpdated()
         {
-            //var _outcome = Substitute.For<Models.Outcomes>();
-            //const string documentServiceResponseClass = "Microsoft.Azure.Documents.DocumentServiceResponse, Microsoft.Azure.DocumentDB.Core, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
-            //const string dictionaryNameValueCollectionClass = "Microsoft.Azure.Documents.Collections.DictionaryNameValueCollection, Microsoft.Azure.DocumentDB.Core, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
-            //_outcomePatchService.Object.Patch(_json, _outcomePatch).Returns(_outcome.ToString());
-            //var resourceResponse = new ResourceResponse<Document>(new Document());
-            //var documentServiceResponseType = Type.GetType(documentServiceResponseClass);
+            var outcomePatch = new OutcomesPatch { OutcomeEffectiveDate = DateTime.MaxValue };
+            var json = JsonConvert.SerializeObject(outcomePatch);
 
-            //const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
+            var mockOutcome = new Models.Outcomes
+            {
+                OutcomeId = new Guid("9c0d182f-5d62-4b64-921e-ab80d6352c57"),
+                CustomerId = new Guid("8840cb20-2436-431b-9e93-5899bb6ea966"),
+                ActionPlanId = new Guid("22b49d9f-f6eb-4aff-919e-e1dc7f413db7"),
+                SessionId = new Guid("cce61da8-b7a8-4843-b308-39c8c380210e"),
+                SubcontractorId = "12345678",
+                OutcomeType = ReferenceData.OutcomeType.CareersManagement,
+                OutcomeClaimedDate = null,
+                OutcomeEffectiveDate = null,
+                IsPriorityCustomer = false,
+                TouchpointId = "9999999999",
+                LastModifiedTouchpointId = "9999999999"
+            };
 
-            //var headers = new NameValueCollection { { "x-ms-request-charge", "0" } };
+            var mockItemResponse = new Mock<ItemResponse<Models.Outcomes>>();
 
-            //var headersDictionaryType = Type.GetType(dictionaryNameValueCollectionClass);
+            mockItemResponse
+            .Setup(response => response.Resource)
+            .Returns(mockOutcome);
+            mockItemResponse
+            .Setup(response => response.StatusCode)
+            .Returns(HttpStatusCode.OK);
 
-            //var headersDictionaryInstance = Activator.CreateInstance(headersDictionaryType, headers);
+            var resourceResponse = mockItemResponse.Object;
 
-            //var arguments = new[] { Stream.Null, headersDictionaryInstance, HttpStatusCode.OK, null };
 
-            //var documentServiceResponse = documentServiceResponseType.GetTypeInfo().GetConstructors(flags)[0].Invoke(arguments);
+            _cosmosDbProvider.Setup(x => x.UpdateOutcomesAsync(It.IsAny<string>(), It.IsAny<Guid>())).Returns(Task.FromResult(resourceResponse));
 
-            //var responseField = typeof(ResourceResponse<Document>).GetTypeInfo().GetField("response", flags);
+            // Act
+            var result = await _outcomePatchHttpTriggerService.UpdateCosmosAsync(json, _outcomeId);
 
-            //responseField?.SetValue(resourceResponse, documentServiceResponse);
-
-            //_documentDbProvider.Object.UpdateOutcomesAsync(It.IsAny<string>(), It.IsAny<Guid>()).Returns(Task.FromResult(resourceResponse).Result);
-
-            //// Act
-            //var result = await _outcomePatchHttpTriggerService.UpdateCosmosAsync(_outcome.ToString(), _outcomeId);
-
-            //// Assert
-            //Assert.IsNotNull(result);
-            //Assert.IsInstanceOf<Models.Outcomes>(result);
-
+            // Assert
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Is.InstanceOf<Models.Outcomes>());
         }
 
         [Test]

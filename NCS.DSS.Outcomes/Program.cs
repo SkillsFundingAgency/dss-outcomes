@@ -1,6 +1,7 @@
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using DFC.Swagger.Standard;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -40,6 +41,14 @@ namespace NCS.DSS.Outcomes
                     services.AddScoped<IPatchOutcomesHttpTriggerService, PatchOutcomesHttpTriggerService>();
                     services.AddScoped<IOutcomePatchService, OutcomePatchService>();
 
+                    services.AddSingleton(s =>
+                    {
+                        var options = new CosmosClientOptions() { ConnectionMode = ConnectionMode.Gateway };
+                        var outcomeConnectionString = Environment.GetEnvironmentVariable("OutcomeConnectionString");
+
+                        return new CosmosClient(outcomeConnectionString, options);
+                    });
+
                     services.Configure<LoggerFilterOptions>(options =>
                     {
                         // The Application Insights SDK adds a default logging filter that instructs ILogger to capture only Warning and more severe logs. Application Insights requires an explicit override.
@@ -51,7 +60,7 @@ namespace NCS.DSS.Outcomes
                             options.Rules.Remove(toRemove);
                         }
                     });
-                })                
+                })
                 .Build();
 
             await host.RunAsync();

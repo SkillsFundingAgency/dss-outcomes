@@ -46,7 +46,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
 
             var responseStatusCode = response?.StatusCode;
 
-            return responseStatusCode == HttpStatusCode.OK ? (dynamic)response.Resource : null;
+            return responseStatusCode == HttpStatusCode.OK ? response.Resource : null;
         }
 
         public async Task<string> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionPlanId, Guid outcomeId)

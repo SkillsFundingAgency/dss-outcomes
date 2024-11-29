@@ -22,7 +22,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service
 
             var response = await _cosmosDbProvider.CreateOutcomesAsync(outcomes);
 
-            return response.StatusCode == HttpStatusCode.Created ? (dynamic)response.Resource : null;
+            return response.StatusCode == HttpStatusCode.Created ? response.Resource : null;
         }
 
         public async Task SendToServiceBusQueueAsync(Models.Outcomes outcomes, string reqUrl)

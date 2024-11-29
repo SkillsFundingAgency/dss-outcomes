@@ -43,19 +43,19 @@ namespace NCS.DSS.Outcomes.Cosmos.Helper
             return string.IsNullOrWhiteSpace(reasonForTermination) ? 99 : int.Parse(reasonForTermination);
         }
 
-        public bool DoesInteractionExistAndBelongToCustomer(Guid interactionId, Guid customerId)
+        public async Task<bool> DoesInteractionExistAndBelongToCustomer(Guid interactionId, Guid customerId)
         {
-            return _cosmosDbProvider.DoesInteractionResourceExistAndBelongToCustomer(interactionId, customerId);
+            return await _cosmosDbProvider.DoesInteractionResourceExistAndBelongToCustomer(interactionId, customerId);
         }
 
-        public bool DoesActionPlanResourceExistAndBelongToCustomer(Guid actionplanId, Guid interactionId, Guid customerId)
+        public async Task<bool> DoesActionPlanResourceExistAndBelongToCustomer(Guid actionplanId, Guid interactionId, Guid customerId)
         {
-            return _cosmosDbProvider.DoesActionPlanResourceExistAndBelongToCustomer(actionplanId, interactionId, customerId);
+            return await _cosmosDbProvider.DoesActionPlanResourceExistAndBelongToCustomer(actionplanId, interactionId, customerId);
         }
 
-        public bool DoesSessionExistAndBelongToCustomer(Guid sessionId, Guid interactionId, Guid customerId)
+        public async Task<bool> DoesSessionExistAndBelongToCustomer(Guid sessionId, Guid interactionId, Guid customerId)
         {
-            return _cosmosDbProvider.DoesSessionResourceExistAndBelongToCustomer(sessionId, interactionId, customerId);
+            return await _cosmosDbProvider.DoesSessionResourceExistAndBelongToCustomer(sessionId, interactionId, customerId);
         }
 
         public async Task<DateTime?> GetDateAndTimeOfSession(Guid sessionId)
@@ -64,6 +64,5 @@ namespace NCS.DSS.Outcomes.Cosmos.Helper
 
             return dateAndTimeOfSession;
         }
-
     }
 }

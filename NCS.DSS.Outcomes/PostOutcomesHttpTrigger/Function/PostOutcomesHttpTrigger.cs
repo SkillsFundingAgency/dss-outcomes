@@ -160,7 +160,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             }
 
             _logger.LogInformation($"Attempting to get Interaction ({interactionGuid}) for Customer ({customerGuid})");
-            var doesInteractionExist = _resourceHelper.DoesInteractionExistAndBelongToCustomer(interactionGuid, customerGuid);
+            var doesInteractionExist = await _resourceHelper.DoesInteractionExistAndBelongToCustomer(interactionGuid, customerGuid);
 
             if (!doesInteractionExist)
             {
@@ -176,7 +176,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             var dateAndTimeOfSession = await _resourceHelper.GetDateAndTimeOfSession(outcomesRequest.SessionId.GetValueOrDefault());
 
             _logger.LogInformation($"Attempting to get Action Plan ({actionplanGuid}) for Customer ({customerGuid}). Interaction GUID: {interactionGuid}");
-            var doesActionPlanExist = _resourceHelper.DoesActionPlanResourceExistAndBelongToCustomer(actionplanGuid, interactionGuid, customerGuid);
+            var doesActionPlanExist = await _resourceHelper.DoesActionPlanResourceExistAndBelongToCustomer(actionplanGuid, interactionGuid, customerGuid);
 
             if (!doesActionPlanExist)
             {

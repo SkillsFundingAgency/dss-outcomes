@@ -1,5 +1,4 @@
-﻿using Microsoft.Azure.Documents;
-using Microsoft.Azure.Documents.Client;
+﻿using Microsoft.Azure.Cosmos;
 using Moq;
 using NCS.DSS.Outcomes.Cosmos.Provider;
 using NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service;
@@ -48,7 +47,32 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             const string documentServiceResponseClass = "Microsoft.Azure.Documents.DocumentServiceResponse, Microsoft.Azure.DocumentDB.Core, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
             const string dictionaryNameValueCollectionClass = "Microsoft.Azure.Documents.Collections.DictionaryNameValueCollection, Microsoft.Azure.DocumentDB.Core, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
 
-            var resourceResponse = new ResourceResponse<Document>(new Document());
+            var mockOutcome = new Models.Outcomes
+            {
+                OutcomeId = new Guid("9c0d182f-5d62-4b64-921e-ab80d6352c57"),
+                CustomerId = new Guid("8840cb20-2436-431b-9e93-5899bb6ea966"),
+                ActionPlanId = new Guid("22b49d9f-f6eb-4aff-919e-e1dc7f413db7"),
+                SessionId = new Guid("cce61da8-b7a8-4843-b308-39c8c380210e"),
+                SubcontractorId = "12345678",
+                OutcomeType = ReferenceData.OutcomeType.CareersManagement,
+                OutcomeClaimedDate = null,
+                OutcomeEffectiveDate = null,
+                IsPriorityCustomer = false,
+                TouchpointId = "9999999999",
+                LastModifiedTouchpointId = "9999999999"
+            };
+
+            var mockItemResponse = new Mock<ItemResponse<Models.Outcomes>>();
+
+            mockItemResponse
+            .Setup(response => response.Resource)
+            .Returns(mockOutcome);
+            mockItemResponse
+            .Setup(response => response.StatusCode)
+            .Returns(HttpStatusCode.Created);
+
+            var resourceResponse = mockItemResponse.Object;
+
             var documentServiceResponseType = Type.GetType(documentServiceResponseClass);
 
             const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
@@ -63,7 +87,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
 
             var documentServiceResponse = documentServiceResponseType.GetTypeInfo().GetConstructors(flags)[0].Invoke(arguments);
 
-            var responseField = typeof(ResourceResponse<Document>).GetTypeInfo().GetField("response", flags);
+            var responseField = typeof(ItemResponse<Models.Outcomes>).GetTypeInfo().GetField("response", flags);
 
             responseField?.SetValue(resourceResponse, documentServiceResponse);
 
@@ -75,7 +99,6 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             // Assert
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.InstanceOf<Models.Outcomes>());
-
         }
     }
 }
