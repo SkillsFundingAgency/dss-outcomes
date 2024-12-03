@@ -137,7 +137,9 @@ namespace NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Function
             _logger.LogInformation($"Function {nameof(GetOutcomesByIdHttpTrigger)} has finished invocation");
 
             if (outcomes == null)
+            {
                 return new NoContentResult();
+            }
 
             return new JsonResult(outcomes, new JsonSerializerOptions())
             {
