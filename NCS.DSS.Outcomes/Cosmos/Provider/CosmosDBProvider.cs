@@ -1,5 +1,7 @@
 ﻿using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using NCS.DSS.Outcomes.Models;
 using Newtonsoft.Json;
 
 namespace NCS.DSS.Outcomes.Cosmos.Provider
@@ -14,27 +16,22 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
         private readonly Container _actionPlanContainer;
         private readonly ILogger<CosmosDBProvider> _logger;
 
-        private readonly string _databaseId = Environment.GetEnvironmentVariable("DatabaseId");
-        private readonly string _containerId = Environment.GetEnvironmentVariable("CollectionId");
-        private readonly string _customerDatabaseId = Environment.GetEnvironmentVariable("CustomerDatabaseId");
-        private readonly string _customerContainerId = Environment.GetEnvironmentVariable("CustomerCollectionId");
-        private readonly string _sessionDatabaseId = Environment.GetEnvironmentVariable("SessionDatabaseId");
-        private readonly string _sessionContainerId = Environment.GetEnvironmentVariable("SessionCollectionId");
-        private readonly string _interactionDatabaseId = Environment.GetEnvironmentVariable("InteractionDatabaseId");
-        private readonly string _interactionContainerId = Environment.GetEnvironmentVariable("InteractionCollectionId");
-        private readonly string _actionPlanDatabaseId = Environment.GetEnvironmentVariable("ActionPlanDatabaseId");
-        private readonly string _actionPlanContainerId = Environment.GetEnvironmentVariable("ActionPlanCollectionId");
-
         public CosmosDBProvider(CosmosClient cosmosClient,
+            IOptions<OutcomesConfigurationSettings> configOptions,
             ILogger<CosmosDBProvider> logger)
         {
-            _container = cosmosClient.GetContainer(_databaseId, _containerId);
-            _customerContainer = cosmosClient.GetContainer(_customerDatabaseId, _customerContainerId);
-            _sessionContainer = cosmosClient.GetContainer(_sessionDatabaseId, _sessionContainerId);
-            _interactionContainer = cosmosClient.GetContainer(_interactionDatabaseId, _interactionContainerId);
-            _actionPlanContainer = cosmosClient.GetContainer(_actionPlanDatabaseId, _actionPlanContainerId);
+            var config = configOptions.Value;
+
+            _container = GetContainer(cosmosClient, config.DatabaseId, config.CollectionId);
+            _customerContainer = GetContainer(cosmosClient, config.CustomerDatabaseId, config.CustomerCollectionId);
+            _sessionContainer = GetContainer(cosmosClient, config.SessionDatabaseId, config.SessionCollectionId);
+            _interactionContainer = GetContainer(cosmosClient, config.InteractionDatabaseId, config.InteractionCollectionId);
+            _actionPlanContainer = GetContainer(cosmosClient, config.ActionPlanDatabaseId, config.ActionPlanCollectionId);
             _logger = logger;
         }
+
+        private static Container GetContainer(CosmosClient cosmosClient, string databaseId, string collectionId)
+            => cosmosClient.GetContainer(databaseId, collectionId);
 
         public string GetCustomerJson()
         {

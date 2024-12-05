@@ -7,10 +7,12 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NCS.DSS.Outcomes.Cosmos.Helper;
 using NCS.DSS.Outcomes.Cosmos.Provider;
 using NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Service;
 using NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Service;
+using NCS.DSS.Outcomes.Models;
 using NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.ServiceBus;
@@ -24,8 +26,12 @@ namespace NCS.DSS.Outcomes
         {
             var host = new HostBuilder()
                 .ConfigureFunctionsWebApplication()
-                .ConfigureServices(services =>
+                .ConfigureServices((context, services) =>
                 {
+                    var configuration = context.Configuration;
+                    services.AddOptions<OutcomesConfigurationSettings>()
+                        .Bind(configuration);
+
                     services.AddLogging();
                     services.AddApplicationInsightsTelemetryWorkerService();
                     services.ConfigureFunctionsApplicationInsights();
@@ -46,16 +52,16 @@ namespace NCS.DSS.Outcomes
 
                     services.AddSingleton(s =>
                     {
+                        var settings = s.GetRequiredService<IOptions<OutcomesConfigurationSettings>>().Value;
                         var options = new CosmosClientOptions() { ConnectionMode = ConnectionMode.Gateway };
-                        var outcomeConnectionString = Environment.GetEnvironmentVariable("OutcomeConnectionString");
 
-                        return new CosmosClient(outcomeConnectionString, options);
+                        return new CosmosClient(settings.OutcomeConnectionString, options);
                     });
 
                     services.AddSingleton(s =>
                     {
-                        var serviceBusConnectionString = Environment.GetEnvironmentVariable("ServiceBusConnectionString");
-                        return new ServiceBusClient(serviceBusConnectionString);
+                        var settings = s.GetRequiredService<IOptions<OutcomesConfigurationSettings>>().Value;
+                        return new ServiceBusClient(settings.ServiceBusConnectionString);
                     });
 
                     services.Configure<LoggerFilterOptions>(options =>

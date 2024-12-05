@@ -1,5 +1,7 @@
 ﻿using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using NCS.DSS.Outcomes.Models;
 using Newtonsoft.Json;
 using System.Text;
 
@@ -9,17 +11,26 @@ namespace NCS.DSS.Outcomes.ServiceBus
     {
         private readonly ServiceBusClient _serviceBusClient;
         private readonly ILogger<OutcomesServiceBusClient> _logger;
-        public static readonly string QueueName = Environment.GetEnvironmentVariable("QueueName");
+        private readonly string _queueName;
 
-        public OutcomesServiceBusClient(ServiceBusClient serviceBusClient, ILogger<OutcomesServiceBusClient> logger)
+        public OutcomesServiceBusClient(ServiceBusClient serviceBusClient,
+            IOptions<OutcomesConfigurationSettings> configOptions,
+            ILogger<OutcomesServiceBusClient> logger)
         {
+            var config = configOptions.Value;
+            if (string.IsNullOrEmpty(config.QueueName))
+            {
+                throw new ArgumentNullException(nameof(config.QueueName), "QueueName cannot be null or empty.");
+            }
+
             _serviceBusClient = serviceBusClient;
+            _queueName = config.QueueName;
             _logger = logger;
         }
 
         public async Task SendPostMessageAsync(Models.Outcomes outcomes, string reqUrl)
         {
-            var serviceBusSender = _serviceBusClient.CreateSender(QueueName);
+            var serviceBusSender = _serviceBusClient.CreateSender(_queueName);
 
             var messageModel = new MessageModel()
             {
@@ -46,7 +57,7 @@ namespace NCS.DSS.Outcomes.ServiceBus
 
         public async Task SendPatchMessageAsync(Models.Outcomes outcomes, Guid customerId, string reqUrl)
         {
-            var serviceBusSender = _serviceBusClient.CreateSender(QueueName);
+            var serviceBusSender = _serviceBusClient.CreateSender(_queueName);
 
             var messageModel = new MessageModel
             {
