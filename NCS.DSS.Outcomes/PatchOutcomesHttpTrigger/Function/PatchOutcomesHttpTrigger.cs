@@ -64,7 +64,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
         )]
         public async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Interactions/{interactionId}/ActionPlans/{actionplanId}/Outcomes/{outcomeId}")] HttpRequest req, string customerId, string interactionId, string actionplanId, string outcomeId)
         {
-            _logger.LogInformation($"Function {nameof(PatchOutcomesHttpTrigger)} has been invoked");
+            _logger.LogInformation("Function {FunctionName} has been invoked", nameof(PatchOutcomesHttpTrigger));
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
             if (string.IsNullOrEmpty(correlationId))
@@ -79,47 +79,47 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                _logger.LogInformation($"Unable to locate 'TouchpointId' in request header. Correlation GUID: {correlationGuid}");
+                _logger.LogWarning("Unable to locate 'TouchpointId' in request header. Correlation GUID: {CorrelationGuid}", correlationGuid);
                 return new BadRequestObjectResult("Unable to locate 'TouchpointId' in request header.");
             }
 
             var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subcontractorId))
             {
-                _logger.LogInformation($"Unable to locate 'SubcontractorId' in request header. Correlation GUID: {correlationGuid}");
+                _logger.LogWarning("Unable to locate 'SubcontractorId' in request header. Correlation GUID: {CorrelationGuid}", correlationGuid);
                 return new BadRequestObjectResult("Unable to locate 'SubcontractorId' in request header");
             }
 
             var apimUrl = _httpRequestHelper.GetDssApimUrl(req);
             if (string.IsNullOrEmpty(apimUrl))
             {
-                _logger.LogInformation($"Unable to locate 'apimurl' in request header. Correlation GUID: {correlationGuid}");
+                _logger.LogWarning("Unable to locate 'apimURL' in request header. Correlation GUID: {CorrelationGuid}", correlationGuid);
                 return new BadRequestObjectResult("Unable to locate 'apimurl' in request header");
             }
 
-            _logger.LogInformation($"Header validation successful. Associated Touchpoint ID: {touchpointId}");
+            _logger.LogInformation("Header validation successful. Associated Touchpoint ID: {TouchpointId}", touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
-                _logger.LogInformation($"Unable to parse 'customerId' to a GUID. Customer ID: {customerId}");
+                _logger.LogWarning("Unable to parse 'customerId' to a GUID. Customer GUID: {CustomerID}", customerId);
                 return new BadRequestObjectResult(customerGuid);
             }
 
             if (!Guid.TryParse(interactionId, out var interactionGuid))
             {
-                _logger.LogInformation($"Unable to parse 'interactionId' to a GUID. Interaction ID: {interactionId}");
+                _logger.LogWarning("Unable to parse 'interactionId' to a GUID. Interaction ID: {InteractionId}", interactionId);
                 return new BadRequestObjectResult(interactionGuid);
             }
 
             if (!Guid.TryParse(actionplanId, out var actionPlanGuid))
             {
-                _logger.LogInformation($"Unable to parse 'actionPlanId' to a GUID. Action Plan ID: {actionplanId}");
+                _logger.LogWarning("Unable to parse 'actionPlanId' to a GUID. Action Plan ID: {ActionplanId}", actionplanId);
                 return new BadRequestObjectResult(actionPlanGuid);
             }
 
             if (!Guid.TryParse(outcomeId, out var outcomesGuid))
             {
-                _logger.LogInformation($"Unable to parse 'outcomeId' to a GUID. Outcome ID: {outcomeId}");
+                _logger.LogWarning("Unable to parse 'outcomeId' to a GUID. OutcomeId ID: {OutcomeId}", outcomeId);
                 return new BadRequestObjectResult(outcomesGuid);
             }
 
@@ -133,12 +133,13 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
 
             try
             {
+                _logger.LogInformation("Attempting to read request body. Correlation GUID: {CorrelationGuid}", correlationGuid);
                 requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 req.Body.Position = 0;
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Unable to read request body. Correlation GUID: {correlationGuid}", ex);
+                _logger.LogError(ex, "Unable to read request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", correlationGuid, ex.Message);
                 throw;
             }
 
@@ -160,50 +161,51 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                     requestCount = requestObject.Count;
             }
 
-            _logger.LogInformation("Attempting to get resource from body of the request.");
+            _logger.LogInformation("Request body is retrieved successfully. Correlation GUID: {CorrelationGuid}", correlationGuid);
 
+            _logger.LogInformation("Attempting to retrieve resource from request. Correlation GUID: {CorrelationGuid}", correlationGuid);
             try
             {
                 outcomesPatchRequest = await _httpRequestHelper.GetResourceFromRequest<Models.OutcomesPatch>(req);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Unable to retrieve request body. Correlation GUID: {correlationGuid}", ex);
+                _logger.LogError(ex, "Unable to parse {OutcomesPatchRequest} from request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", nameof(outcomesPatchRequest), correlationGuid, ex.Message);
                 return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ExceptionToExclude));
             }
 
+            _logger.LogInformation("Retrieved resource from request body. Correlation GUID: {CorrelationGuid}", correlationGuid);
+
             if (outcomesPatchRequest == null)
             {
-                _logger.LogInformation($"Outcome patch request is NULL. Correlation GUID: {correlationGuid}");
+                _logger.LogWarning("{outcomesPatchRequest} object is NULL. Correlation GUID: {CorrelationGuid}", nameof(outcomesPatchRequest), correlationGuid);
                 return new UnprocessableEntityObjectResult(req);
             }
 
-            _logger.LogInformation($"Attempting to set IDs for Outcome PATCH. Correlation GUID: {correlationGuid}");
+            _logger.LogInformation("Attempting to set IDs for Outcome PATCH. Correlation GUID: {CorrelationGuid}", correlationGuid);
             outcomesPatchRequest.SetIds(touchpointId, subcontractorId);
-            _logger.LogInformation($"IDs successfully set for Outcome PATCH. Correlation GUID: {correlationGuid}");
+            _logger.LogInformation("IDs successfully set for Outcome PATCH. Correlation GUID: {CorrelationGuid}", correlationGuid);
 
-            _logger.LogInformation($"Attempting to see if customer exists. Customer GUID: {customerGuid}");
+            _logger.LogInformation("Attempting to check if customer exists. Customer GUID: {CustomerId}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
             var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
             {
-                _logger.LogInformation($"Customer does not exist. Customer GUID: {customerGuid}");
+                _logger.LogWarning("Customer does not exist. Customer GUID: {CustomerGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
                 return new NoContentResult();
             }
-            else
-            {
-                _logger.LogInformation($"Customer does exist. Customer GUID: {customerGuid}");
-            }
 
-            _logger.LogInformation($"Attempting to see if this customer ({customerGuid}) is read-only");
+            _logger.LogInformation("Customer exists. Customer GUID: {CustomerGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
+
+            _logger.LogInformation("Attempting to check if customer is read-only. Customer GUID: {CustomerId}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
             var isCustomerReadOnly = _resourceHelper.IsCustomerReadOnly();
 
-            _logger.LogInformation($"Attempting to see if this customer ({customerGuid}) has a termination reason");
+            _logger.LogInformation("Attempting to check if customer has a termination reason. Customer GUID: {CustomerId}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
             var isADuplicateCustomer = _resourceHelper.GetCustomerReasonForTermination();
 
             if (isCustomerReadOnly && isADuplicateCustomer != 3)
             {
-                _logger.LogInformation($"Customer ({customerGuid}) is read-only");
+                _logger.LogWarning("Customer is read-only. Customer GUID: {CustomerId}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
                 return new ObjectResult(customerGuid.ToString())
                 {
                     StatusCode = (int)HttpStatusCode.Forbidden
@@ -215,8 +217,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                 bool customerIsDuplicate = requestCount > 2 || requestCount == 1 && !setOutcomeClaimedDateToNull && !setOutcomeEffectiveDateToNull || (requestCount == 2 && (!setOutcomeClaimedDateToNull || !setOutcomeEffectiveDateToNull));
                 if (customerIsDuplicate)
                 {
-                    _logger.LogInformation($"Duplicate Customer ({customerGuid}): This resource is read only. You may only remove values for Outcome Claimed and Effective date. Correlation GUID: {correlationGuid}");
-
+                    _logger.LogWarning("Duplicate Customer. This resource is read only. You may only remove values for Outcome Claimed and Effective date. Customer GUID: {CustomerId}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
                     return new ObjectResult(new HttpErrorResponse(new List<string> { "Duplicate Customer: This resource is read only. You may only remove values for Outcome Claimed and Effective date" }, correlationGuid))
                     {
                         StatusCode = (int)HttpStatusCode.Forbidden
@@ -224,44 +225,38 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                 }
             }
 
-            _logger.LogInformation($"Attempting to get Interaction ({interactionGuid}) for Customer ({customerGuid})");
+            _logger.LogInformation("Attempting to get Interaction for Customer. Customer GUID: {CustomerId}. Interaction GUID: {InteractionGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, interactionGuid, correlationGuid);
             var doesInteractionExist = await _resourceHelper.DoesInteractionExistAndBelongToCustomer(interactionGuid, customerGuid);
 
             if (!doesInteractionExist)
             {
-                _logger.LogInformation($"Interaction does not exist. Interaction GUID: {interactionGuid}");
+                _logger.LogWarning("Interaction does not exist. Customer GUID: {CustomerId}. Interaction GUID: {InteractionGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, interactionGuid, correlationGuid);
                 return new NoContentResult();
             }
-            else
-            {
-                _logger.LogInformation($"Interaction does exist. Interaction GUID: {interactionGuid}");
-            }
+            _logger.LogInformation("Interaction exists. Customer GUID: {CustomerId}. Interaction GUID: {InteractionGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, interactionGuid, correlationGuid);
 
-            _logger.LogInformation($"Attempting to get Action Plan ({actionPlanGuid}) for Customer ({customerGuid})");
+
+            _logger.LogInformation("Attempting to get Action Plan for Customer. Customer GUID: {CustomerId}. Action Plan GUID: {ActionPlanGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, actionPlanGuid, correlationGuid);
             var doesActionPlanExist = await _resourceHelper.DoesActionPlanResourceExistAndBelongToCustomer(actionPlanGuid, interactionGuid, customerGuid);
 
             if (!doesActionPlanExist)
             {
-                _logger.LogInformation($"Action Plan does not exist. Action Plan GUID: {actionPlanGuid}");
+                _logger.LogWarning("Action Plan does not exist. Customer GUID: {CustomerId}. Action Plan GUID: {ActionPlanGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, actionPlanGuid, correlationGuid);
                 return new NoContentResult();
             }
-            else
-            {
-                _logger.LogInformation($"Action Plan does exist. Action Plan GUID: {actionPlanGuid}");
-            }
+            _logger.LogInformation("Action Plan exists. Customer GUID: {CustomerId}. Action Plan GUID: {ActionPlanGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, actionPlanGuid, correlationGuid);
 
-            _logger.LogInformation($"Attempting to get Outcome ({outcomesGuid}) for Customer ({customerGuid})");
+
+            _logger.LogInformation("Attempting to get Outcome for Customer. Customer GUID: {CustomerId}. Outcome GUID: {OutcomeGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, outcomesGuid, correlationGuid);
             var outcome = await _outcomesPatchService.GetOutcomesForCustomerAsync(customerGuid, interactionGuid, actionPlanGuid, outcomesGuid);
 
             if (outcome == null)
             {
-                _logger.LogInformation($"Outcome does not exist. Outcome GUID: {outcomesGuid}");
+                _logger.LogInformation("Outcome does not exist. Customer GUID: {CustomerId}. Outcome GUID: {OutcomeGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, outcomesGuid, correlationGuid);
                 return new NoContentResult();
             }
-            else
-            {
-                _logger.LogInformation($"Outcome does exist. Outcome GUID: {outcomesGuid}");
-            }
+            _logger.LogInformation("Outcome exists. Customer GUID: {CustomerId}. Outcome GUID: {OutcomeGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, outcomesGuid, correlationGuid);
+
 
             _logger.LogInformation("Attempting to PATCH Outcome resource.");
             var patchedOutcomeResource = _outcomesPatchService.PatchResource(outcome, outcomesPatchRequest);
@@ -291,43 +286,52 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             }
             catch (JsonException ex)
             {
-                _logger.LogError($"Failure deserializing the PATCH Outcome resource. Correlation GUID: {correlationGuid}", ex);
+                _logger.LogError(ex, "Failure deserializing the PATCH Outcome resource. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", correlationGuid, ex.Message);
                 throw;
             }
 
             if (outcomeValidationObject == null)
             {
-                _logger.LogInformation($"Outcome validation object is NULL. Correlation GUID: {correlationGuid}");
+                _logger.LogWarning("Outcome validation object is NULL. Correlation GUID: {CorrelationGuid}", correlationGuid);
                 return new UnprocessableEntityObjectResult(req);
             }
 
-            _logger.LogInformation($"Attempting to get GetDateAndTimeOfSession for Session. Session ID: {outcomeValidationObject.SessionId}");
+            _logger.LogInformation("Attempting to get DateAndTimeOfSession for Session. Session ID: {SessionId}", outcomeValidationObject.SessionId);
             var dateAndTimeOfSession = await _resourceHelper.GetDateAndTimeOfSession(outcomeValidationObject.SessionId.GetValueOrDefault());
+            _logger.LogInformation("Successfully retrieved DateAndTimeOfSession for Session. {dateAndTimeOfSession}", dateAndTimeOfSession);
 
-            _logger.LogInformation($"Attempting to validate resource. Correlation GUID: {correlationGuid}");
+
+            _logger.LogInformation("Attempting to validate {outcomeValidationObject} object", nameof(outcomeValidationObject));
             var errors = _validate.ValidateResource(outcomeValidationObject, dateAndTimeOfSession);
 
             if (errors != null && errors.Any())
             {
-                _logger.LogInformation("Validation errors present with the resource.");
+                _logger.LogWarning("Falied to validate {outcomeValidationObject}", nameof(outcomeValidationObject));
                 return new UnprocessableEntityObjectResult(errors);
             }
+            _logger.LogInformation("Successfully validated {outcomeValidationObject}", nameof(outcomeValidationObject));
 
-            _logger.LogInformation($"Attempting to PATCH Outcome in Cosmos DB. Outcome GUID: {outcomesGuid}");
+            _logger.LogInformation("Attempting to PATCH Outcome in Cosmos DB. Outcome GUID: {OutcomesGuid}", outcomesGuid);
             var updatedOutcome = await _outcomesPatchService.UpdateCosmosAsync(patchedOutcomeResource, outcomesGuid);
 
             if (updatedOutcome != null)
             {
-                _logger.LogInformation($"Successfully PATCHed Outcome in Cosmos DB. Outcome GUID: {outcomesGuid}");
-                _logger.LogInformation($"Attempting to send message to Service Bus Namespace. Outcome GUID: {outcomesGuid}");
+                _logger.LogInformation("Successfully PATCHed Outcome in Cosmos DB. Outcome GUID: {OutcomesGuid}", outcomesGuid);
+
+                _logger.LogInformation("Attempting to send message to Service Bus Namespace. Outcome GUID: {OutcomesGuid}", outcomesGuid);
                 await _outcomesPatchService.SendToServiceBusQueueAsync(updatedOutcome, customerGuid, apimUrl);
+
+                _logger.LogInformation("Successfully sent message to Service Bus. Outcome GUID: {OutcomesGuid}", outcomesGuid);
             }
 
-            _logger.LogInformation($"Function {nameof(PatchOutcomesHttpTrigger)} has finished invocation");
-
             if (updatedOutcome == null)
+            {
+                _logger.LogWarning("PATCH request unsuccessful. Outcome GUID: {OutcomeGuid}", outcomesGuid);
+                _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(PatchOutcomesHttpTrigger));
                 return new BadRequestObjectResult(outcomesGuid);
+            }
 
+            _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(PatchOutcomesHttpTrigger));
             return new JsonResult(updatedOutcome, new JsonSerializerOptions())
             {
                 StatusCode = (int)HttpStatusCode.OK

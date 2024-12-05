@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Logging;
+using Moq;
 using NCS.DSS.Outcomes.Cosmos.Provider;
 using NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Service;
 using NUnit.Framework;
@@ -13,13 +14,15 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
     {
         private IGetOutcomesHttpTriggerService _outcomeHttpTriggerService;
         private Mock<ICosmosDBProvider> _cosmosDbProvider;
+        private Mock<ILogger<GetOutcomesHttpTriggerService>> _MockLogger;
         private readonly Guid _customerId = Guid.Parse("58b43e3f-4a50-4900-9c82-a14682ee90fa");
 
         [SetUp]
         public void Setup()
         {
             _cosmosDbProvider = new Mock<ICosmosDBProvider>();
-            _outcomeHttpTriggerService = new GetOutcomesHttpTriggerService(_cosmosDbProvider.Object);
+            _MockLogger = new Mock<ILogger<GetOutcomesHttpTriggerService>>();
+            _outcomeHttpTriggerService = new GetOutcomesHttpTriggerService(_cosmosDbProvider.Object, _MockLogger.Object);
         }
 
         [Test]

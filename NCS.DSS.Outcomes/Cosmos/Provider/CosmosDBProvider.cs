@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace NCS.DSS.Outcomes.Cosmos.Provider
@@ -11,6 +12,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
         private readonly Container _sessionContainer;
         private readonly Container _interactionContainer;
         private readonly Container _actionPlanContainer;
+        private readonly ILogger<CosmosDBProvider> _logger;
 
         private readonly string _databaseId = Environment.GetEnvironmentVariable("DatabaseId");
         private readonly string _containerId = Environment.GetEnvironmentVariable("CollectionId");
@@ -23,13 +25,15 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
         private readonly string _actionPlanDatabaseId = Environment.GetEnvironmentVariable("ActionPlanDatabaseId");
         private readonly string _actionPlanContainerId = Environment.GetEnvironmentVariable("ActionPlanCollectionId");
 
-        public CosmosDBProvider(CosmosClient cosmosClient)
+        public CosmosDBProvider(CosmosClient cosmosClient,
+            ILogger<CosmosDBProvider> logger)
         {
             _container = cosmosClient.GetContainer(_databaseId, _containerId);
             _customerContainer = cosmosClient.GetContainer(_customerDatabaseId, _customerContainerId);
             _sessionContainer = cosmosClient.GetContainer(_sessionDatabaseId, _sessionContainerId);
             _interactionContainer = cosmosClient.GetContainer(_interactionDatabaseId, _interactionContainerId);
             _actionPlanContainer = cosmosClient.GetContainer(_actionPlanDatabaseId, _actionPlanContainerId);
+            _logger = logger;
         }
 
         public string GetCustomerJson()
@@ -39,26 +43,42 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
 
         public async Task<bool> DoesCustomerResourceExist(Guid customerId)
         {
-            string queryText = "SELECT TOP 1 * FROM c WHERE c.id = @customerId";
-            var queryDefinition = new QueryDefinition(queryText)
-                .WithParameter("@customerId", customerId.ToString());
-
-            using var iterator = _customerContainer.GetItemQueryIterator<dynamic>(queryDefinition);
-
-            var response = await iterator.ReadNextAsync();
-
-            var customerData = response.FirstOrDefault();
-            if (customerData != null)
+            try
             {
-                _customerJson = customerData.ToString();
-                return true;
-            }
+                _logger.LogInformation("Checking for customer resource. Customer ID: {CustomerId}", customerId);
 
-            return false;
+                string queryText = "SELECT TOP 1 * FROM c WHERE c.id = @customerId";
+                var queryDefinition = new QueryDefinition(queryText)
+                    .WithParameter("@customerId", customerId.ToString());
+
+                using var iterator = _customerContainer.GetItemQueryIterator<dynamic>(queryDefinition);
+
+                var response = await iterator.ReadNextAsync();
+
+                var customerData = response.FirstOrDefault();
+                if (customerData != null)
+                {
+                    _customerJson = customerData.ToString();
+                    _logger.LogInformation("Customer exists. Customer ID: {CustomerId}", customerId);
+                    return true;
+                }
+                return false;
+            }
+            catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                _logger.LogInformation("Customer does not exist. Customer ID: {CustomerId}", customerId);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking customer resource existence. Customer ID: {CustomerId}", customerId);
+                throw;
+            }
         }
 
         public async Task<DateTime?> GetDateAndTimeOfSessionFromSessionResource(Guid sessionId)
         {
+            _logger.LogInformation("Attempting to retrieve DateAndTimeOfSession. Session ID: {SessionId}", sessionId);
             try
             {
                 string queryText = "SELECT TOP 1 * FROM c WHERE c.id = @sessionId";
@@ -73,7 +93,13 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
             }
             catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
+                _logger.LogInformation("Session does not exist. Session ID: {SessionId}", sessionId);
                 return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving DateAndTimeOfSession. Session ID: {SessionId}", sessionId);
+                throw;
             }
         }
 
@@ -88,6 +114,8 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
         {
             try
             {
+                _logger.LogInformation("Checking for interaction resource for a customer. Customer ID: {CustomerId} Interaction ID: {InteractionId}", customerId, interactionId);
+
                 string queryText = "SELECT VALUE COUNT(1) FROM interactions i WHERE i.id = @interactionId AND i.CustomerId = @customerId";
                 var queryDefinition = new QueryDefinition(queryText)
                     .WithParameter("@interactionId", interactionId.ToString())
@@ -98,19 +126,32 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
                 if (iterator.HasMoreResults)
                 {
                     var response = await iterator.ReadNextAsync();
-                    return response.FirstOrDefault() > 0;
+                    var interactionFound = response.FirstOrDefault() > 0;
+
+                    if (interactionFound)
+                    {
+                        _logger.LogInformation("Interaction for customer exists. Customer ID: {CustomerId} Interaction ID: {InteractionId}", customerId, interactionId);
+                    }
+                    return interactionFound;
                 }
 
                 return false;
             }
             catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
+                _logger.LogInformation("Interaction for customer is not found. Customer ID: {CustomerId} Interaction ID: {InteractionId}", customerId, interactionId);
                 return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking interaction resource for a customer. Customer ID: {CustomerId} Interaction ID: {InteractionId}", customerId, interactionId);
+                throw;
             }
         }
 
         public async Task<bool> DoesSessionResourceExistAndBelongToCustomer(Guid sessionId, Guid interactionId, Guid customerId)
         {
+            _logger.LogInformation("Checking for session resource for a customer. Customer ID: {CustomerId} Interaction ID: {InteractionId} Session ID: {SessionId}", customerId, interactionId, sessionId);
             try
             {
                 string queryText = "SELECT VALUE COUNT(1) FROM sessions s WHERE s.id = @sessionId AND s.InteractionId = @interactionId AND s.CustomerId = @customerId";
@@ -124,19 +165,31 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
                 if (iterator.HasMoreResults)
                 {
                     var response = await iterator.ReadNextAsync();
-                    return response.FirstOrDefault() > 0;
+                    var sessionExists = response.FirstOrDefault() > 0;
+                    if (sessionExists)
+                    {
+                        _logger.LogInformation("Session for customer exists. Customer ID: {CustomerId} Interaction ID: {InteractionId} Session ID: {SessionId}", customerId, interactionId, sessionId);
+                    }
+                    return sessionExists;
                 }
 
                 return false;
             }
             catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
+                _logger.LogInformation("Session for customer is not found. Customer ID: {CustomerId} Interaction ID: {InteractionId} Session ID: {SessionId}", customerId, interactionId, sessionId);
                 return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking session resource for a customer. Customer ID: {CustomerId} Interaction ID: {InteractionId} Session ID: {SessionId}", customerId, interactionId, sessionId);
+                throw;
             }
         }
 
         public async Task<bool> DoesActionPlanResourceExistAndBelongToCustomer(Guid actionPlanId, Guid interactionId, Guid customerId)
         {
+            _logger.LogInformation("Checking for action plan resource for a customer. Customer ID: {CustomerId} Interaction ID: {InteractionId} ActionPlan ID: {ActionPlanId}", customerId, interactionId, actionPlanId);
             try
             {
                 string queryText = "SELECT VALUE COUNT(1) FROM actionplans a WHERE a.id = @actionPlanId AND a.InteractionId = @interactionId AND a.CustomerId = @customerId";
@@ -150,69 +203,104 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
                 if (iterator.HasMoreResults)
                 {
                     var response = await iterator.ReadNextAsync();
-                    return response.FirstOrDefault() > 0;
+                    var actionPlanExists = response.FirstOrDefault() > 0;
+                    if (actionPlanExists)
+                    {
+                        _logger.LogInformation("Action plan for customer exists. Customer ID: {CustomerId} Interaction ID: {InteractionId} ActionPlan ID: {ActionPlanId}", customerId, interactionId, actionPlanId);
+                    }
+                    return actionPlanExists;
                 }
 
                 return false;
             }
             catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
+                _logger.LogInformation("Action plan for customer is not found. Customer ID: {CustomerId} Interaction ID: {InteractionId} ActionPlan ID: {ActionPlanId}", customerId, interactionId, actionPlanId);
                 return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking action plan resource for a customer. Customer ID: {CustomerId} Interaction ID: {InteractionId} ActionPlan ID: {ActionPlanId}", customerId, interactionId, actionPlanId);
+                throw;
             }
         }
 
         public async Task<List<Models.Outcomes>> GetOutcomesForCustomerAsync(Guid customerId)
         {
-            string queryText = "SELECT * FROM c Where c.CustomerId = @customerId";
-            QueryDefinition queryDefinition = new QueryDefinition(queryText)
-                .WithParameter("@customerId", customerId.ToString());
+            _logger.LogInformation("Attempting to retrieve Outcomes for a Customer. Customer ID: {CustomerId}", customerId);
 
-            var outcomes = new List<Models.Outcomes>();
-
-            using (FeedIterator<Models.Outcomes> iterator = _container.GetItemQueryIterator<Models.Outcomes>(queryDefinition))
+            try
             {
-                while (iterator.HasMoreResults)
-                {
-                    var response = await iterator.ReadNextAsync();
-                    outcomes.AddRange(response);
-                }
-            }
+                string queryText = "SELECT * FROM c Where c.CustomerId = @customerId";
+                QueryDefinition queryDefinition = new QueryDefinition(queryText)
+                    .WithParameter("@customerId", customerId.ToString());
 
-            return outcomes.Any() ? outcomes : null;
+                var outcomes = new List<Models.Outcomes>();
+
+                using (FeedIterator<Models.Outcomes> iterator = _container.GetItemQueryIterator<Models.Outcomes>(queryDefinition))
+                {
+                    while (iterator.HasMoreResults)
+                    {
+                        var response = await iterator.ReadNextAsync();
+                        outcomes.AddRange(response);
+                    }
+                }
+
+                return outcomes.Any() ? outcomes : null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving Outcomes for a Customer. Customer ID: {CustomerId}", customerId);
+                throw;
+            }
         }
 
-        public async Task<Models.Outcomes> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionPlanId, Guid outcomeId)
+        public async Task<Models.Outcomes> GetOutcomeForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionPlanId, Guid outcomeId)
         {
-            string queryText = "SELECT * FROM c Where c.CustomerId = @customerId AND c.ActionPlanId = @actionPlanId AND c.id = @outcomeId";
-            QueryDefinition queryDefinition = new QueryDefinition(queryText)
-                .WithParameter("@customerId", customerId.ToString())
-                .WithParameter("@actionPlanId", actionPlanId.ToString())
-                .WithParameter("@outcomeId", outcomeId.ToString());
+            _logger.LogInformation("Attempting to retrieve Outcome for a Customer. Customer ID: {CustomerId} Interaction ID: {InteractionId} ActionPlan ID: {ActionPlanId} OutcomeId ID: {OutcomeId}", customerId, interactionsId, actionPlanId, outcomeId);
 
-            var outcomes = new List<Models.Outcomes>();
-
-            using (FeedIterator<Models.Outcomes> iterator = _container.GetItemQueryIterator<Models.Outcomes>(queryDefinition))
+            try
             {
-                while (iterator.HasMoreResults)
-                {
-                    var response = await iterator.ReadNextAsync();
-                    outcomes.AddRange(response);
-                }
-            }
+                string queryText = "SELECT * FROM c Where c.CustomerId = @customerId AND c.ActionPlanId = @actionPlanId AND c.id = @outcomeId";
+                QueryDefinition queryDefinition = new QueryDefinition(queryText)
+                    .WithParameter("@customerId", customerId.ToString())
+                    .WithParameter("@actionPlanId", actionPlanId.ToString())
+                    .WithParameter("@outcomeId", outcomeId.ToString());
 
-            return outcomes.Any() ? outcomes.FirstOrDefault() : null;
+                var outcomes = new List<Models.Outcomes>();
+
+                using (FeedIterator<Models.Outcomes> iterator = _container.GetItemQueryIterator<Models.Outcomes>(queryDefinition))
+                {
+                    while (iterator.HasMoreResults)
+                    {
+                        var response = await iterator.ReadNextAsync();
+                        outcomes.AddRange(response);
+                    }
+                }
+
+                return outcomes.Any() ? outcomes.FirstOrDefault() : null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving Outcome for a Customer. Customer ID: {CustomerId} Interaction ID: {InteractionId} ActionPlan ID: {ActionPlanId} OutcomeId ID: {OutcomeId}", customerId, interactionsId, actionPlanId, outcomeId);
+                throw;
+            }
         }
 
         public async Task<string> GetOutcomesForCustomerAsyncToUpdateAsync(Guid customerId, Guid interactionsId, Guid actionPlanId, Guid outcomeId)
         {
-            var outcomes = await GetOutcomesForCustomerAsync(customerId, interactionsId, actionPlanId, outcomeId);
+            var outcome = await GetOutcomeForCustomerAsync(customerId, interactionsId, actionPlanId, outcomeId);
 
-            return JsonConvert.SerializeObject(outcomes);
+            return JsonConvert.SerializeObject(outcome);
         }
 
         public async Task<ItemResponse<Models.Outcomes>> CreateOutcomesAsync(Models.Outcomes outcome)
         {
+            _logger.LogInformation("Creating Outcome. Outcome ID: {OutcomeId}", outcome.OutcomeId);
+
             ItemResponse<Models.Outcomes> response = await _container.CreateItemAsync(outcome);
+
+            _logger.LogInformation("Finished creating Outcome. Outcome ID: {OutcomeID}", outcome.OutcomeId);
 
             return response;
         }
@@ -221,7 +309,12 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
         {
             var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(outcomeJson);
 
+            _logger.LogInformation("Updating Outcome. Outcome ID: {OutcomeId}", outcomeId);
+
             var response = await _container.ReplaceItemAsync(outcome, outcomeId.ToString());
+
+            _logger.LogInformation("Finished updating Outcome. Outcome ID: {OutcomeID}", outcomeId);
+
             return response;
         }
     }

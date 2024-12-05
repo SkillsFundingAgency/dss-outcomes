@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NCS.DSS.Outcomes.Cosmos.Provider;
 using NCS.DSS.Outcomes.Models;
@@ -20,6 +21,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         private Mock<IOutcomePatchService> _outcomePatchService;
         private Mock<ICosmosDBProvider> _cosmosDbProvider;
         private Mock<IOutcomesServiceBusClient> _outcomesServiceBusClient;
+        private Mock<ILogger<PatchOutcomesHttpTriggerService>> _mockServiceLogger;
 
         private readonly Guid _outcomeId = Guid.Parse("7E467BDB-213F-407A-B86A-1954053D3C24");
 
@@ -29,7 +31,11 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
             _cosmosDbProvider = new Mock<ICosmosDBProvider>();
             _outcomePatchService = new Mock<IOutcomePatchService>();
             _outcomesServiceBusClient = new Mock<IOutcomesServiceBusClient>();
-            _outcomePatchHttpTriggerService = new PatchOutcomesHttpTriggerService(_cosmosDbProvider.Object, _outcomePatchService.Object, _outcomesServiceBusClient.Object);
+            _mockServiceLogger = new Mock<ILogger<PatchOutcomesHttpTriggerService>>();
+            _outcomePatchHttpTriggerService = new PatchOutcomesHttpTriggerService(_cosmosDbProvider.Object,
+                _outcomePatchService.Object,
+                _outcomesServiceBusClient.Object,
+                _mockServiceLogger.Object);
         }
 
 

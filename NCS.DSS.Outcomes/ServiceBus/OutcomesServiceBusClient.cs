@@ -1,4 +1,5 @@
 ﻿using Azure.Messaging.ServiceBus;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Text;
 
@@ -7,11 +8,13 @@ namespace NCS.DSS.Outcomes.ServiceBus
     public class OutcomesServiceBusClient : IOutcomesServiceBusClient
     {
         private readonly ServiceBusClient _serviceBusClient;
+        private readonly ILogger<OutcomesServiceBusClient> _logger;
         public static readonly string QueueName = Environment.GetEnvironmentVariable("QueueName");
 
-        public OutcomesServiceBusClient(ServiceBusClient serviceBusClient)
+        public OutcomesServiceBusClient(ServiceBusClient serviceBusClient, ILogger<OutcomesServiceBusClient> logger)
         {
             _serviceBusClient = serviceBusClient;
+            _logger = logger;
         }
 
         public async Task SendPostMessageAsync(Models.Outcomes outcomes, string reqUrl)
@@ -34,7 +37,11 @@ namespace NCS.DSS.Outcomes.ServiceBus
                 MessageId = outcomes.CustomerId + " " + DateTime.UtcNow
             };
 
+            _logger.LogInformation("Attempting to send POST message to service bus. Outcome ID: {OutcomeId}", outcomes.OutcomeId);
+
             await serviceBusSender.SendMessageAsync(msg);
+
+            _logger.LogInformation("Successfully sent POST message to the service bus. Outcome ID: {OutcomeId}", outcomes.OutcomeId);
         }
 
         public async Task SendPatchMessageAsync(Models.Outcomes outcomes, Guid customerId, string reqUrl)
@@ -57,7 +64,11 @@ namespace NCS.DSS.Outcomes.ServiceBus
                 MessageId = customerId + " " + DateTime.UtcNow
             };
 
+            _logger.LogInformation("Attempting to send PATCH message to service bus. Outcome ID: {OutcomeId}.", outcomes.OutcomeId);
+
             await serviceBusSender.SendMessageAsync(msg);
+
+            _logger.LogInformation("Successfully sent PATCH message to the service bus. Outcome ID: {OutcomeId}", outcomes.OutcomeId);
         }
     }
 }

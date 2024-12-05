@@ -1,4 +1,5 @@
-﻿using NCS.DSS.Outcomes.Cosmos.Provider;
+﻿using Microsoft.Extensions.Logging;
+using NCS.DSS.Outcomes.Cosmos.Provider;
 using NCS.DSS.Outcomes.Models;
 using NCS.DSS.Outcomes.ServiceBus;
 using System.Net;
@@ -10,18 +11,26 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
         private readonly IOutcomePatchService _outcomePatchService;
         private readonly ICosmosDBProvider _cosmosDbProvider;
         private readonly IOutcomesServiceBusClient _outcomesServiceBusClient;
+        private readonly ILogger<PatchOutcomesHttpTriggerService> _logger;
 
-        public PatchOutcomesHttpTriggerService(ICosmosDBProvider cosmosDbProvider, IOutcomePatchService outcomePatchService, IOutcomesServiceBusClient outcomesServiceBusClient)
+        public PatchOutcomesHttpTriggerService(ICosmosDBProvider cosmosDbProvider,
+            IOutcomePatchService outcomePatchService,
+            IOutcomesServiceBusClient outcomesServiceBusClient,
+            ILogger<PatchOutcomesHttpTriggerService> logger)
         {
             _cosmosDbProvider = cosmosDbProvider;
             _outcomePatchService = outcomePatchService;
             _outcomesServiceBusClient = outcomesServiceBusClient;
+            _logger = logger;
         }
 
         public string UpdateOutcomeClaimedDateOutcomeEffectiveDateValue(string outcomeJson, bool setOutcomeClaimedDateToNull, bool setOutcomeEffectiveDateToNull)
         {
             if (string.IsNullOrEmpty(outcomeJson))
+            {
+                _logger.LogInformation("{outcomeJson} object is NULL or EMPTY.", nameof(outcomeJson));
                 return null;
+            }
 
             return _outcomePatchService.SetOutcomeClaimedDateOrOutcomeEffectiveDateToNull(outcomeJson, setOutcomeClaimedDateToNull, setOutcomeEffectiveDateToNull);
         }
