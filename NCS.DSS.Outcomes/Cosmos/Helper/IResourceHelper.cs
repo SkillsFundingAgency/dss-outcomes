@@ -5,9 +5,9 @@
         Task<bool> DoesCustomerExist(Guid customerId);
         bool IsCustomerReadOnly();
         int GetCustomerReasonForTermination();
-        bool DoesActionPlanResourceExistAndBelongToCustomer(Guid actionplanId, Guid interactionId, Guid customerId);
-        bool DoesInteractionExistAndBelongToCustomer(Guid interactionId, Guid customerId);
-        bool DoesSessionExistAndBelongToCustomer(Guid sessionId, Guid interactionId, Guid customerId);
+        Task<bool> DoesActionPlanResourceExistAndBelongToCustomer(Guid actionplanId, Guid interactionId, Guid customerId);
+        Task<bool> DoesInteractionExistAndBelongToCustomer(Guid interactionId, Guid customerId);
+        Task<bool> DoesSessionExistAndBelongToCustomer(Guid sessionId, Guid interactionId, Guid customerId);
         Task<DateTime?> GetDateAndTimeOfSession(Guid sessionId);
 
     }

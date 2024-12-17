@@ -1,53 +1,82 @@
+using Azure.Messaging.ServiceBus;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using DFC.Swagger.Standard;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NCS.DSS.Outcomes.Cosmos.Helper;
 using NCS.DSS.Outcomes.Cosmos.Provider;
 using NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Service;
 using NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Service;
+using NCS.DSS.Outcomes.Models;
 using NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service;
 using NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service;
+using NCS.DSS.Outcomes.ServiceBus;
 using NCS.DSS.Outcomes.Validation;
 
-var host = new HostBuilder()
-    .ConfigureFunctionsWebApplication()
-    .ConfigureServices(services =>
+namespace NCS.DSS.Outcomes
+{
+    internal class Program
     {
-        services.AddLogging();
-        services.AddApplicationInsightsTelemetryWorkerService();
-        services.ConfigureFunctionsApplicationInsights();
-        services.AddSingleton<IResourceHelper, ResourceHelper>();
-        services.AddSingleton<IValidate, Validate>();
-        services.AddSingleton<IHttpRequestHelper, HttpRequestHelper>();
-        services.AddSingleton<IHttpResponseMessageHelper, HttpResponseMessageHelper>();
-        services.AddSingleton<IJsonHelper, JsonHelper>();
-        services.AddSingleton<IDynamicHelper, DynamicHelper>();
-        services.AddSingleton<IDocumentDBProvider, DocumentDBProvider>();
-        services.AddScoped<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
-        services.AddScoped<IGetOutcomesHttpTriggerService, GetOutcomesHttpTriggerService>();
-        services.AddScoped<IGetOutcomesByIdHttpTriggerService, GetOutcomesByIdHttpTriggerService>();
-        services.AddScoped<IPostOutcomesHttpTriggerService, PostOutcomesHttpTriggerService>();
-        services.AddScoped<IPatchOutcomesHttpTriggerService, PatchOutcomesHttpTriggerService>();
-        services.AddScoped<IOutcomePatchService, OutcomePatchService>();
-    })
-    .ConfigureLogging(logging =>
-    {
-        // The Application Insights SDK adds a default logging filter that instructs ILogger to capture only Warning and more severe logs. Application Insights requires an explicit override.
-        // For more information, see https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide?tabs=windows#application-insights
-        logging.Services.Configure<LoggerFilterOptions>(options =>
+        private static async Task Main(string[] args)
         {
-            LoggerFilterRule defaultRule = options.Rules.FirstOrDefault(rule => rule.ProviderName
-                == "Microsoft.Extensions.Logging.ApplicationInsights.ApplicationInsightsLoggerProvider");
-            if (defaultRule is not null)
-            {
-                options.Rules.Remove(defaultRule);
-            }
-        });
-    })
-    .Build();
+            var host = new HostBuilder()
+                .ConfigureFunctionsWebApplication()
+                .ConfigureServices((context, services) =>
+                {
+                    var configuration = context.Configuration;
+                    services.AddOptions<OutcomesConfigurationSettings>()
+                        .Bind(configuration);
 
-host.Run();
+                    services.AddLogging();
+                    services.AddApplicationInsightsTelemetryWorkerService();
+                    services.ConfigureFunctionsApplicationInsights();
+                    services.AddSingleton<IResourceHelper, ResourceHelper>();
+                    services.AddSingleton<IValidate, Validate>();
+                    services.AddSingleton<IHttpRequestHelper, HttpRequestHelper>();
+                    services.AddSingleton<IHttpResponseMessageHelper, HttpResponseMessageHelper>();
+                    services.AddSingleton<IJsonHelper, JsonHelper>();
+                    services.AddSingleton<IDynamicHelper, DynamicHelper>();
+                    services.AddSingleton<ICosmosDBProvider, CosmosDBProvider>();
+                    services.AddScoped<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
+                    services.AddScoped<IGetOutcomesHttpTriggerService, GetOutcomesHttpTriggerService>();
+                    services.AddScoped<IGetOutcomesByIdHttpTriggerService, GetOutcomesByIdHttpTriggerService>();
+                    services.AddScoped<IPostOutcomesHttpTriggerService, PostOutcomesHttpTriggerService>();
+                    services.AddScoped<IPatchOutcomesHttpTriggerService, PatchOutcomesHttpTriggerService>();
+                    services.AddScoped<IOutcomePatchService, OutcomePatchService>();
+                    services.AddScoped<IOutcomesServiceBusClient, OutcomesServiceBusClient>();
+
+                    services.AddSingleton(s =>
+                    {
+                        var settings = s.GetRequiredService<IOptions<OutcomesConfigurationSettings>>().Value;
+                        var options = new CosmosClientOptions() { ConnectionMode = ConnectionMode.Gateway };
+
+                        return new CosmosClient(settings.OutcomeConnectionString, options);
+                    });
+
+                    services.AddSingleton(s =>
+                    {
+                        var settings = s.GetRequiredService<IOptions<OutcomesConfigurationSettings>>().Value;
+                        return new ServiceBusClient(settings.ServiceBusConnectionString);
+                    });
+
+                    services.Configure<LoggerFilterOptions>(options =>
+                    {
+                        LoggerFilterRule toRemove = options.Rules.FirstOrDefault(rule => rule.ProviderName
+                            == "Microsoft.Extensions.Logging.ApplicationInsights.ApplicationInsightsLoggerProvider");
+                        if (toRemove is not null)
+                        {
+                            options.Rules.Remove(toRemove);
+                        }
+                    });
+                })
+                .Build();
+
+            await host.RunAsync();
+        }
+    }
+}
