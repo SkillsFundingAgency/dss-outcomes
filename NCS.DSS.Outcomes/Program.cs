@@ -54,7 +54,7 @@ namespace NCS.DSS.Outcomes
                     services.AddSingleton(s =>
                     {
                         var options = new CosmosClientOptions() { ConnectionMode = ConnectionMode.Gateway };
-                        return new CosmosClient(configuration["cosmosDbEndpoint"], new DefaultAzureCredential(), options);
+                        return new CosmosClient(configuration["CosmosDbEndpoint"], new DefaultAzureCredential(), options);
                     });
 
                     services.AddSingleton(s =>
