@@ -55,7 +55,6 @@ jobs:
       SolutionBaseName: $(SolutionBaseName)
       BuildPlatform: $(BuildPlatform)
       BuildConfiguration: $(BuildConfiguration)
-    env:
       CosmosDbEndpoint: $(CosmosDbEndpoint)
 
 # Build the app with the dfc-dotnetcore-build template.  Runs if the output of TestBranchName is Version2+
@@ -72,6 +71,7 @@ jobs:
       BuildConfiguration: $(BuildConfiguration)
       GitVersionVersion: 5.12.x
       DotNetCoreVersion: 8.x
+      CosmosDbEndpoint: $(CosmosDbEndpoint)
 
 
 
