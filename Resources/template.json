@@ -78,7 +78,8 @@
         "InteractionCollectionId": "interactions",
         "InteractionDatabaseId": "interactions",
         "SessionCollectionId": "sessions",
-        "SessionDatabaseId": "sessions"
+        "SessionDatabaseId": "sessions",
+        "CosmosDbEndpoint": "[parameters('CosmosDbEndpoint')]"
       },
       "copy": {
         "name": "FunctionAppSettingsCopy",
