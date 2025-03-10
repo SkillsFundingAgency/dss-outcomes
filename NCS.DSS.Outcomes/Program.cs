@@ -53,8 +53,14 @@ namespace NCS.DSS.Outcomes
 
                     services.AddSingleton(s =>
                     {
+                        var cosmosDbEndpoint = configuration["CosmosDbEndpoint"];
+                        if (string.IsNullOrEmpty(cosmosDbEndpoint))
+                        {
+                            throw new InvalidOperationException("CosmosDbEndpoint is not configured.");
+                        }
+
                         var options = new CosmosClientOptions() { ConnectionMode = ConnectionMode.Gateway };
-                        return new CosmosClient(configuration["CosmosDbEndpoint"], new DefaultAzureCredential(), options);
+                        return new CosmosClient(cosmosDbEndpoint, new DefaultAzureCredential(), options);
                     });
 
                     services.AddSingleton(s =>
