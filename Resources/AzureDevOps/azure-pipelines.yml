@@ -2,6 +2,7 @@ variables:
     SolutionBaseName: 'NCS.DSS.Outcomes'
     BuildPlatform: 'any cpu'
     BuildConfiguration: 'release'
+    CosmosDbEndpoint: $(CosmosDbEndpoint)
 
 resources:
   repositories:
@@ -54,6 +55,8 @@ jobs:
       SolutionBaseName: $(SolutionBaseName)
       BuildPlatform: $(BuildPlatform)
       BuildConfiguration: $(BuildConfiguration)
+    env:
+      CosmosDbEndpoint: $(CosmosDbEndpoint)
 
 # Build the app with the dfc-dotnetcore-build template.  Runs if the output of TestBranchName is Version2+
 - job: BuildDotNetStandard

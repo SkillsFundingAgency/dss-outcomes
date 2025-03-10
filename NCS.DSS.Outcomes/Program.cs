@@ -53,7 +53,7 @@ namespace NCS.DSS.Outcomes
 
                     services.AddSingleton(s =>
                     {
-                        var cosmosDbEndpoint = configuration["CosmosDbEndpoint"];
+                        var cosmosDbEndpoint = Environment.GetEnvironmentVariable("CosmosDbEndpoint");
                         if (string.IsNullOrEmpty(cosmosDbEndpoint))
                         {
                             throw new InvalidOperationException("CosmosDbEndpoint is not configured.");
