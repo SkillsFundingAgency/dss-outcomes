@@ -306,7 +306,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
 
             if (errors != null && errors.Any())
             {
-                _logger.LogWarning("Falied to validate {outcomeValidationObject}", nameof(outcomeValidationObject));
+                _logger.LogWarning("Failed to validate {outcomeValidationObject}", nameof(outcomeValidationObject));
                 return new UnprocessableEntityObjectResult(errors);
             }
             _logger.LogInformation("Successfully validated {outcomeValidationObject}", nameof(outcomeValidationObject));
