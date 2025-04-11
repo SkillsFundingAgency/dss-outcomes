@@ -106,7 +106,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
 
             if (!Guid.TryParse(actionplanId, out var actionplanGuid))
             {
-                _logger.LogInformation("Unable to parse 'actionPlanId' to a GUID. Action Plan ID: {ActionplanId}", actionplanId);
+                _logger.LogWarning("Unable to parse 'actionPlanId' to a GUID. Action Plan ID: {ActionPlanId}", actionplanId);
                 return new BadRequestObjectResult("Unable to parse 'actionPlanId' to a GUID. Action Plan ID: " + actionplanGuid);
             }
 
@@ -169,7 +169,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
 
             _logger.LogInformation("Attempting to get DateAndTimeOfSession for Session. Session ID: {SessionId}", outcomesRequest.SessionId);
             var dateAndTimeOfSession = await _resourceHelper.GetDateAndTimeOfSession(outcomesRequest.SessionId.GetValueOrDefault());
-            _logger.LogInformation("Successfully retrieved DateAndTimeOfSession for Session. {dateAndTimeOfSession}", dateAndTimeOfSession);
+            _logger.LogInformation("Successfully retrieved DateAndTimeOfSession for Session. {DateAndTimeOfSession}", dateAndTimeOfSession);
 
             _logger.LogInformation("Attempting to get Action Plan for Customer. Customer GUID: {CustomerId}. Action Plan GUID: {ActionPlanGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, actionplanGuid, correlationGuid);
             var doesActionPlanExist = await _resourceHelper.DoesActionPlanResourceExistAndBelongToCustomer(actionplanGuid, interactionGuid, customerGuid);
@@ -182,15 +182,15 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             _logger.LogInformation("Action Plan exists. Customer GUID: {CustomerId}. Action Plan GUID: {ActionPlanGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, actionplanGuid, correlationGuid);
 
 
-            _logger.LogInformation("Attempting to validate {outcomesRequest} object", nameof(outcomesRequest));
+            _logger.LogInformation("Attempting to validate {OutcomesRequest} object", nameof(outcomesRequest));
             var errors = _validate.ValidateResource(outcomesRequest, dateAndTimeOfSession);
 
             if (errors != null && errors.Any())
             {
-                _logger.LogWarning("Falied to validate {outcomesRequest}", nameof(outcomesRequest));
+                _logger.LogWarning("Failed to validate {OutcomesRequest}", nameof(outcomesRequest));
                 return new UnprocessableEntityObjectResult(errors);
             }
-            _logger.LogInformation("Successfully validated {outcomesRequest}", nameof(outcomesRequest));
+            _logger.LogInformation("Successfully validated {OutcomesRequest}", nameof(outcomesRequest));
 
             _logger.LogInformation("Attempting to POST Outcome in Cosmos DB. Customer GUID: {CustomerGuid}", customerGuid);
             var outcome = await _outcomesPostService.CreateAsync(outcomesRequest);

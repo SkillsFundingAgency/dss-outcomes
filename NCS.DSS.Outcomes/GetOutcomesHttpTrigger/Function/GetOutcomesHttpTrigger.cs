@@ -81,7 +81,7 @@ namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Function
 
             if (!Guid.TryParse(actionplanId, out var actionPlanGuid))
             {
-                _logger.LogInformation("Unable to parse 'actionPlanId' to a GUID. Action Plan ID: {ActionplanId}", actionplanId);
+                _logger.LogInformation("Unable to parse 'actionPlanId' to a GUID. Action Plan ID: {ActionPlanId}", actionplanId);
                 return new BadRequestObjectResult("Unable to parse 'actionPlanId' to a GUID. Action Plan ID: " + actionPlanGuid);
             }
 
@@ -90,7 +90,7 @@ namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Function
 
             if (!doesCustomerExist)
             {
-                _logger.LogInformation("Failed to GET outcome. Customer does not exist. Customer GUID: {customerGuid}", customerGuid);
+                _logger.LogInformation("Failed to GET outcome. Customer does not exist. Customer GUID: {CustomerGuid}", customerGuid);
                 return new NotFoundObjectResult($"Failed to GET outcome. Customer does not exist. Customer GUID: {customerGuid}");
             }
 
@@ -104,10 +104,8 @@ namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Function
                 _logger.LogInformation("Failed to GET outcome. Interaction does not exist. Interaction GUID: {InteractionGuid}", interactionGuid);
                 return new NotFoundObjectResult($"Failed to GET outcome. Interaction does not exist. Interaction GUID: {interactionGuid}");
             }
-            else
-            {
-                _logger.LogInformation("Interaction exists. Customer GUID: {CustomerId}. Interaction GUID: {InteractionGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, interactionGuid, correlationGuid);
-            }
+
+            _logger.LogInformation("Interaction exists. Customer GUID: {CustomerId}. Interaction GUID: {InteractionGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, interactionGuid, correlationGuid);
 
             _logger.LogInformation("Attempting to get Action Plan for Customer. Customer GUID: {CustomerId}. Action Plan GUID: {ActionPlanGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, actionPlanGuid, correlationGuid);
             var doesActionPlanExist = await _resourceHelper.DoesActionPlanResourceExistAndBelongToCustomer(actionPlanGuid, interactionGuid, customerGuid);
@@ -117,10 +115,8 @@ namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Function
                 _logger.LogInformation("Failed to GET outcome. Action Plan does not exist. Action Plan GUID: {ActionPlanGuid}", actionPlanGuid);
                 return new NotFoundObjectResult($"Failed to GET outcome. Action Plan does not exist. Action Plan GUID: {actionPlanGuid}");
             }
-            else
-            {
-                _logger.LogInformation("Action Plan exists. Customer GUID: {CustomerId}. Action Plan GUID: {ActionPlanGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, actionPlanGuid, correlationGuid);
-            }
+
+            _logger.LogInformation("Action Plan exists. Customer GUID: {CustomerId}. Action Plan GUID: {ActionPlanGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, actionPlanGuid, correlationGuid);
 
             _logger.LogInformation("Attempting to get Outcomes for Customer. Customer GUID: {CustomerId}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
             var outcomes = await _outcomesGetService.GetOutcomesAsync(customerGuid);
@@ -134,22 +130,20 @@ namespace NCS.DSS.Outcomes.GetOutcomesHttpTrigger.Function
 
             if (outcomes.Count == 1)
             {
-                _logger.LogInformation("Outcome successfully retrieved. Outcome GUID: {OutcomeId} Customer GUID: {CustomerGuid}", outcomes.First().OutcomeId, customerGuid);
+                _logger.LogInformation("Outcome successfully retrieved. Outcome GUID: {OutcomeId} Customer GUID: {CustomerGuid}", outcomes[0].OutcomeId, customerGuid);
                 _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(GetOutcomesHttpTrigger));
                 return new JsonResult(outcomes[0], new JsonSerializerOptions())
                 {
                     StatusCode = (int)HttpStatusCode.OK,
                 };
             }
-            else
+
+            _logger.LogInformation("{Count} Outcomes successfully retrieved. Customer GUID: {CustomerGuid}", outcomes.Count, customerGuid);
+            _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(GetOutcomesHttpTrigger));
+            return new JsonResult(outcomes, new JsonSerializerOptions())
             {
-                _logger.LogInformation("{Count} Outcomes successfully retrieved. Customer GUID: {CustomerGuid}", outcomes.Count, customerGuid);
-                _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(GetOutcomesHttpTrigger));
-                return new JsonResult(outcomes, new JsonSerializerOptions())
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                };
-            }
+                StatusCode = (int)HttpStatusCode.OK,
+            };
         }
     }
 }
