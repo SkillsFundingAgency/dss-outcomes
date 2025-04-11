@@ -1,4 +1,5 @@
-﻿using NCS.DSS.Outcomes.Cosmos.Provider;
+﻿using Microsoft.Extensions.Logging;
+using NCS.DSS.Outcomes.Cosmos.Provider;
 using NCS.DSS.Outcomes.Models;
 using NCS.DSS.Outcomes.ServiceBus;
 using System.Net;
@@ -8,18 +9,28 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
     public class PatchOutcomesHttpTriggerService : IPatchOutcomesHttpTriggerService
     {
         private readonly IOutcomePatchService _outcomePatchService;
-        private readonly IDocumentDBProvider _documentDbProvider;
+        private readonly ICosmosDBProvider _cosmosDbProvider;
+        private readonly IOutcomesServiceBusClient _outcomesServiceBusClient;
+        private readonly ILogger<PatchOutcomesHttpTriggerService> _logger;
 
-        public PatchOutcomesHttpTriggerService(IDocumentDBProvider documentDbProvider, IOutcomePatchService outcomePatchService)
+        public PatchOutcomesHttpTriggerService(ICosmosDBProvider cosmosDbProvider,
+            IOutcomePatchService outcomePatchService,
+            IOutcomesServiceBusClient outcomesServiceBusClient,
+            ILogger<PatchOutcomesHttpTriggerService> logger)
         {
-            _documentDbProvider = documentDbProvider;
+            _cosmosDbProvider = cosmosDbProvider;
             _outcomePatchService = outcomePatchService;
+            _outcomesServiceBusClient = outcomesServiceBusClient;
+            _logger = logger;
         }
 
         public string UpdateOutcomeClaimedDateOutcomeEffectiveDateValue(string outcomeJson, bool setOutcomeClaimedDateToNull, bool setOutcomeEffectiveDateToNull)
         {
             if (string.IsNullOrEmpty(outcomeJson))
+            {
+                _logger.LogInformation("{outcomeJson} object is NULL or EMPTY.", nameof(outcomeJson));
                 return null;
+            }
 
             return _outcomePatchService.SetOutcomeClaimedDateOrOutcomeEffectiveDateToNull(outcomeJson, setOutcomeClaimedDateToNull, setOutcomeEffectiveDateToNull);
         }
@@ -42,23 +53,23 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
             if (string.IsNullOrEmpty(outcomeJson))
                 return null;
 
-            var response = await _documentDbProvider.UpdateOutcomesAsync(outcomeJson, outcomeId);
+            var response = await _cosmosDbProvider.UpdateOutcomesAsync(outcomeJson, outcomeId);
 
             var responseStatusCode = response?.StatusCode;
 
-            return responseStatusCode == HttpStatusCode.OK ? (dynamic)response.Resource : null;
+            return responseStatusCode == HttpStatusCode.OK ? response.Resource : null;
         }
 
         public async Task<string> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionPlanId, Guid outcomeId)
         {
-            var outcomes = await _documentDbProvider.GetOutcomesForCustomerAsyncToUpdateAsync(customerId, interactionsId, actionPlanId, outcomeId);
+            var outcomes = await _cosmosDbProvider.GetOutcomesForCustomerAsyncToUpdateAsync(customerId, interactionsId, actionPlanId, outcomeId);
 
             return outcomes;
         }
 
         public async Task SendToServiceBusQueueAsync(Models.Outcomes outcomes, Guid customerId, string reqUrl)
         {
-            await ServiceBusClient.SendPatchMessageAsync(outcomes, customerId, reqUrl);
+            await _outcomesServiceBusClient.SendPatchMessageAsync(outcomes, customerId, reqUrl);
         }
     }
 }
