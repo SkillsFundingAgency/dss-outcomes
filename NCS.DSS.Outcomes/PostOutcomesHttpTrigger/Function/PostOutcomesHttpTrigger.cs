@@ -41,8 +41,8 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
         [Function("Post")]
         [ProducesResponseType(typeof(Models.Outcomes), 200)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Created, Description = "Outcome Created", ShowSchema = true)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Outcome does not exist", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.BadRequest, Description = "Request was malformed", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Customer, action plan or interaction do not exist", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Outcome validation error(s)", ShowSchema = false)]
@@ -94,20 +94,20 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
-                _logger.LogWarning("Unable to parse 'customerId' to a GUID. Customer GUID: {CustomerID}", customerId);
-                return new BadRequestObjectResult(customerGuid);
+                _logger.LogWarning("Unable to parse 'customerId' to a GUID. Customer ID: {CustomerId}", customerId);
+                return new BadRequestObjectResult("Unable to parse 'customerId' to a GUID. Customer ID: " +customerGuid);
             }
 
             if (!Guid.TryParse(interactionId, out var interactionGuid))
             {
                 _logger.LogWarning("Unable to parse 'interactionId' to a GUID. Interaction ID: {InteractionId}", interactionId);
-                return new BadRequestObjectResult(interactionGuid);
+                return new BadRequestObjectResult("Unable to parse 'interactionId' to a GUID. Interaction ID: " + interactionGuid);
             }
 
             if (!Guid.TryParse(actionplanId, out var actionplanGuid))
             {
-                _logger.LogWarning("Unable to parse 'actionPlanId' to a GUID. Action Plan ID: {ActionplanId}", actionplanId);
-                return new BadRequestObjectResult(actionplanGuid);
+                _logger.LogWarning("Unable to parse 'actionPlanId' to a GUID. Action Plan ID: {ActionPlanId}", actionplanId);
+                return new BadRequestObjectResult("Unable to parse 'actionPlanId' to a GUID. Action Plan ID: " + actionplanGuid);
             }
 
             Models.Outcomes outcomesRequest;
@@ -120,14 +120,14 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unable to retrieve request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", correlationGuid, ex.Message);
-                return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ExceptionToExclude));
+                _logger.LogError(ex, "Unable to retrieve request body. Correlation GUID: {CorrelationGuid}", correlationGuid);
+                return new UnprocessableEntityObjectResult($"Unable to retrieve request body. Correlation GUID: {correlationGuid}" + _dynamicHelper.ExcludeProperty(ex, ExceptionToExclude));
             }
 
             if (outcomesRequest == null)
             {
-                _logger.LogWarning("{outcomesRequest} object is NULL. Correlation GUID: {CorrelationGuid}", nameof(outcomesRequest), correlationGuid);
-                return new UnprocessableEntityObjectResult(req);
+                _logger.LogWarning("Outcome post request is NULL. Correlation GUID: {CorrelationGuid}", correlationGuid);
+                return new UnprocessableEntityObjectResult($"Outcome post request is NULL. Correlation GUID: {correlationGuid}");
             }
 
             _logger.LogInformation("Attempting to set IDs for Outcome POST. Correlation GUID: {CorrelationGuid}", correlationGuid);
@@ -140,7 +140,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             if (!doesCustomerExist)
             {
                 _logger.LogWarning("Customer does not exist. Customer GUID: {CustomerGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
-                return new NoContentResult();
+                return new NotFoundObjectResult("Failed to POST outcome. Customer does not exist. Customer GUID: " + customerGuid);
             }
             _logger.LogInformation("Customer exists. Customer GUID: {CustomerGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
 
@@ -162,14 +162,14 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             if (!doesInteractionExist)
             {
                 _logger.LogWarning("Interaction does not exist. Customer GUID: {CustomerId}. Interaction GUID: {InteractionGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, interactionGuid, correlationGuid);
-                return new NoContentResult();
+                return new NotFoundObjectResult("Failed to POST outcome. Interaction does not exist. Interaction GUID: " + interactionGuid);
             }
             _logger.LogInformation("Interaction exists. Customer GUID: {CustomerId}. Interaction GUID: {InteractionGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, interactionGuid, correlationGuid);
 
 
             _logger.LogInformation("Attempting to get DateAndTimeOfSession for Session. Session ID: {SessionId}", outcomesRequest.SessionId);
             var dateAndTimeOfSession = await _resourceHelper.GetDateAndTimeOfSession(outcomesRequest.SessionId.GetValueOrDefault());
-            _logger.LogInformation("Successfully retrieved DateAndTimeOfSession for Session. {dateAndTimeOfSession}", dateAndTimeOfSession);
+            _logger.LogInformation("Successfully retrieved DateAndTimeOfSession for Session. {DateAndTimeOfSession}", dateAndTimeOfSession);
 
             _logger.LogInformation("Attempting to get Action Plan for Customer. Customer GUID: {CustomerId}. Action Plan GUID: {ActionPlanGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, actionplanGuid, correlationGuid);
             var doesActionPlanExist = await _resourceHelper.DoesActionPlanResourceExistAndBelongToCustomer(actionplanGuid, interactionGuid, customerGuid);
@@ -177,20 +177,20 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             if (!doesActionPlanExist)
             {
                 _logger.LogWarning("Action Plan does not exist. Customer GUID: {CustomerId}. Action Plan GUID: {ActionPlanGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, actionplanGuid, correlationGuid);
-                return new NoContentResult();
+                return new NotFoundObjectResult("Failed to POST outcome. Action Plan does not exist. Action Plan GUID: " + actionplanGuid);
             }
             _logger.LogInformation("Action Plan exists. Customer GUID: {CustomerId}. Action Plan GUID: {ActionPlanGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, actionplanGuid, correlationGuid);
 
 
-            _logger.LogInformation("Attempting to validate {outcomesRequest} object", nameof(outcomesRequest));
+            _logger.LogInformation("Attempting to validate {OutcomesRequest} object", nameof(outcomesRequest));
             var errors = _validate.ValidateResource(outcomesRequest, dateAndTimeOfSession);
 
             if (errors != null && errors.Any())
             {
-                _logger.LogWarning("Falied to validate {outcomesRequest}", nameof(outcomesRequest));
+                _logger.LogWarning("Failed to validate {OutcomesRequest}", nameof(outcomesRequest));
                 return new UnprocessableEntityObjectResult(errors);
             }
-            _logger.LogInformation("Successfully validated {outcomesRequest}", nameof(outcomesRequest));
+            _logger.LogInformation("Successfully validated {OutcomesRequest}", nameof(outcomesRequest));
 
             _logger.LogInformation("Attempting to POST Outcome in Cosmos DB. Customer GUID: {CustomerGuid}", customerGuid);
             var outcome = await _outcomesPostService.CreateAsync(outcomesRequest);
@@ -208,7 +208,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             {
                 _logger.LogWarning("POST request unsuccessful. Customer GUID: {CustomerGuid}", customerGuid);
                 _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(PostOutcomesHttpTrigger));
-                return new BadRequestObjectResult(customerGuid);
+                return new BadRequestObjectResult("Failed to POST outcome in Cosmos DB for customer " + customerGuid + ". Outcome is NULL after creation attempt.");
             }
 
             _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(PostOutcomesHttpTrigger));
