@@ -250,12 +250,12 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             _logger.LogInformation("Attempting to get Outcome for Customer. Customer GUID: {CustomerId}. Outcome GUID: {OutcomeGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, outcomesGuid, correlationGuid);
             var outcome = await _outcomesPatchService.GetOutcomesForCustomerAsync(customerGuid, interactionGuid, actionPlanGuid, outcomesGuid);
 
-            if (outcome == null)
+            if (outcome == "null" || outcome == null)
             {
-                _logger.LogInformation("Outcome does not exist. Customer GUID: {CustomerId}. Outcome GUID: {OutcomeGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, outcomesGuid, correlationGuid);
-                return new NotFoundObjectResult("Failed to PATCH Outcome. Outcome does not exist. Outcome GUID: " + outcomesGuid);
+                _logger.LogInformation("Outcome does not exist. Customer GUID: {CustomerId}. Action Plan GUID: {ActionPlanGuid}. Outcome GUID: {OutcomeGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, actionPlanGuid, outcomesGuid, correlationGuid);
+                return new NotFoundObjectResult("Failed to PATCH Outcome. Outcome does not exist. Outcome GUID: " + outcomesGuid + ", Action Plan GUID: " + actionPlanGuid);
             }
-            _logger.LogInformation("Outcome exists. Customer GUID: {CustomerId}. Outcome GUID: {OutcomeGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, outcomesGuid, correlationGuid);
+            _logger.LogInformation("Outcome exists. Customer GUID: {CustomerId}. Action Plan GUID: {ActionPlanGuid}. Outcome GUID: {OutcomeGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, actionPlanGuid, outcomesGuid, correlationGuid);
 
 
             _logger.LogInformation("Attempting to PATCH Outcome resource.");
