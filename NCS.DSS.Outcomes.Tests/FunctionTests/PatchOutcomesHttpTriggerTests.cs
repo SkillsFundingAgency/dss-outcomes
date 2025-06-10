@@ -149,7 +149,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         [Test]
         public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeBadRequest_WhenOutcomePatchCantBePatched()
         {
-            _patchOutcomesHttpTriggerService.GetOutcomesForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult(_outcomeString).Result);
+            _patchOutcomesHttpTriggerService.GetOutcomesForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult(_outcomeString).Result);
 
             _patchOutcomesHttpTriggerService.PatchResource(Arg.Any<string>(), Arg.Any<Models.OutcomesPatch>()).Returns((string)null);
 
@@ -204,7 +204,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 .Returns(false);
 
             _patchOutcomesHttpTriggerService
-                .GetOutcomesForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>())
+                .GetOutcomesForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>())
                 .Returns(Task.FromResult<string>(null).Result);
 
             // Act
@@ -222,7 +222,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 .Returns(false);
 
             _patchOutcomesHttpTriggerService
-                .GetOutcomesForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>())
+                .GetOutcomesForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>())
                 .Returns(Task.FromResult<string>(null).Result);
 
             // Act
@@ -237,7 +237,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeNotFound_WhenOutcomesDoesNotExist()
         {
             _patchOutcomesHttpTriggerService
-                .GetOutcomesForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>())
+                .GetOutcomesForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>())
                 .Returns(Task.FromResult<string>(null).Result);
 
             // Act
@@ -251,7 +251,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeBadRequest_WhenUnableToUpdateOutcomesRecord()
         {
             _patchOutcomesHttpTriggerService
-                .GetOutcomesForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>())
+                .GetOutcomesForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>())
                 .Returns(Task.FromResult(_outcomeString).Result);
 
             _patchOutcomesHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>())
@@ -267,7 +267,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeBadRequest_WhenRequestIsNotValid()
         {
             _patchOutcomesHttpTriggerService
-                .GetOutcomesForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>())
+                .GetOutcomesForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>())
                 .Returns(Task.FromResult(_outcomeString).Result);
 
             _patchOutcomesHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>())
@@ -283,7 +283,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         public async Task PatchOutcomesHttpTrigger_ReturnsStatusCodeOK_WhenRequestIsValid()
         {
             _patchOutcomesHttpTriggerService
-                .GetOutcomesForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>())
+                .GetOutcomesForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>())
                 .Returns(Task.FromResult(_outcomeString).Result);
 
             _patchOutcomesHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>())

@@ -151,10 +151,10 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         public async Task PatchOutcomesHttpTriggerServiceTests_GetActionPlanForCustomerAsync_ReturnsNullWhenResourceHasNotBeenFound()
         {
             // Arrange
-            _cosmosDbProvider.Setup(x => x.GetOutcomesForCustomerAsyncToUpdateAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult<string>(null));
+            _cosmosDbProvider.Setup(x => x.GetOutcomesForCustomerAsyncToUpdateAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult<string>(null));
 
             // Act
-            var result = await _outcomePatchHttpTriggerService.GetOutcomesForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>());
+            var result = await _outcomePatchHttpTriggerService.GetOutcomesForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>());
 
             // Assert
             Assert.That(result, Is.Null);
@@ -165,10 +165,10 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         {
             var outcomePatch = new Models.OutcomesPatch { OutcomeEffectiveDate = DateTime.MaxValue };
             var json = JsonConvert.SerializeObject(outcomePatch);
-            _cosmosDbProvider.Setup(x => x.GetOutcomesForCustomerAsyncToUpdateAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(json));
+            _cosmosDbProvider.Setup(x => x.GetOutcomesForCustomerAsyncToUpdateAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(json));
 
             // Act
-            var result = await _outcomePatchHttpTriggerService.GetOutcomesForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>());
+            var result = await _outcomePatchHttpTriggerService.GetOutcomesForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>());
 
             // Assert
             Assert.That(result, Is.InstanceOf<string>());
