@@ -55,7 +55,7 @@ namespace NCS.DSS.Outcomes
                     services.AddSingleton(s =>
                     {
                         var logger = s.GetRequiredService<ILogger<Program>>();
-                        var connectionString = configuration["CustomerConnectionString"];
+                        var connectionString = configuration["OutcomeConnectionString"];
                         var endpoint = configuration["CosmosDbEndpoint"];
 
                         var options = new CosmosClientOptions
