@@ -1,5 +1,6 @@
 ﻿using DFC.HTTP.Standard;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Outcomes.Cosmos.Helper;
@@ -104,7 +105,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         }
 
         [Test]
-        public async Task GetOutcomesHttpTrigger_ReturnsStatusCodeNoContent_WhenCustomerDoesNotExist()
+        public async Task GetOutcomesHttpTrigger_ReturnsStatusCodeNotFound_WhenCustomerDoesNotExist()
         {
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(false);
 
@@ -112,11 +113,11 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
-            Assert.That(result, Is.InstanceOf<NoContentResult>());
+            Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
         }
 
         [Test]
-        public async Task GetOutcomesHttpTrigger_ReturnsStatusCodeNoContent_WhenInteractionDoesNotExist()
+        public async Task GetOutcomesHttpTrigger_ReturnsStatusCodeNotFound_WhenInteractionDoesNotExist()
         {
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(true);
             _resourceHelper.DoesInteractionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(false);
@@ -125,11 +126,11 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
-            Assert.That(result, Is.InstanceOf<NoContentResult>());
+            Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
         }
 
         [Test]
-        public async Task GetOutcomesByIdHttpTrigger_ReturnsStatusCodeNoContent_WhenActionPlanDoesNotExist()
+        public async Task GetOutcomesByIdHttpTrigger_ReturnsStatusCodeNotFound_WhenActionPlanDoesNotExist()
         {
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(true);
             _resourceHelper.DoesInteractionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
@@ -139,11 +140,11 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
-            Assert.That(result, Is.InstanceOf<NoContentResult>());
+            Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
         }
 
         [Test]
-        public async Task GetOutcomesHttpTrigger_ReturnsStatusCodeNoContent_WhenOutcomesDoesNotExist()
+        public async Task GetOutcomesHttpTrigger_ReturnsStatusCodeNotFound_WhenOutcomesDoesNotExist()
         {
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(true);
             _resourceHelper.DoesInteractionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(false);
@@ -155,7 +156,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
-            Assert.That(result, Is.InstanceOf<NoContentResult>());
+            Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
         }
 
         [Test]

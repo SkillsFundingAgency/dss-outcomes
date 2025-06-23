@@ -48,8 +48,8 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
         [Function("Patch")]
         [ProducesResponseType(typeof(Models.Outcomes), 200)]
         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Outcome Updated", ShowSchema = true)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Outcome does not exist", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.BadRequest, Description = "Request was malformed", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Outcome, customer, action plan or interaction do not exist", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Outcome validation error(s)", ShowSchema = false)]
@@ -101,26 +101,26 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
-                _logger.LogWarning("Unable to parse 'customerId' to a GUID. Customer GUID: {CustomerID}", customerId);
-                return new BadRequestObjectResult(customerGuid);
+                _logger.LogWarning("Unable to parse 'customerId' to a GUID. Customer ID: {CustomerId}", customerId);
+                return new BadRequestObjectResult("Unable to parse 'customerId' to a GUID. Customer ID: " + customerGuid);
             }
 
             if (!Guid.TryParse(interactionId, out var interactionGuid))
             {
                 _logger.LogWarning("Unable to parse 'interactionId' to a GUID. Interaction ID: {InteractionId}", interactionId);
-                return new BadRequestObjectResult(interactionGuid);
+                return new BadRequestObjectResult("Unable to parse 'interactionId' to a GUID. Interaction ID: " + interactionGuid);
             }
 
             if (!Guid.TryParse(actionplanId, out var actionPlanGuid))
             {
-                _logger.LogWarning("Unable to parse 'actionPlanId' to a GUID. Action Plan ID: {ActionplanId}", actionplanId);
-                return new BadRequestObjectResult(actionPlanGuid);
+                _logger.LogWarning("Unable to parse 'actionPlanId' to a GUID. Action Plan ID: {ActionPlanId}", actionplanId);
+                return new BadRequestObjectResult("Unable to parse 'actionPlanId' to a GUID. Action Plan ID: " + actionPlanGuid);
             }
 
             if (!Guid.TryParse(outcomeId, out var outcomesGuid))
             {
-                _logger.LogWarning("Unable to parse 'outcomeId' to a GUID. OutcomeId ID: {OutcomeId}", outcomeId);
-                return new BadRequestObjectResult(outcomesGuid);
+                _logger.LogWarning("Unable to parse 'outcomeId' to a GUID. Outcome ID: {OutcomeId}", outcomeId);
+                return new BadRequestObjectResult("Unable to parse 'outcomeId' to a GUID. Outcome ID: " + outcomesGuid);
             }
 
             Models.OutcomesPatch outcomesPatchRequest;
@@ -170,16 +170,16 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unable to parse {OutcomesPatchRequest} from request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", nameof(outcomesPatchRequest), correlationGuid, ex.Message);
-                return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ExceptionToExclude));
+                _logger.LogError(ex, "Unable to retrieve request body. Correlation GUID: {CorrelationGuid}", correlationGuid);
+                return new UnprocessableEntityObjectResult($"Unable to retrieve request body. Correlation GUID: {correlationGuid}" + _dynamicHelper.ExcludeProperty(ex, ExceptionToExclude));
             }
 
             _logger.LogInformation("Retrieved resource from request body. Correlation GUID: {CorrelationGuid}", correlationGuid);
 
             if (outcomesPatchRequest == null)
             {
-                _logger.LogWarning("{outcomesPatchRequest} object is NULL. Correlation GUID: {CorrelationGuid}", nameof(outcomesPatchRequest), correlationGuid);
-                return new UnprocessableEntityObjectResult(req);
+                _logger.LogInformation("Outcome patch request is NULL. Correlation GUID: {CorrelationGuid}", correlationGuid);
+                return new UnprocessableEntityObjectResult($"Outcome patch request is NULL. Correlation GUID: {correlationGuid}");
             }
 
             _logger.LogInformation("Attempting to set IDs for Outcome PATCH. Correlation GUID: {CorrelationGuid}", correlationGuid);
@@ -192,7 +192,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             if (!doesCustomerExist)
             {
                 _logger.LogWarning("Customer does not exist. Customer GUID: {CustomerGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
-                return new NoContentResult();
+                return new NotFoundObjectResult("Failed to PATCH outcome. Customer does not exist. Customer GUID: " + customerGuid);
             }
 
             _logger.LogInformation("Customer exists. Customer GUID: {CustomerGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, correlationGuid);
@@ -231,7 +231,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             if (!doesInteractionExist)
             {
                 _logger.LogWarning("Interaction does not exist. Customer GUID: {CustomerId}. Interaction GUID: {InteractionGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, interactionGuid, correlationGuid);
-                return new NoContentResult();
+                return new NotFoundObjectResult("Failed to PATCH outcome. Interaction does not exist. Interaction GUID: " + interactionGuid);
             }
             _logger.LogInformation("Interaction exists. Customer GUID: {CustomerId}. Interaction GUID: {InteractionGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, interactionGuid, correlationGuid);
 
@@ -242,7 +242,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             if (!doesActionPlanExist)
             {
                 _logger.LogWarning("Action Plan does not exist. Customer GUID: {CustomerId}. Action Plan GUID: {ActionPlanGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, actionPlanGuid, correlationGuid);
-                return new NoContentResult();
+                return new NotFoundObjectResult("Failed to PATCH outcome. Action Plan does not exist. Action Plan GUID: " + actionPlanGuid);
             }
             _logger.LogInformation("Action Plan exists. Customer GUID: {CustomerId}. Action Plan GUID: {ActionPlanGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, actionPlanGuid, correlationGuid);
 
@@ -253,7 +253,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             if (outcome == null)
             {
                 _logger.LogInformation("Outcome does not exist. Customer GUID: {CustomerId}. Outcome GUID: {OutcomeGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, outcomesGuid, correlationGuid);
-                return new NoContentResult();
+                return new NotFoundObjectResult("Failed to PATCH Outcome. Outcome does not exist. Outcome GUID: " + outcomesGuid);
             }
             _logger.LogInformation("Outcome exists. Customer GUID: {CustomerId}. Outcome GUID: {OutcomeGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, outcomesGuid, correlationGuid);
 
@@ -263,8 +263,8 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
 
             if (patchedOutcomeResource == null)
             {
-                _logger.LogInformation("Failed to PATCH Outcome resource.");
-                return new NoContentResult();
+                _logger.LogInformation($"Failed to PATCH Outcome resource. Outcome ({outcomesGuid}) returned NULL after update attempt.");
+                return new BadRequestObjectResult($"Failed to PATCH Outcome resource. Outcome ({outcomesGuid}) returned NULL after update attempt.");
             }
 
             if (setOutcomeClaimedDateToNull || setOutcomeEffectiveDateToNull)
@@ -293,7 +293,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             if (outcomeValidationObject == null)
             {
                 _logger.LogWarning("Outcome validation object is NULL. Correlation GUID: {CorrelationGuid}", correlationGuid);
-                return new UnprocessableEntityObjectResult(req);
+                return new UnprocessableEntityObjectResult($"Outcome validation object is NULL. Correlation GUID: {correlationGuid}");
             }
 
             _logger.LogInformation("Attempting to get DateAndTimeOfSession for Session. Session ID: {SessionId}", outcomeValidationObject.SessionId);
@@ -328,7 +328,8 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             {
                 _logger.LogWarning("PATCH request unsuccessful. Outcome GUID: {OutcomeGuid}", outcomesGuid);
                 _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(PatchOutcomesHttpTrigger));
-                return new BadRequestObjectResult(outcomesGuid);
+                return new BadRequestObjectResult($"Failed to PATCH Outcome in Cosmos DB. The outcome is NULL. Outcome ID: {outcomesGuid}");
+
             }
 
             _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(PatchOutcomesHttpTrigger));
