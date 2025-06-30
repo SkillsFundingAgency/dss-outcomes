@@ -1,9 +1,11 @@
+using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using DFC.Swagger.Standard;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -52,10 +54,29 @@ namespace NCS.DSS.Outcomes
 
                     services.AddSingleton(s =>
                     {
-                        var settings = s.GetRequiredService<IOptions<OutcomesConfigurationSettings>>().Value;
-                        var options = new CosmosClientOptions() { ConnectionMode = ConnectionMode.Gateway };
+                        var logger = s.GetRequiredService<ILogger<Program>>();
+                        var connectionString = configuration["OutcomeConnectionString"];
+                        var endpoint = configuration["CosmosDbEndpoint"];
 
-                        return new CosmosClient(settings.OutcomeConnectionString, options);
+                        var options = new CosmosClientOptions
+                        {
+                            ConnectionMode = ConnectionMode.Gateway
+                        };
+
+                        if (!string.IsNullOrWhiteSpace(endpoint))
+                        {
+                            logger.LogInformation("Using DefaultAzureCredential for Cosmos DB (managed identity)");
+                            return new CosmosClient(endpoint, new DefaultAzureCredential(), options);
+                        }
+                        else if (!string.IsNullOrWhiteSpace(connectionString))
+                        {
+                            logger.LogInformation("No managed identity found: using Cosmos DB connection string (local development)");
+                            return new CosmosClient(connectionString, options);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Neither CosmosDbEndpoint or a ConnectionString are configured");
+                        }
                     });
 
                     services.AddSingleton(s =>
