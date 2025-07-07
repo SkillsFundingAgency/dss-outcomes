@@ -8,7 +8,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
             bool setOutcomeEffectiveDateToNull);
         string PatchResource(string outcomeJson, OutcomesPatch outcomesPatchPatch);
         Task<Models.Outcomes> UpdateCosmosAsync(string outcomeJson, Guid outcomeId);
-        Task<string> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionPlanId, Guid outcomeId);
+        Task<string> GetOutcomesForCustomerAsync(Guid customerId, Guid actionPlanId, Guid outcomeId);
         Task SendToServiceBusQueueAsync(Models.Outcomes outcomes, Guid customerId, string reqUrl);
     }
 }

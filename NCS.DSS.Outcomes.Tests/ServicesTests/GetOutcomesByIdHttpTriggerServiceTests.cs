@@ -31,7 +31,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         public async Task GetOutcomesByIdHttpTriggerServiceTests_GetOutcomesForCustomerAsyncc_ReturnsNullWhenResourceCannotBeFound()
         {
             // Arrange
-            _cosmosDbProvider.Setup(x => x.GetOutcomeForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult<Models.Outcomes>(null));
+            _cosmosDbProvider.Setup(x => x.GetOutcomeForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult<Models.Outcomes>(null));
 
             // Act
             var result = await _outcomeHttpTriggerService.GetOutcomesForCustomerAsync(_customerId, _interactionId, _actionPlanId, _outcomeId);
@@ -44,7 +44,7 @@ namespace NCS.DSS.Outcomes.Tests.ServicesTests
         public async Task GetOutcomesByIdHttpTriggerServiceTests_GetOutcomesForCustomerAsync_ReturnsResource()
         {
             // Arrange
-            _cosmosDbProvider.Setup(x => x.GetOutcomeForCustomerAsync(_customerId, _interactionId, _actionPlanId, _outcomeId)).Returns(Task.FromResult(new Models.Outcomes()));
+            _cosmosDbProvider.Setup(x => x.GetOutcomeForCustomerAsync(_customerId, _actionPlanId, _outcomeId)).Returns(Task.FromResult(new Models.Outcomes()));
 
             // Act
             var result = await _outcomeHttpTriggerService.GetOutcomesForCustomerAsync(_customerId, _interactionId, _actionPlanId, _outcomeId);
