@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NCS.DSS.Outcomes.Models;
+using NCS.DSS.Outcomes.ReferenceData;
 using Newtonsoft.Json;
 
 namespace NCS.DSS.Outcomes.Cosmos.Provider
@@ -218,6 +219,46 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error checking action plan resource for a customer. Customer ID: {CustomerId} Interaction ID: {InteractionId} ActionPlan ID: {ActionPlanId}", customerId, interactionId, actionPlanId);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Queries CosmosDB to check if Customer already posseses an outcome with the same ID Values and Outcome type and created within a 12 month period
+        /// </summary>
+        /// <param name="actionPlanId">Customers Action plan ID from request</param>
+        /// <param name="sessionId">Customers Session ID from request</param>
+        /// <param name="customerId">Customer ID</param>
+        /// <param name="outcomeType">Outcome Type being created</param>
+        /// <returns>True if Outcome already exists. False if outcome does not already exist</returns>
+        public async Task<bool> DoesOutcomeExistForCustomerAsync(Guid customerId, Guid sessionId, Guid actionPlanId, OutcomeType outcomeType)
+        {
+            try
+            {
+                var currentFinancialYearStartDate = new DateTime(DateTime.Now.Year - 1, DateTime.Now.Month, DateTime.Now.Day);
+                var cosmosQueryText = "SELECT * FROM c Where c.CustomerId = @customerId AND c.ActionPlanId = @actionPlanId AND c.SessionId = @sessionId AND c.OutcomeType = @outcomeType";
+                var queryDefinition = new QueryDefinition(cosmosQueryText)
+                    .WithParameter("@customerId", customerId.ToString())
+                    .WithParameter("@actionPlanId", actionPlanId.ToString())
+                    .WithParameter("@sessionId", sessionId.ToString())
+                    .WithParameter("@outcomeType", outcomeType);
+
+                var outcomes = new List<Models.Outcomes>();
+
+                using (FeedIterator<Models.Outcomes> iterator = _container.GetItemQueryIterator<Models.Outcomes>(queryDefinition))
+                {
+                    while (iterator.HasMoreResults)
+                    {
+                        var response = await iterator.ReadNextAsync();
+                        outcomes.AddRange(response.Resource);
+                    }
+                }
+
+                return outcomes.Any(o => o.OutcomeEffectiveDate > DateTime.Now.AddYears(-1) && o.OutcomeEffectiveDate < DateTime.Now);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving Outcomes for a Customer. Customer ID: {CustomerId}", customerId);
                 throw;
             }
         }
