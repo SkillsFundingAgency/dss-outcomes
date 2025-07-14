@@ -224,7 +224,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
         }
 
         /// <summary>
-        /// Queries CosmosDB to check if Customer already posseses an outcome with the same ID Values and Outcome type and created within a 12 month period
+        /// Queries CosmosDB to check if Customer already posseses an outcome with the same ID Values and Outcome type.
         /// </summary>
         /// <param name="actionPlanId">Customers Action plan ID from request</param>
         /// <param name="sessionId">Customers Session ID from request</param>
@@ -235,7 +235,6 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
         {
             try
             {
-                var currentFinancialYearStartDate = new DateTime(DateTime.Now.Year - 1, DateTime.Now.Month, DateTime.Now.Day);
                 var cosmosQueryText = "SELECT * FROM c Where c.CustomerId = @customerId AND c.ActionPlanId = @actionPlanId AND c.SessionId = @sessionId AND c.OutcomeType = @outcomeType";
                 var queryDefinition = new QueryDefinition(cosmosQueryText)
                     .WithParameter("@customerId", customerId.ToString())
@@ -254,7 +253,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
                     }
                 }
 
-                return outcomes.Any(o => o.OutcomeEffectiveDate > DateTime.Now.AddYears(-1) && o.OutcomeEffectiveDate < DateTime.Now);
+                return outcomes.Any();
             }
             catch (Exception ex)
             {
