@@ -8,7 +8,7 @@
     "cosmosDbDatabaseId": {
       "type": "string"
     },
-    "cosmosDbEndpoint": {
+    "CosmosDbEndpoint": {
       "type": "string"
     },
     "cosmosDbKey": {
@@ -68,7 +68,7 @@
         "APPINSIGHTS_INSTRUMENTATIONKEY": "[parameters('appInsightsInstrumentationKey')]",
         "CollectionId": "[parameters('cosmosDbCollectionId')]",
         "DatabaseId": "[parameters('cosmosDbDatabaseId')]",
-        "OutcomeConnectionString": "[format('AccountEndpoint={0}/;AccountKey={1};', parameters('cosmosDbEndpoint'), parameters('cosmosDbKey'))]",
+        "OutcomeConnectionString": "[format('AccountEndpoint={0}/;AccountKey={1};', parameters('CosmosDbEndpoint'), parameters('cosmosDbKey'))]",
         "CustomerCollectionId": "customers",
         "CustomerDatabaseId": "customers",
         "ActionPlanCollectionId": "actionplans",
@@ -78,7 +78,8 @@
         "InteractionCollectionId": "interactions",
         "InteractionDatabaseId": "interactions",
         "SessionCollectionId": "sessions",
-        "SessionDatabaseId": "sessions"
+        "SessionDatabaseId": "sessions",
+        "CosmosDbEndpoint": "[parameters('CosmosDbEndpoint')]"
       },
       "copy": {
         "name": "FunctionAppSettingsCopy",

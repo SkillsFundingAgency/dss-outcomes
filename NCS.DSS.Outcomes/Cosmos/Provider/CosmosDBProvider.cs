@@ -252,9 +252,9 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
             }
         }
 
-        public async Task<Models.Outcomes> GetOutcomeForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionPlanId, Guid outcomeId)
+        public async Task<Models.Outcomes> GetOutcomeForCustomerAsync(Guid customerId, Guid actionPlanId, Guid outcomeId)
         {
-            _logger.LogInformation("Attempting to retrieve Outcome for a Customer. Customer ID: {CustomerId} Interaction ID: {InteractionId} ActionPlan ID: {ActionPlanId} OutcomeId ID: {OutcomeId}", customerId, interactionsId, actionPlanId, outcomeId);
+            _logger.LogInformation("Attempting to retrieve Outcome for a Customer. Customer ID: {CustomerId} ActionPlan ID: {ActionPlanId} OutcomeId ID: {OutcomeId}", customerId, actionPlanId, outcomeId);
 
             try
             {
@@ -279,14 +279,16 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving Outcome for a Customer. Customer ID: {CustomerId} Interaction ID: {InteractionId} ActionPlan ID: {ActionPlanId} OutcomeId ID: {OutcomeId}", customerId, interactionsId, actionPlanId, outcomeId);
+                _logger.LogError(ex, "Error retrieving Outcome for a Customer. Customer ID: {CustomerId} ActionPlan ID: {ActionPlanId} OutcomeId ID: {OutcomeId}", customerId, actionPlanId, outcomeId);
                 throw;
             }
         }
 
-        public async Task<string> GetOutcomesForCustomerAsyncToUpdateAsync(Guid customerId, Guid interactionsId, Guid actionPlanId, Guid outcomeId)
+        public async Task<string> GetOutcomesForCustomerAsyncToUpdateAsync(Guid customerId, Guid actionPlanId, Guid outcomeId)
         {
-            var outcome = await GetOutcomeForCustomerAsync(customerId, interactionsId, actionPlanId, outcomeId);
+            var outcome = await GetOutcomeForCustomerAsync(customerId, actionPlanId, outcomeId);
+            if (outcome == null)
+                return null;
 
             return JsonConvert.SerializeObject(outcome);
         }

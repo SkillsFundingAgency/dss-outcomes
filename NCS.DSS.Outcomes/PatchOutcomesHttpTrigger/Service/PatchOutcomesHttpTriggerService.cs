@@ -60,9 +60,9 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Service
             return responseStatusCode == HttpStatusCode.OK ? response.Resource : null;
         }
 
-        public async Task<string> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionsId, Guid actionPlanId, Guid outcomeId)
+        public async Task<string> GetOutcomesForCustomerAsync(Guid customerId, Guid actionPlanId, Guid outcomeId)
         {
-            var outcomes = await _cosmosDbProvider.GetOutcomesForCustomerAsyncToUpdateAsync(customerId, interactionsId, actionPlanId, outcomeId);
+            var outcomes = await _cosmosDbProvider.GetOutcomesForCustomerAsyncToUpdateAsync(customerId, actionPlanId, outcomeId);
 
             return outcomes;
         }
