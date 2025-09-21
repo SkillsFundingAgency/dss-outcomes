@@ -42,7 +42,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
         {
             try
             {
-                _logger.LogInformation("Checking for customer resource. Customer ID: {CustomerId}", customerId);
+                _logger.LogTrace("Checking for customer resource. Customer ID: {CustomerId}", customerId);
 
                 string queryText = "SELECT TOP 1 * FROM c WHERE c.id = @customerId";
                 var queryDefinition = new QueryDefinition(queryText)
@@ -75,7 +75,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
 
         public async Task<DateTime?> GetDateAndTimeOfSessionFromSessionResource(Guid sessionId)
         {
-            _logger.LogInformation("Attempting to retrieve DateAndTimeOfSession. Session ID: {SessionId}", sessionId);
+            _logger.LogTrace("Attempting to retrieve DateAndTimeOfSession. Session ID: {SessionId}", sessionId);
             try
             {
                 string queryText = "SELECT TOP 1 * FROM c WHERE c.id = @sessionId";
@@ -111,7 +111,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
         {
             try
             {
-                _logger.LogInformation("Checking for interaction resource for a customer. Customer ID: {CustomerId} Interaction ID: {InteractionId}", customerId, interactionId);
+                _logger.LogTrace("Checking for interaction resource for a customer. Customer ID: {CustomerId} Interaction ID: {InteractionId}", customerId, interactionId);
 
                 string queryText = "SELECT VALUE COUNT(1) FROM interactions i WHERE i.id = @interactionId AND i.CustomerId = @customerId";
                 var queryDefinition = new QueryDefinition(queryText)
@@ -127,7 +127,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
 
                     if (interactionFound)
                     {
-                        _logger.LogInformation("Interaction for customer exists. Customer ID: {CustomerId} Interaction ID: {InteractionId}", customerId, interactionId);
+                        _logger.LogTrace("Interaction for customer exists. Customer ID: {CustomerId} Interaction ID: {InteractionId}", customerId, interactionId);
                     }
                     return interactionFound;
                 }
@@ -148,7 +148,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
 
         public async Task<bool> DoesSessionResourceExistAndBelongToCustomer(Guid sessionId, Guid interactionId, Guid customerId)
         {
-            _logger.LogInformation("Checking for session resource for a customer. Customer ID: {CustomerId} Interaction ID: {InteractionId} Session ID: {SessionId}", customerId, interactionId, sessionId);
+            _logger.LogTrace("Checking for session resource for a customer. Customer ID: {CustomerId} Interaction ID: {InteractionId} Session ID: {SessionId}", customerId, interactionId, sessionId);
             try
             {
                 string queryText = "SELECT VALUE COUNT(1) FROM sessions s WHERE s.id = @sessionId AND s.InteractionId = @interactionId AND s.CustomerId = @customerId";
@@ -165,7 +165,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
                     var sessionExists = response.FirstOrDefault() > 0;
                     if (sessionExists)
                     {
-                        _logger.LogInformation("Session for customer exists. Customer ID: {CustomerId} Interaction ID: {InteractionId} Session ID: {SessionId}", customerId, interactionId, sessionId);
+                        _logger.LogTrace("Session for customer exists. Customer ID: {CustomerId} Interaction ID: {InteractionId} Session ID: {SessionId}", customerId, interactionId, sessionId);
                     }
                     return sessionExists;
                 }
@@ -186,7 +186,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
 
         public async Task<bool> DoesActionPlanResourceExistAndBelongToCustomer(Guid actionPlanId, Guid interactionId, Guid customerId)
         {
-            _logger.LogInformation("Checking for action plan resource for a customer. Customer ID: {CustomerId} Interaction ID: {InteractionId} ActionPlan ID: {ActionPlanId}", customerId, interactionId, actionPlanId);
+            _logger.LogTrace("Checking for action plan resource for a customer. Customer ID: {CustomerId} Interaction ID: {InteractionId} ActionPlan ID: {ActionPlanId}", customerId, interactionId, actionPlanId);
             try
             {
                 string queryText = "SELECT VALUE COUNT(1) FROM actionplans a WHERE a.id = @actionPlanId AND a.InteractionId = @interactionId AND a.CustomerId = @customerId";
@@ -203,7 +203,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
                     var actionPlanExists = response.FirstOrDefault() > 0;
                     if (actionPlanExists)
                     {
-                        _logger.LogInformation("Action plan for customer exists. Customer ID: {CustomerId} Interaction ID: {InteractionId} ActionPlan ID: {ActionPlanId}", customerId, interactionId, actionPlanId);
+                        _logger.LogTrace("Action plan for customer exists. Customer ID: {CustomerId} Interaction ID: {InteractionId} ActionPlan ID: {ActionPlanId}", customerId, interactionId, actionPlanId);
                     }
                     return actionPlanExists;
                 }
@@ -224,7 +224,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
 
         public async Task<List<Models.Outcomes>> GetOutcomesForCustomerAsync(Guid customerId)
         {
-            _logger.LogInformation("Attempting to retrieve Outcomes for a Customer. Customer ID: {CustomerId}", customerId);
+            _logger.LogTrace("Attempting to retrieve Outcomes for a Customer. Customer ID: {CustomerId}", customerId);
 
             try
             {
@@ -254,7 +254,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
 
         public async Task<Models.Outcomes> GetOutcomeForCustomerAsync(Guid customerId, Guid actionPlanId, Guid outcomeId)
         {
-            _logger.LogInformation("Attempting to retrieve Outcome for a Customer. Customer ID: {CustomerId} ActionPlan ID: {ActionPlanId} OutcomeId ID: {OutcomeId}", customerId, actionPlanId, outcomeId);
+            _logger.LogTrace("Attempting to retrieve Outcome for a Customer. Customer ID: {CustomerId} ActionPlan ID: {ActionPlanId} OutcomeId ID: {OutcomeId}", customerId, actionPlanId, outcomeId);
 
             try
             {
@@ -295,11 +295,11 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
 
         public async Task<ItemResponse<Models.Outcomes>> CreateOutcomesAsync(Models.Outcomes outcome)
         {
-            _logger.LogInformation("Creating Outcome. Outcome ID: {OutcomeId}", outcome.OutcomeId);
+            _logger.LogTrace("Creating Outcome. Outcome ID: {OutcomeId}", outcome.OutcomeId);
 
             ItemResponse<Models.Outcomes> response = await _container.CreateItemAsync(outcome);
 
-            _logger.LogInformation("Finished creating Outcome. Outcome ID: {OutcomeID}", outcome.OutcomeId);
+            _logger.LogTrace("Finished creating Outcome. Outcome ID: {OutcomeID}", outcome.OutcomeId);
 
             return response;
         }
@@ -308,11 +308,11 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
         {
             var outcome = JsonConvert.DeserializeObject<Models.Outcomes>(outcomeJson);
 
-            _logger.LogInformation("Updating Outcome. Outcome ID: {OutcomeId}", outcomeId);
+            _logger.LogTrace("Updating Outcome. Outcome ID: {OutcomeId}", outcomeId);
 
             var response = await _container.ReplaceItemAsync(outcome, outcomeId.ToString());
 
-            _logger.LogInformation("Finished updating Outcome. Outcome ID: {OutcomeID}", outcomeId);
+            _logger.LogTrace("Finished updating Outcome. Outcome ID: {OutcomeID}", outcomeId);
 
             return response;
         }
