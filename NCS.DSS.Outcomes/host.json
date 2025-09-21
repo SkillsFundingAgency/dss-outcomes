@@ -2,6 +2,12 @@
   "version": "2.0",
   "logging": {
     "applicationInsights": {
+      "logLevel": {
+        "default": "Information",
+        "Azure.Core": "Warning",
+        "Azure.Messaging.ServiceBus": "Warning",
+        "Function": "Warning"
+      },
       "samplingSettings": {
         "isEnabled": true,
         "excludedTypes": "Request"
