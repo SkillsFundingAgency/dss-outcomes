@@ -1,5 +1,6 @@
 ﻿using DFC.JSON.Standard;
 using NCS.DSS.Outcomes.Cosmos.Provider;
+using NCS.DSS.Outcomes.ReferenceData;
 
 namespace NCS.DSS.Outcomes.Cosmos.Helper
 {
@@ -51,6 +52,11 @@ namespace NCS.DSS.Outcomes.Cosmos.Helper
         public async Task<bool> DoesActionPlanResourceExistAndBelongToCustomer(Guid actionplanId, Guid interactionId, Guid customerId)
         {
             return await _cosmosDbProvider.DoesActionPlanResourceExistAndBelongToCustomer(actionplanId, interactionId, customerId);
+        }
+
+        public async Task<bool> DoesOutcomeExistForCustomerAsync(Guid customerId, Guid sessionId, Guid actionPlanId, OutcomeType outcomeType)
+        {
+            return await _cosmosDbProvider.DoesOutcomeExistForCustomerAsync(customerId, sessionId, actionPlanId, outcomeType);
         }
 
         public async Task<bool> DoesSessionExistAndBelongToCustomer(Guid sessionId, Guid interactionId, Guid customerId)
