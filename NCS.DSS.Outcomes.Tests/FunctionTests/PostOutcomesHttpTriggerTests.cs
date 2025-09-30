@@ -180,9 +180,9 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
             // Assert
-            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
+            Assert.That(result, Is.InstanceOf<NotFoundObjectResult>());
         }
-
+    
         [Test]
         public async Task GetOutcomesByIdHttpTrigger_ReturnsStatusCodeNotFound_WhenActionPlanDoesNotExist()
         {
