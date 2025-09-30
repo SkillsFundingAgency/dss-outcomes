@@ -296,10 +296,16 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                 return new UnprocessableEntityObjectResult($"Outcome validation object is NULL. Correlation GUID: {correlationGuid}");
             }
 
+            var doesSessionIsValid = await _resourceHelper.DoesSessionExistAndBelongToCustomer(outcomeValidationObject.SessionId.GetValueOrDefault(), interactionGuid, customerGuid);
+            if (!doesSessionIsValid)
+            {
+                _logger.LogInformation("Session does not exist. Customer GUID: {CustomerId}. Session GUID: {SessionId}. Correlation GUID: {CorrelationGuid}", customerGuid, outcomeValidationObject.SessionId.GetValueOrDefault(), correlationGuid);
+                return new NotFoundObjectResult("Failed to POST outcome. Session does not exist. Session GUID: " + outcomeValidationObject.SessionId.GetValueOrDefault());
+            }
+
             _logger.LogInformation("Attempting to get DateAndTimeOfSession for Session. Session ID: {SessionId}", outcomeValidationObject.SessionId);
             var dateAndTimeOfSession = await _resourceHelper.GetDateAndTimeOfSession(outcomeValidationObject.SessionId.GetValueOrDefault());
             _logger.LogInformation("Successfully retrieved DateAndTimeOfSession for Session. {dateAndTimeOfSession}", dateAndTimeOfSession);
-
 
             _logger.LogInformation("Attempting to validate {outcomeValidationObject} object", nameof(outcomeValidationObject));
             var errors = _validate.ValidateResource(outcomeValidationObject, dateAndTimeOfSession);

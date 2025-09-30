@@ -169,13 +169,13 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
 
             var doesSessionIsValid = await _resourceHelper.DoesSessionExistAndBelongToCustomer(outcomesRequest.SessionId.GetValueOrDefault(), interactionGuid, customerGuid);
             if (!doesSessionIsValid) {
-                _logger.LogWarning("Session does not exist. Customer GUID: {CustomerId}. Session GUID: {SessionId}. Correlation GUID: {CorrelationGuid}", customerGuid, outcomesRequest.SessionId, correlationGuid);
+                _logger.LogInformation("Session does not exist. Customer GUID: {CustomerId}. Session GUID: {SessionId}. Correlation GUID: {CorrelationGuid}", customerGuid, outcomesRequest.SessionId, correlationGuid);
                 return new NotFoundObjectResult("Failed to POST outcome. Session does not exist. Session GUID: " + outcomesRequest.SessionId);
             }       
          
              _logger.LogInformation("Attempting to get DateAndTimeOfSession for Session. Session ID: {SessionId}", outcomesRequest.SessionId);
             var dateAndTimeOfSession = await _resourceHelper.GetDateAndTimeOfSession(outcomesRequest.SessionId.GetValueOrDefault());
-            _logger.LogInformation("Successfully retrieved DateAndTimeOfSession for Session. {DateAndTimeOfSession}", dateAndTimeOfSession);
+            _logger.LogTrace("Successfully retrieved DateAndTimeOfSession for Session. {DateAndTimeOfSession}", dateAndTimeOfSession);
   
             _logger.LogInformation("Attempting to get Action Plan for Customer. Customer GUID: {CustomerId}. Action Plan GUID: {ActionPlanGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, actionplanGuid, correlationGuid);
             var doesActionPlanExist = await _resourceHelper.DoesActionPlanResourceExistAndBelongToCustomer(actionplanGuid, interactionGuid, customerGuid);
