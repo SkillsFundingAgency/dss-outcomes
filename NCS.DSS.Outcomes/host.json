@@ -1,14 +1,14 @@
 {
   "version": "2.0",
   "logging": {
+    "logLevel": {
+      "default": "Information",
+      "Azure.Core": "Warning",
+      "Azure.Messaging.ServiceBus": "Warning",
+      "Function": "Warning",
+      "Microsoft.AspNetCore": "Warning"
+    },
     "applicationInsights": {
-      "logLevel": {
-        "default": "Information",
-        "Azure.Core": "Warning",
-        "Azure.Messaging.ServiceBus": "Warning",
-        "Function": "Warning",
-        "Microsoft.AspNetCore": "Warning"
-      },
       "samplingSettings": {
         "isEnabled": true,
         "excludedTypes": "Request"
