@@ -296,6 +296,13 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                 return new UnprocessableEntityObjectResult($"Outcome validation object is NULL. Correlation GUID: {correlationGuid}");
             }
 
+            var doesSessionIsValid = await _resourceHelper.DoesSessionExistAndBelongToCustomer(outcomeValidationObject.SessionId.GetValueOrDefault(), interactionGuid, customerGuid);
+            if (!doesSessionIsValid)
+            {
+                _logger.LogWarning("Session does not exist. Customer GUID: {CustomerId}. Session GUID: {SessionId}. Correlation GUID: {CorrelationGuid}", customerGuid, outcomeValidationObject.SessionId, correlationGuid);
+                return new NotFoundObjectResult("Failed to PATCH outcome. Session does not exist. Session GUID: " + outcomeValidationObject.SessionId);
+            }
+
             _logger.LogInformation("Attempting to get DateAndTimeOfSession for Session. Session ID: {SessionId}", outcomeValidationObject.SessionId);
             var dateAndTimeOfSession = await _resourceHelper.GetDateAndTimeOfSession(outcomeValidationObject.SessionId.GetValueOrDefault());
             _logger.LogInformation("Successfully retrieved DateAndTimeOfSession for Session. {dateAndTimeOfSession}", dateAndTimeOfSession);
