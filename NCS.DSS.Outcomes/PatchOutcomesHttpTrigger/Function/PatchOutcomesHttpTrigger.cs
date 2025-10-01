@@ -303,6 +303,15 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                 return new NotFoundObjectResult("Failed to PATCH outcome. Session does not exist. Session GUID: " + outcomeValidationObject.SessionId);
             }
 
+            var doesSessionBelongsToActionPlan = await _resourceHelper.DoesSessionExistAndBelongToCustomerActionPlan(outcomeValidationObject.SessionId.GetValueOrDefault(), interactionGuid, actionPlanGuid, customerGuid);
+            if (!doesSessionIsValid)
+            {
+                _logger.LogInformation("Session does not belong to ActionPlan. Customer GUID: {CustomerId}. Session GUID: {SessionId}. Correlation GUID: {CorrelationGuid}  ActionPlan: {ActionPlan}", customerGuid, outcomeValidationObject.SessionId, correlationGuid, actionplanId);
+                return new NotFoundObjectResult("Failed to PATCH outcome. Session does not belong to ActionPlan: " + outcomeValidationObject.SessionId);
+            }
+
+
+
             _logger.LogTrace("Attempting to get DateAndTimeOfSession for Session. Session ID: {SessionId}", outcomeValidationObject.SessionId);
             var dateAndTimeOfSession = await _resourceHelper.GetDateAndTimeOfSession(outcomeValidationObject.SessionId.GetValueOrDefault());
             _logger.LogTrace("Successfully retrieved DateAndTimeOfSession for Session. {dateAndTimeOfSession}", dateAndTimeOfSession);

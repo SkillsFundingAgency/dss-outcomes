@@ -8,6 +8,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
         Task<bool> DoesCustomerResourceExist(Guid customerId);
         Task<bool> DoesInteractionResourceExistAndBelongToCustomer(Guid interactionId, Guid customerId);
         Task<bool> DoesSessionResourceExistAndBelongToCustomer(Guid sessionId, Guid interactionId, Guid customerId);
+        Task<bool> DoesSessionExistAndBelongToCustomerActionPlan(Guid sessionId, Guid interactionId, Guid actionPlanId, Guid customerId);
         Task<bool> DoesActionPlanResourceExistAndBelongToCustomer(Guid actionPlanId, Guid interactionId, Guid customerId);
 
         Task<List<Models.Outcomes>> GetOutcomesForCustomerAsync(Guid customerId);

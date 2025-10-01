@@ -171,8 +171,17 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             if (!doesSessionIsValid) {
                 _logger.LogInformation("Session does not exist. Customer GUID: {CustomerId}. Session GUID: {SessionId}. Correlation GUID: {CorrelationGuid}", customerGuid, outcomesRequest.SessionId, correlationGuid);
                 return new NotFoundObjectResult("Failed to POST outcome. Session does not exist. Session GUID: " + outcomesRequest.SessionId);
-            }       
-         
+            }
+
+            var doesSessionBelongsToActionPlan= await _resourceHelper.DoesSessionExistAndBelongToCustomerActionPlan(outcomesRequest.SessionId.GetValueOrDefault(), interactionGuid,actionplanGuid, customerGuid);
+            if (!doesSessionIsValid)
+            {
+                _logger.LogInformation("Session does not belong to ActionPlan. Customer GUID: {CustomerId}. Session GUID: {SessionId}. Correlation GUID: {CorrelationGuid}  ActionPlan: {ActionPlan}", customerGuid, outcomesRequest.SessionId, correlationGuid,actionplanGuid);
+                return new NotFoundObjectResult("Failed to POST outcome. Session does not belong to ActionPlan: " + outcomesRequest.SessionId);
+            }
+            
+
+
              _logger.LogTrace("Attempting to get DateAndTimeOfSession for Session. Session ID: {SessionId}", outcomesRequest.SessionId);
             var dateAndTimeOfSession = await _resourceHelper.GetDateAndTimeOfSession(outcomesRequest.SessionId.GetValueOrDefault());
             _logger.LogTrace("Successfully retrieved DateAndTimeOfSession for Session. {DateAndTimeOfSession}", dateAndTimeOfSession);

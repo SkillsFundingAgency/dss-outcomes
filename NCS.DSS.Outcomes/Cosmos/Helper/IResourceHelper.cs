@@ -8,6 +8,7 @@
         Task<bool> DoesActionPlanResourceExistAndBelongToCustomer(Guid actionplanId, Guid interactionId, Guid customerId);
         Task<bool> DoesInteractionExistAndBelongToCustomer(Guid interactionId, Guid customerId);
         Task<bool> DoesSessionExistAndBelongToCustomer(Guid sessionId, Guid interactionId, Guid customerId);
+        Task<bool> DoesSessionExistAndBelongToCustomerActionPlan(Guid sessionId, Guid interactionId, Guid actionPlanId,Guid customerId);
         Task<DateTime?> GetDateAndTimeOfSession(Guid sessionId);
 
     }
