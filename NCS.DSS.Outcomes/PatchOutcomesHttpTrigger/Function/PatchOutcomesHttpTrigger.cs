@@ -304,7 +304,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             }
 
             var doesSessionBelongsToActionPlan = await _resourceHelper.DoesSessionExistAndBelongToCustomerActionPlan(outcomeValidationObject.SessionId.GetValueOrDefault(), interactionGuid, actionPlanGuid, customerGuid);
-            if (!doesSessionIsValid)
+            if (!doesSessionBelongsToActionPlan)
             {
                 _logger.LogInformation("Session does not belong to ActionPlan. Customer GUID: {CustomerId}. Session GUID: {SessionId}. Correlation GUID: {CorrelationGuid}  ActionPlan: {ActionPlan}", customerGuid, outcomeValidationObject.SessionId, correlationGuid, actionplanId);
                 return new NotFoundObjectResult("Failed to PATCH outcome. Session does not belong to ActionPlan: " + outcomeValidationObject.SessionId);

@@ -174,7 +174,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             }
 
             var doesSessionBelongsToActionPlan= await _resourceHelper.DoesSessionExistAndBelongToCustomerActionPlan(outcomesRequest.SessionId.GetValueOrDefault(), interactionGuid,actionplanGuid, customerGuid);
-            if (!doesSessionIsValid)
+            if (!doesSessionBelongsToActionPlan)
             {
                 _logger.LogInformation("Session does not belong to ActionPlan. Customer GUID: {CustomerId}. Session GUID: {SessionId}. Correlation GUID: {CorrelationGuid}  ActionPlan: {ActionPlan}", customerGuid, outcomesRequest.SessionId, correlationGuid,actionplanGuid);
                 return new NotFoundObjectResult("Failed to POST outcome. Session does not belong to ActionPlan: " + outcomesRequest.SessionId);
