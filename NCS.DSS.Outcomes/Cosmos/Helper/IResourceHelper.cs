@@ -1,4 +1,6 @@
-﻿namespace NCS.DSS.Outcomes.Cosmos.Helper
+﻿using NCS.DSS.Outcomes.ReferenceData;
+
+namespace NCS.DSS.Outcomes.Cosmos.Helper
 {
     public interface IResourceHelper
     {
@@ -9,6 +11,7 @@
         Task<bool> DoesInteractionExistAndBelongToCustomer(Guid interactionId, Guid customerId);
         Task<bool> DoesSessionExistAndBelongToCustomer(Guid sessionId, Guid interactionId, Guid customerId);
         Task<bool> DoesSessionExistAndBelongToCustomerActionPlan(Guid sessionId, Guid interactionId, Guid actionPlanId,Guid customerId);
+        Task<bool> DoesOutcomeExistForCustomerAsync(Guid customerId, Guid sessionId, Guid actionPlanId, OutcomeType outcomeType);
         Task<DateTime?> GetDateAndTimeOfSession(Guid sessionId);
 
     }
