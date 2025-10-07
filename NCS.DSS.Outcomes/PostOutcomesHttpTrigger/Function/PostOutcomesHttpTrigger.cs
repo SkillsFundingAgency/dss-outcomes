@@ -197,7 +197,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
                 return new BadRequestObjectResult("Failed to POST outcome. Outcome of type '"+ outcomesRequest.OutcomeType + "' already exists for customer ID: " + customerId);
             }
 
-            _logger.LoTrace("Attempting to POST Outcome in Cosmos DB. Customer GUID: {CustomerGuid}", customerGuid);
+            _logger.LogTrace("Attempting to POST Outcome in Cosmos DB. Customer GUID: {CustomerGuid}", customerGuid);
             var outcome = await _outcomesPostService.CreateAsync(outcomesRequest);
 
             if (outcome != null)
