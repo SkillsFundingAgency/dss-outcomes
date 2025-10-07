@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.Cosmos;
+using NCS.DSS.Outcomes.ReferenceData;
 
 namespace NCS.DSS.Outcomes.Cosmos.Provider
 {
@@ -9,6 +10,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
         Task<bool> DoesInteractionResourceExistAndBelongToCustomer(Guid interactionId, Guid customerId);
         Task<bool> DoesSessionResourceExistAndBelongToCustomer(Guid sessionId, Guid interactionId, Guid customerId);
         Task<bool> DoesActionPlanResourceExistAndBelongToCustomer(Guid actionPlanId, Guid interactionId, Guid customerId);
+        Task<bool> DoesOutcomeExistForCustomerAsync(Guid customerId, Guid sessionId, Guid actionPlanId, OutcomeType outcomeType);
 
         Task<List<Models.Outcomes>> GetOutcomesForCustomerAsync(Guid customerId);
         Task<string> GetOutcomesForCustomerAsyncToUpdateAsync(Guid customerId, Guid actionPlanId, Guid outcomeId);
