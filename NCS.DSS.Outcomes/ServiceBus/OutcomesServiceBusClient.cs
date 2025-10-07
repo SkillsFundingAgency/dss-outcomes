@@ -48,11 +48,11 @@ namespace NCS.DSS.Outcomes.ServiceBus
                 MessageId = outcomes.CustomerId + " " + DateTime.UtcNow
             };
 
-            _logger.LogInformation("Attempting to send POST message to service bus. Outcome ID: {OutcomeId}", outcomes.OutcomeId);
+            _logger.LogTrace("Attempting to send POST message to service bus. Outcome ID: {OutcomeId}", outcomes.OutcomeId);
 
             await serviceBusSender.SendMessageAsync(msg);
 
-            _logger.LogInformation("Successfully sent POST message to the service bus. Outcome ID: {OutcomeId}", outcomes.OutcomeId);
+            _logger.LogTrace("Successfully sent POST message to the service bus. Outcome ID: {OutcomeId}", outcomes.OutcomeId);
         }
 
         public async Task SendPatchMessageAsync(Models.Outcomes outcomes, Guid customerId, string reqUrl)
@@ -75,11 +75,11 @@ namespace NCS.DSS.Outcomes.ServiceBus
                 MessageId = customerId + " " + DateTime.UtcNow
             };
 
-            _logger.LogInformation("Attempting to send PATCH message to service bus. Outcome ID: {OutcomeId}.", outcomes.OutcomeId);
+            _logger.LogTrace("Attempting to send PATCH message to service bus. Outcome ID: {OutcomeId}.", outcomes.OutcomeId);
 
             await serviceBusSender.SendMessageAsync(msg);
 
-            _logger.LogInformation("Successfully sent PATCH message to the service bus. Outcome ID: {OutcomeId}", outcomes.OutcomeId);
+            _logger.LogTrace("Successfully sent PATCH message to the service bus. Outcome ID: {OutcomeId}", outcomes.OutcomeId);
         }
     }
 }
