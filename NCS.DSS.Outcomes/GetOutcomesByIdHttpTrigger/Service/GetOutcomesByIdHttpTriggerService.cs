@@ -15,7 +15,7 @@ namespace NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Service
         }
         public async Task<Models.Outcomes> GetOutcomesForCustomerAsync(Guid customerId, Guid interactionId, Guid actionplanId, Guid outcomeId)
         {
-            _logger.LogInformation("Attempting to get Outcome for Customer. Customer ID: {CustomerId}.", customerId);
+            _logger.LogTrace("Attempting to get Outcome for Customer. Customer ID: {CustomerId}.", customerId);
             var outcomes = await _cosmosDbProvider.GetOutcomeForCustomerAsync(customerId, actionplanId, outcomeId);
 
             if (outcomes == null)
@@ -24,7 +24,7 @@ namespace NCS.DSS.Outcomes.GetOutcomesByIdHttpTrigger.Service
                 return null;
             }
 
-            _logger.LogInformation("Outcome successfully retrieved. Outcome GUID: {OutcomeId} Customer GUID: {CustomerId}", outcomes.OutcomeId, customerId);
+            _logger.LogTrace("Outcome successfully retrieved. Outcome GUID: {OutcomeId} Customer GUID: {CustomerId}", outcomes.OutcomeId, customerId);
             return outcomes;
         }
     }
