@@ -17,32 +17,8 @@
         "functionAppNames": {
             "value": "__NotTokenised__"
         },
-        "serviceBusConnectionString": {
-            "value": "__serviceBusConnectionString__"
-        },
         "serviceBusQueueName": {
             "value": "__serviceBusQueueName__"
-        },
-        "sharedAppServicePlanName": {
-            "value": "__SharedAppServicePlanName__"
-        },
-        "sharedAppServicePlanResourceGroup": {
-            "value": "__SharedAppServicePlanResourceGroup__"
-        },
-        "storageAccountName": {
-            "value": "__storageAccountName__"
-        },
-        "storageAccountKey": {
-            "value": "__storageAccountKey__"
-        },
-        "templateBaseUrl": {
-            "value": "__NestedArmTemplateBaseUrl__"
-        },
-        "workspaceName": {
-            "value": "__sharedLogAnalyticsWorkspace__"
-        },
-        "workspaceResourceGroup": {
-            "value": "__sharedLogAnalyticsResourceGroup__"
         },
         "appInsightsInstrumentationKey": {
             "value": "__appInsightsInstrumentationKey__" 
