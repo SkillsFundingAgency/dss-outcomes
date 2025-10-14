@@ -230,7 +230,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
         /// <param name="sessionId">Customers Session ID from request</param>
         /// <param name="customerId">Customer ID</param>
         /// <param name="outcomeType">Outcome Type being created</param>
-        /// <returns>True if Outcome already exists. False if outcome does not already exist</returns>
+        /// <returns>True if Claimed Outcome already exists. False if Claimed Outcome does not already exist</returns>
         public async Task<bool> DoesOutcomeExistForCustomerAsync(Guid customerId, Guid sessionId, Guid actionPlanId, OutcomeType outcomeType)
         {
             try
@@ -241,6 +241,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
                     .WithParameter("@actionPlanId", actionPlanId.ToString())
                     .WithParameter("@sessionId", sessionId.ToString())
                     .WithParameter("@outcomeType", outcomeType);
+                var monthOffset = outcomeType.Equals(OutcomeType.SustainableEmployment) || outcomeType.Equals(OutcomeType.CareerProgression) ? -13 : -12;
 
                 var outcomes = new List<Models.Outcomes>();
 
@@ -249,11 +250,11 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
                     while (iterator.HasMoreResults)
                     {
                         var response = await iterator.ReadNextAsync();
-                        outcomes.AddRange(response.Resource);
+                        outcomes.AddRange(response.Resource.Where(x => x.OutcomeEffectiveDate > DateTime.UtcNow.AddMonths(monthOffset) && x.OutcomeEffectiveDate < DateTime.UtcNow));
                     }
                 }
 
-                return outcomes.Any();
+                return outcomes.Any(x => x.OutcomeClaimedDate != null);
             }
             catch (Exception ex)
             {
