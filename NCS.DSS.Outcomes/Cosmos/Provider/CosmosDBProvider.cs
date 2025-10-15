@@ -263,6 +263,49 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
             }
         }
 
+        /// <summary>
+        /// Queries CosmosDB to check if PATCH requested Outcome already posseses an outcome with the same ID Values and Outcome type and is already claimed.
+        /// </summary>
+        /// <param name="customerId">Customers ID from request</param>
+        /// <param name="actionPlanId">Customers Action Plan ID from request</param>
+        /// <param name="outcomeJson">JSON string containing retrieved outcome data from requested outcome</param>
+        /// <param name="outcomeType">String containing Outcome type if specified in request body</param>
+        /// <returns>True if Claimed Outcome already exists. False if Claimed Outcome does not already exist</returns>
+        public async Task<bool> DoesOutcomeExistForCustomerAsync(Guid customerId, Guid actionPlanId, string outcomeJson, string outcomeType)
+        {
+            try
+            {
+                var requestedOutcomeData = JsonConvert.DeserializeObject<Models.Outcomes>(outcomeJson);
+                var targettedOutcomeType = int.TryParse(outcomeType, out var type) ? (OutcomeType)type : requestedOutcomeData.OutcomeType;
+
+                var cosmosQueryText = "SELECT * FROM c Where c.CustomerId = @customerId AND c.ActionPlanId = @actionPlanId AND c.SessionId = @sessionId AND c.OutcomeType = @outcomeType";
+                var queryDefinition = new QueryDefinition(cosmosQueryText)
+                    .WithParameter("@customerId", customerId.ToString())
+                    .WithParameter("@actionPlanId", actionPlanId.ToString())
+                    .WithParameter("@sessionId", requestedOutcomeData.SessionId.ToString())
+                    .WithParameter("@outcomeType", targettedOutcomeType);
+                var monthOffset = targettedOutcomeType.Equals(OutcomeType.SustainableEmployment) || targettedOutcomeType.Equals(OutcomeType.CareerProgression) ? -13 : -12;
+
+                var outcomes = new List<Models.Outcomes>();
+
+                using (FeedIterator<Models.Outcomes> iterator = _container.GetItemQueryIterator<Models.Outcomes>(queryDefinition))
+                {
+                    while (iterator.HasMoreResults)
+                    {
+                        var response = await iterator.ReadNextAsync();
+                        outcomes.AddRange(response.Resource.Where(x => x.OutcomeEffectiveDate > DateTime.UtcNow.AddMonths(monthOffset) && x.OutcomeEffectiveDate < DateTime.UtcNow));
+                    }
+                }
+
+                return outcomes.Any(x => x.OutcomeClaimedDate != null && x.OutcomeId != requestedOutcomeData.OutcomeId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error validating Claimed outcomes for a Customer. Customer ID: {CustomerId}", customerId);
+                throw;
+            }
+        }
+
         public async Task<List<Models.Outcomes>> GetOutcomesForCustomerAsync(Guid customerId)
         {
             _logger.LogInformation("Attempting to retrieve Outcomes for a Customer. Customer ID: {CustomerId}", customerId);

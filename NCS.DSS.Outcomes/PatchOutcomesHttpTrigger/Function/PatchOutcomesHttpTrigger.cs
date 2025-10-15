@@ -127,6 +127,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
 
             var setOutcomeClaimedDateToNull = false;
             var setOutcomeEffectiveDateToNull = false;
+            var outcomeType = string.Empty;
             int requestCount = 0;
             string requestBody;
             req.EnableBuffering(); //Allows request to be read multiple times
@@ -151,6 +152,8 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                     setOutcomeClaimedDateToNull = true;
 
                 var outcomeEffectiveDate = _jsonHelper.GetValue(requestBody, "OutcomeEffectiveDate");
+
+                outcomeType = _jsonHelper.GetValue(requestBody, "OutcomeType");
 
                 if (outcomeEffectiveDate == string.Empty)
                     setOutcomeEffectiveDateToNull = true;
@@ -227,7 +230,6 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
 
             _logger.LogInformation("Attempting to get Interaction for Customer. Customer GUID: {CustomerId}. Interaction GUID: {InteractionGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, interactionGuid, correlationGuid);
             var doesInteractionExist = await _resourceHelper.DoesInteractionExistAndBelongToCustomer(interactionGuid, customerGuid);
-
             if (!doesInteractionExist)
             {
                 _logger.LogWarning("Interaction does not exist. Customer GUID: {CustomerId}. Interaction GUID: {InteractionGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, interactionGuid, correlationGuid);
@@ -257,6 +259,15 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             }
             _logger.LogInformation("Outcome exists. Customer GUID: {CustomerId}. Action Plan GUID: {ActionPlanGuid}. Outcome GUID: {OutcomeGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, actionPlanGuid, outcomesGuid, correlationGuid);
 
+            if (!setOutcomeClaimedDateToNull)
+            {
+                var doesClaimedOutcomeExist = await _resourceHelper.DoesOutcomeExistForCustomerAsync(customerGuid, actionPlanGuid, outcome, outcomeType);
+                if (doesClaimedOutcomeExist)
+                {
+                    _logger.LogWarning("Claimed Outcome of same type as Outcome GUID: {OutcomeId}, for Customer GUID: {CustomerId} already exists", outcomesGuid, customerId);
+                    return new BadRequestObjectResult("Failed to PATCH outcome. Claimed outcome of the same type as Outcome GUID: " + outcomesGuid + ", already exists for customer ID: " + customerId);
+                }
+            }
 
             _logger.LogInformation("Attempting to PATCH Outcome resource.");
             var patchedOutcomeResource = _outcomesPatchService.PatchResource(outcome, outcomesPatchRequest);
