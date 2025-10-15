@@ -1,19 +1,20 @@
-﻿using DFC.HTTP.Standard;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
+using System.Threading.Tasks;
+using DFC.HTTP.Standard;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Outcomes.Cosmos.Helper;
 using NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Service;
+using NCS.DSS.Outcomes.ReferenceData;
 using NCS.DSS.Outcomes.Validation;
 using Newtonsoft.Json;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
-using System.Threading.Tasks;
 
 namespace NCS.DSS.Outcomes.Tests.FunctionTests
 {
@@ -39,7 +40,11 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         [SetUp]
         public void Setup()
         {
-            _outcome = Substitute.For<Models.Outcomes>();
+            _outcome = new Models.Outcomes
+            {
+                SessionId = Guid.NewGuid(),
+                OutcomeType = OutcomeType.SustainableEmployment,
+            };
 
             _request = new DefaultHttpContext().Request;
 
@@ -57,6 +62,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             _resourceHelper.DoesSessionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
             _resourceHelper.GetDateAndTimeOfSession(Arg.Any<Guid>()).Returns(DateTime.Now);
             _resourceHelper.DoesActionPlanResourceExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
+            _resourceHelper.DoesOutcomeExistForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<OutcomeType>()).Returns(Task.FromResult(false));
 
             _httpRequestHelper.GetDssTouchpointId(_request).Returns("0000000001");
             _httpRequestHelper.GetDssSubcontractorId(_request).Returns("9999999999");
@@ -230,6 +236,17 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             Assert.That(responseResult.StatusCode, Is.EqualTo((int)HttpStatusCode.Created));
         }
 
+        [Test]
+        public async Task PostOutcomesHttpTrigger_ReturnsStatusCodeBadRequest_WhenOutcomeAlreadyExists()
+        {
+            _resourceHelper.DoesOutcomeExistForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<OutcomeType>()).Returns(Task.FromResult(true));
+
+            var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
+
+            // Assert
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
+        }
+
         private async Task<IActionResult> RunFunction(string customerId, string interactionId, string actionPlanId)
         {
             return await _function.RunAsync(
@@ -238,5 +255,6 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
                 interactionId,
                 actionPlanId).ConfigureAwait(false);
         }
+
     }
 }

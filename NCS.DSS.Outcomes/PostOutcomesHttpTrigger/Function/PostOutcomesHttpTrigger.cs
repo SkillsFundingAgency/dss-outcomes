@@ -181,7 +181,6 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             }
             _logger.LogInformation("Action Plan exists. Customer GUID: {CustomerId}. Action Plan GUID: {ActionPlanGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, actionplanGuid, correlationGuid);
 
-
             _logger.LogInformation("Attempting to validate {OutcomesRequest} object", nameof(outcomesRequest));
             var errors = _validate.ValidateResource(outcomesRequest, dateAndTimeOfSession);
 
@@ -191,6 +190,13 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
                 return new UnprocessableEntityObjectResult(errors);
             }
             _logger.LogInformation("Successfully validated {OutcomesRequest}", nameof(outcomesRequest));
+
+            var doesOutcomeExist = await _resourceHelper.DoesOutcomeExistForCustomerAsync(customerGuid, outcomesRequest.SessionId.Value, actionplanGuid, outcomesRequest.OutcomeType.Value);
+            if (doesOutcomeExist)
+            {
+                _logger.LogWarning("Outcome for Customer GUID: {CustomerId} already exists for outcome type of: {outcomeType}", customerId, outcomesRequest.OutcomeType);
+                return new BadRequestObjectResult("Failed to POST outcome. Outcome of type '"+ outcomesRequest.OutcomeType + "' already exists for customer ID: " + customerId);
+            }
 
             _logger.LogInformation("Attempting to POST Outcome in Cosmos DB. Customer GUID: {CustomerGuid}", customerGuid);
             var outcome = await _outcomesPostService.CreateAsync(outcomesRequest);

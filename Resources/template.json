@@ -11,9 +11,6 @@
     "CosmosDbEndpoint": {
       "type": "string"
     },
-    "cosmosDbKey": {
-      "type": "string"
-    },
     "environmentName": {
       "type": "string"
     },
@@ -68,7 +65,6 @@
         "APPINSIGHTS_INSTRUMENTATIONKEY": "[parameters('appInsightsInstrumentationKey')]",
         "CollectionId": "[parameters('cosmosDbCollectionId')]",
         "DatabaseId": "[parameters('cosmosDbDatabaseId')]",
-        "OutcomeConnectionString": "[format('AccountEndpoint={0}/;AccountKey={1};', parameters('CosmosDbEndpoint'), parameters('cosmosDbKey'))]",
         "CustomerCollectionId": "customers",
         "CustomerDatabaseId": "customers",
         "ActionPlanCollectionId": "actionplans",
