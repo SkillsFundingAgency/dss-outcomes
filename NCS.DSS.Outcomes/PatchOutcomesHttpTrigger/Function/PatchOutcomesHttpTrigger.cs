@@ -128,6 +128,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             var setOutcomeClaimedDateToNull = false;
             var setOutcomeEffectiveDateToNull = false;
             var outcomeType = string.Empty;
+            var isClaimedDatePresent = false;
             int requestCount = 0;
             string requestBody;
             req.EnableBuffering(); //Allows request to be read multiple times
@@ -150,6 +151,9 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
 
                 if (outcomeClaimedDate == string.Empty)
                     setOutcomeClaimedDateToNull = true;
+
+                if (outcomeClaimedDate != null && outcomeClaimedDate != string.Empty)
+                    isClaimedDatePresent = true;
 
                 var outcomeEffectiveDate = _jsonHelper.GetValue(requestBody, "OutcomeEffectiveDate");
 
@@ -259,7 +263,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
             }
             _logger.LogInformation("Outcome exists. Customer GUID: {CustomerId}. Action Plan GUID: {ActionPlanGuid}. Outcome GUID: {OutcomeGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, actionPlanGuid, outcomesGuid, correlationGuid);
 
-            if (!setOutcomeClaimedDateToNull)
+            if (isClaimedDatePresent)
             {
                 var doesClaimedOutcomeExist = await _resourceHelper.DoesOutcomeExistForCustomerAsync(customerGuid, actionPlanGuid, outcome, outcomeType);
                 if (doesClaimedOutcomeExist)
