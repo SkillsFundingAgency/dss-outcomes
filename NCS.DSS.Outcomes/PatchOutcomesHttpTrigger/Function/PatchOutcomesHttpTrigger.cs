@@ -265,7 +265,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
 
             if (isClaimedDatePresent)
             {
-                var doesClaimedOutcomeExist = await _resourceHelper.DoesOutcomeExistForCustomerAsync(customerGuid, actionPlanGuid, outcome, outcomeType);
+                var doesClaimedOutcomeExist = await _resourceHelper.DoesClaimedOutcomeExistForCustomerAsync(customerGuid, actionPlanGuid, outcome, outcomeType);
                 if (doesClaimedOutcomeExist)
                 {
                     _logger.LogWarning("Claimed Outcome of same type as Outcome GUID: {OutcomeId}, for Customer GUID: {CustomerId} already exists", outcomesGuid, customerId);

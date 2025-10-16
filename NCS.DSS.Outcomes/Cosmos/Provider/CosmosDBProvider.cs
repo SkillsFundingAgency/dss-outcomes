@@ -231,7 +231,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
         /// <param name="customerId">Customer ID</param>
         /// <param name="outcomeType">Outcome Type being created</param>
         /// <returns>True if Claimed Outcome already exists. False if Claimed Outcome does not already exist</returns>
-        public async Task<bool> DoesOutcomeExistForCustomerAsync(Guid customerId, Guid sessionId, Guid actionPlanId, OutcomeType outcomeType)
+        public async Task<bool> DoesClaimedOutcomeExistForCustomerAsync(Guid customerId, Guid sessionId, Guid actionPlanId, OutcomeType outcomeType)
         {
             try
             {
@@ -271,7 +271,7 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
         /// <param name="outcomeJson">JSON string containing retrieved outcome data from requested outcome</param>
         /// <param name="outcomeType">String containing Outcome type if specified in request body</param>
         /// <returns>True if Claimed Outcome already exists. False if Claimed Outcome does not already exist</returns>
-        public async Task<bool> DoesOutcomeExistForCustomerAsync(Guid customerId, Guid actionPlanId, string outcomeJson, string outcomeType)
+        public async Task<bool> DoesClaimedOutcomeExistForCustomerAsync(Guid customerId, Guid actionPlanId, string outcomeJson, string outcomeType)
         {
             try
             {

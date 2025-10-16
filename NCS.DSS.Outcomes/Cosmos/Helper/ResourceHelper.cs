@@ -54,14 +54,14 @@ namespace NCS.DSS.Outcomes.Cosmos.Helper
             return await _cosmosDbProvider.DoesActionPlanResourceExistAndBelongToCustomer(actionplanId, interactionId, customerId);
         }
 
-        public async Task<bool> DoesOutcomeExistForCustomerAsync(Guid customerId, Guid sessionId, Guid actionPlanId, OutcomeType outcomeType)
+        public async Task<bool> DoesClaimedOutcomeExistForCustomerAsync(Guid customerId, Guid sessionId, Guid actionPlanId, OutcomeType outcomeType)
         {
-            return await _cosmosDbProvider.DoesOutcomeExistForCustomerAsync(customerId, sessionId, actionPlanId, outcomeType);
+            return await _cosmosDbProvider.DoesClaimedOutcomeExistForCustomerAsync(customerId, sessionId, actionPlanId, outcomeType);
         }
 
-        public async Task<bool> DoesOutcomeExistForCustomerAsync(Guid customerId, Guid actionPlanId, string outcomeJson, string outcomeType)
+        public async Task<bool> DoesClaimedOutcomeExistForCustomerAsync(Guid customerId, Guid actionPlanId, string outcomeJson, string outcomeType)
         {
-            return await _cosmosDbProvider.DoesOutcomeExistForCustomerAsync(customerId, actionPlanId, outcomeJson, outcomeType);
+            return await _cosmosDbProvider.DoesClaimedOutcomeExistForCustomerAsync(customerId, actionPlanId, outcomeJson, outcomeType);
         }
 
 

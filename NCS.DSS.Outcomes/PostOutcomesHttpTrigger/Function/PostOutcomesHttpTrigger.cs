@@ -191,7 +191,7 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             }
             _logger.LogInformation("Successfully validated {OutcomesRequest}", nameof(outcomesRequest));
 
-            var doesOutcomeExist = await _resourceHelper.DoesOutcomeExistForCustomerAsync(customerGuid, outcomesRequest.SessionId.Value, actionplanGuid, outcomesRequest.OutcomeType.Value);
+            var doesOutcomeExist = await _resourceHelper.DoesClaimedOutcomeExistForCustomerAsync(customerGuid, outcomesRequest.SessionId.Value, actionplanGuid, outcomesRequest.OutcomeType.Value);
             if (doesOutcomeExist)
             {
                 _logger.LogWarning("Outcome for Customer GUID: {CustomerId} already exists for outcome type of: {outcomeType}", customerId, outcomesRequest.OutcomeType);
