@@ -12,6 +12,8 @@ namespace NCS.DSS.Outcomes.Cosmos.Helper
         Task<bool> DoesSessionExistAndBelongToCustomer(Guid sessionId, Guid interactionId, Guid customerId);
         Task<bool> DoesSessionExistAndBelongToCustomerActionPlan(Guid sessionId, Guid interactionId, Guid actionPlanId,Guid customerId);
         Task<bool> DoesOutcomeExistForCustomerAsync(Guid customerId, Guid sessionId, Guid actionPlanId, OutcomeType outcomeType);
+        Task<bool> DoesClaimedOutcomeExistForCustomerAsync(Guid customerId, Guid sessionId, Guid actionPlanId, OutcomeType outcomeType);
+        Task<bool> DoesClaimedOutcomeExistForCustomerAsync(Guid customerId, Guid actionPlanId, string outcomeJson, string outcomeType);
         Task<DateTime?> GetDateAndTimeOfSession(Guid sessionId);
 
     }

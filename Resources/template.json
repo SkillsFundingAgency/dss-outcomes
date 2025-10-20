@@ -17,31 +17,7 @@
     "functionAppNames": {
       "type": "array"
     },
-    "serviceBusConnectionString": {
-      "type": "string"
-    },
     "serviceBusQueueName": {
-      "type": "string"
-    },
-    "sharedAppServicePlanName": {
-      "type": "string"
-    },
-    "sharedAppServicePlanResourceGroup": {
-      "type": "string"
-    },
-    "storageAccountName": {
-      "type": "string"
-    },
-    "storageAccountKey": {
-      "type": "string"
-    },
-    "templateBaseUrl": {
-      "type": "string"
-    },
-    "workspaceName": {
-      "type": "string"
-    },
-    "workspaceResourceGroup": {
       "type": "string"
     },
     "appInsightsInstrumentationKey": {
@@ -69,7 +45,7 @@
         "CustomerDatabaseId": "customers",
         "ActionPlanCollectionId": "actionplans",
         "ActionPlanDatabaseId": "actionplans",
-        "ServiceBusConnectionString": "[parameters('serviceBusConnectionString')]",
+        "ServiceBusConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=ServiceBusConnectionString)', parameters('keyVaultName'))]",
         "QueueName": "[parameters('serviceBusQueueName')]",
         "InteractionCollectionId": "interactions",
         "InteractionDatabaseId": "interactions",

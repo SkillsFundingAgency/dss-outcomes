@@ -62,7 +62,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
             _resourceHelper.DoesSessionExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
             _resourceHelper.GetDateAndTimeOfSession(Arg.Any<Guid>()).Returns(DateTime.Now);
             _resourceHelper.DoesActionPlanResourceExistAndBelongToCustomer(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(true);
-            _resourceHelper.DoesOutcomeExistForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<OutcomeType>()).Returns(Task.FromResult(false));
+            _resourceHelper.DoesClaimedOutcomeExistForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<OutcomeType>()).Returns(Task.FromResult(false));
 
             _httpRequestHelper.GetDssTouchpointId(_request).Returns("0000000001");
             _httpRequestHelper.GetDssSubcontractorId(_request).Returns("9999999999");
@@ -239,7 +239,7 @@ namespace NCS.DSS.Outcomes.Tests.FunctionTests
         [Test]
         public async Task PostOutcomesHttpTrigger_ReturnsStatusCodeBadRequest_WhenOutcomeAlreadyExists()
         {
-            _resourceHelper.DoesOutcomeExistForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<OutcomeType>()).Returns(Task.FromResult(true));
+            _resourceHelper.DoesClaimedOutcomeExistForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<OutcomeType>()).Returns(Task.FromResult(true));
 
             var result = await RunFunction(ValidCustomerId, ValidInteractionId, ValidActionPlanId);
 
