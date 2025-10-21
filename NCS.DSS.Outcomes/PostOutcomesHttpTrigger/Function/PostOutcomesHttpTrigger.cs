@@ -164,12 +164,25 @@ namespace NCS.DSS.Outcomes.PostOutcomesHttpTrigger.Function
             }
             _logger.LogTrace("Interaction exists. Customer GUID: {CustomerId}. Interaction GUID: {InteractionGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, interactionGuid, correlationGuid);
 
+            var doesSessionIsValid = await _resourceHelper.DoesSessionExistAndBelongToCustomer(outcomesRequest.SessionId.GetValueOrDefault(), interactionGuid, customerGuid);
+            if (!doesSessionIsValid) {
+                _logger.LogInformation("Session does not exist. Customer GUID: {CustomerId}. Session GUID: {SessionId}. Correlation GUID: {CorrelationGuid}", customerGuid, outcomesRequest.SessionId, correlationGuid);
+                return new NotFoundObjectResult("Failed to POST outcome. Session does not exist. Session GUID: " + outcomesRequest.SessionId);
+            }
 
-            _logger.LogTrace("Attempting to get DateAndTimeOfSession for Session. Session ID: {SessionId}", outcomesRequest.SessionId);
+            var doesSessionBelongsToActionPlan= await _resourceHelper.DoesSessionExistAndBelongToCustomerActionPlan(outcomesRequest.SessionId.GetValueOrDefault(), interactionGuid,actionplanGuid, customerGuid);
+            if (!doesSessionBelongsToActionPlan)
+            {
+                _logger.LogInformation("Session does not belong to ActionPlan. Customer GUID: {CustomerId}. Session GUID: {SessionId}. Correlation GUID: {CorrelationGuid}  ActionPlan: {ActionPlan}", customerGuid, outcomesRequest.SessionId, correlationGuid,actionplanGuid);
+                return new NotFoundObjectResult("Failed to POST outcome. Session does not belong to ActionPlan: " + outcomesRequest.SessionId);
+            }
+         
+             _logger.LogTrace("Attempting to get DateAndTimeOfSession for Session. Session ID: {SessionId}", outcomesRequest.SessionId);
             var dateAndTimeOfSession = await _resourceHelper.GetDateAndTimeOfSession(outcomesRequest.SessionId.GetValueOrDefault());
             _logger.LogTrace("Successfully retrieved DateAndTimeOfSession for Session. {DateAndTimeOfSession}", dateAndTimeOfSession);
+  
+              _logger.LogTrace("Attempting to get Action Plan for Customer. Customer GUID: {CustomerId}. Action Plan GUID: {ActionPlanGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, actionplanGuid, correlationGuid);
 
-            _logger.LogTrace("Attempting to get Action Plan for Customer. Customer GUID: {CustomerId}. Action Plan GUID: {ActionPlanGuid}. Correlation GUID: {CorrelationGuid}", customerGuid, actionplanGuid, correlationGuid);
             var doesActionPlanExist = await _resourceHelper.DoesActionPlanResourceExistAndBelongToCustomer(actionplanGuid, interactionGuid, customerGuid);
 
             if (!doesActionPlanExist)

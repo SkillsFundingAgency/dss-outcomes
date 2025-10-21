@@ -309,6 +309,21 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
                 return new UnprocessableEntityObjectResult($"Outcome validation object is NULL. Correlation GUID: {correlationGuid}");
             }
 
+            var doesSessionIsValid = await _resourceHelper.DoesSessionExistAndBelongToCustomer(outcomeValidationObject.SessionId.GetValueOrDefault(), interactionGuid, customerGuid);
+            if (!doesSessionIsValid)
+            {
+                _logger.LogInformation("Session does not exist. Customer GUID: {CustomerId}. Session GUID: {SessionId}. Correlation GUID: {CorrelationGuid}", customerGuid, outcomeValidationObject.SessionId, correlationGuid);
+                return new NotFoundObjectResult("Failed to PATCH outcome. Session does not exist. Session GUID: " + outcomeValidationObject.SessionId);
+            }
+
+            var doesSessionBelongsToActionPlan = await _resourceHelper.DoesSessionExistAndBelongToCustomerActionPlan(outcomeValidationObject.SessionId.GetValueOrDefault(), interactionGuid, actionPlanGuid, customerGuid);
+            if (!doesSessionBelongsToActionPlan)
+            {
+                _logger.LogInformation("Session does not belong to ActionPlan. Customer GUID: {CustomerId}. Session GUID: {SessionId}. Correlation GUID: {CorrelationGuid}  ActionPlan: {ActionPlan}", customerGuid, outcomeValidationObject.SessionId, correlationGuid, actionplanId);
+                return new NotFoundObjectResult("Failed to PATCH outcome. Session does not belong to ActionPlan: " + outcomeValidationObject.SessionId);
+            }
+
+
             _logger.LogTrace("Attempting to get DateAndTimeOfSession for Session. Session ID: {SessionId}", outcomeValidationObject.SessionId);
             var dateAndTimeOfSession = await _resourceHelper.GetDateAndTimeOfSession(outcomeValidationObject.SessionId.GetValueOrDefault());
             _logger.LogTrace("Successfully retrieved DateAndTimeOfSession for Session. {dateAndTimeOfSession}", dateAndTimeOfSession);

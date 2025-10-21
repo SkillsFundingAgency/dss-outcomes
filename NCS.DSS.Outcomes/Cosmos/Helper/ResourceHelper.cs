@@ -70,6 +70,12 @@ namespace NCS.DSS.Outcomes.Cosmos.Helper
             return await _cosmosDbProvider.DoesSessionResourceExistAndBelongToCustomer(sessionId, interactionId, customerId);
         }
 
+        public async Task<bool> DoesSessionExistAndBelongToCustomerActionPlan(Guid sessionId, Guid interactionId, Guid actionPlanId, Guid customerId)
+        {
+            return await _cosmosDbProvider.DoesSessionExistAndBelongToCustomerActionPlan(sessionId, interactionId, actionPlanId,customerId);
+        }
+
+
         public async Task<DateTime?> GetDateAndTimeOfSession(Guid sessionId)
         {
             var dateAndTimeOfSession = await _cosmosDbProvider.GetDateAndTimeOfSessionFromSessionResource(sessionId);
