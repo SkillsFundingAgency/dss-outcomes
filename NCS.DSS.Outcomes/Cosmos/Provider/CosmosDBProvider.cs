@@ -184,44 +184,6 @@ namespace NCS.DSS.Outcomes.Cosmos.Provider
                 throw;
             }
         }
-        public async Task<bool> DoesSessionExistAndBelongToCustomerActionPlan(Guid sessionId, Guid interactionId, Guid actionPlanId, Guid customerId)
-        {
-            _logger.LogTrace("Checking for action plan resource for a customer. Customer ID: {CustomerId} Interaction ID: {InteractionId} ActionPlan ID: {ActionPlanId} sessionId: {sessionId}", customerId, interactionId, actionPlanId, sessionId);
-            try
-            {
-                string queryText = "SELECT VALUE COUNT(1) FROM actionplans a WHERE a.id = @actionPlanId AND a.InteractionId = @interactionId AND a.CustomerId = @customerId AND a.SessionId=@sessionId";
-                var queryDefinition = new QueryDefinition(queryText)
-                    .WithParameter("@actionPlanId", actionPlanId.ToString())
-                    .WithParameter("@interactionId", interactionId.ToString())
-                    .WithParameter("@customerId", customerId.ToString())
-                    .WithParameter("@sessionId", sessionId.ToString());
-
-                using var iterator = _actionPlanContainer.GetItemQueryIterator<dynamic>(queryDefinition);
-
-                if (iterator.HasMoreResults)
-                {
-                    var response = await iterator.ReadNextAsync();
-                    var actionPlanExists = response.FirstOrDefault() > 0;
-                    if (actionPlanExists)
-                    {
-                        _logger.LogTrace("Action plan for customer exists. Customer ID: {CustomerId} Interaction ID: {InteractionId} ActionPlan ID: {ActionPlanId} sessionId: {sessionId}", customerId, interactionId, actionPlanId, sessionId);
-                    }
-                    return actionPlanExists;
-                }
-
-                return false;
-            }
-            catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                _logger.LogInformation("Action plan for customer is not found. Customer ID: {CustomerId} Interaction ID: {InteractionId} ActionPlan ID: {ActionPlanId} sessionId: {sessionId}", customerId, interactionId, actionPlanId, sessionId);
-                return false;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error checking action plan resource for a customer. Customer ID: {CustomerId} Interaction ID: {InteractionId} ActionPlan ID: {ActionPlanId} sessionId: {sessionId}", customerId, interactionId, actionPlanId, sessionId);
-                throw;
-            }
-        }
 
         public async Task<bool> DoesActionPlanResourceExistAndBelongToCustomer(Guid actionPlanId, Guid interactionId, Guid customerId)
         {
