@@ -20,37 +20,32 @@ pool:
 
 jobs:
 # Test the branch name, the output of this job will satisfy the condition of one or neither of the subsequent jobs
-# - job: TestBranchName
-#   displayName: TestBranchName
+- job: TestBranchName
+  displayName: TestBranchName
 
-#   variables:
-#     TestBranchNameScriptUrl: https://raw.githubusercontent.com/SkillsFundingAgency/dss-devops/master/Scripts/Test-BranchName.ps1
-#     TestBranchNameScriptFilePath: $(System.DefaultWorkingDirectory)\Test-BranchName.ps1
+  variables:
+    TestBranchNameScriptUrl: https://raw.githubusercontent.com/SkillsFundingAgency/dss-devops/master/Scripts/Test-BranchName.ps1
+    TestBranchNameScriptFilePath: $(System.DefaultWorkingDirectory)\Test-BranchName.ps1
 
-#   steps:
-#   - task: PowerShell@2
-#     name: DownloadTestBranchNameScript
-#     displayName: 'Download Test-BranchName script'
-#     inputs:
-#      targetType: 'inline'
-#      script: Invoke-WebRequest -Uri $(TestBranchNameScriptUrl) -OutFile $(TestBranchNameScriptFilePath)
-#   - task: PowerShell@2
-#     name: ExecuteTestBranchNameScript
-#     displayName: Test-BranchName
-#     inputs:
-#      targetType: 'filePath'
-#      filePath: $(TestBranchNameScriptFilePath)
-#      arguments: '-BranchName $(Build.SourceBranchName) -PullRequestBranchName $(if ("$(Build.SourceBranchName)" -eq "merge") { "$(System.PullRequest.SourceBranch)" } else { "NotAPullRequest" } ) -PipelineType Build -Verbose'
+  steps:
+  - task: PowerShell@2
+    name: DownloadTestBranchNameScript
+    displayName: 'Download Test-BranchName script'
+    inputs:
+     targetType: 'inline'
+     script: Invoke-WebRequest -Uri $(TestBranchNameScriptUrl) -OutFile $(TestBranchNameScriptFilePath)
+  - task: PowerShell@2
+    name: ExecuteTestBranchNameScript
+    displayName: Test-BranchName
+    inputs:
+     targetType: 'filePath'
+     filePath: $(TestBranchNameScriptFilePath)
+     arguments: '-BranchName $(Build.SourceBranchName) -PullRequestBranchName $(if ("$(Build.SourceBranchName)" -eq "merge") { "$(System.PullRequest.SourceBranch)" } else { "NotAPullRequest" } ) -PipelineType Build -Verbose'
 
 # Build the app with the dfc-dotnetframework-build template.  Runs if the output of TestBranchName is Version1
-- job: ListDotNetSdks
-  displayName: List .NET SDKs
-  steps:
-  - script: dotnet --list-sdks
-
 - job: BuildDotNetFramework
   displayName: Build-DotNetFramework
-  # dependsOn: TestBranchName
+  dependsOn: TestBranchName
   condition: and(succeeded(), eq(dependencies.TestBranchName.outputs['ExecuteTestBranchNameScript.FunctionAppVersion'], 'Version1'))
 
   steps:
@@ -63,7 +58,7 @@ jobs:
 # Build the app with the dfc-dotnetcore-build template.  Runs if the output of TestBranchName is Version2+
 - job: BuildDotNetStandard
   displayName: Build-DotNetStandard
-  # dependsOn: TestBranchName
+  dependsOn: TestBranchName
   condition: and(succeeded(), eq(dependencies.TestBranchName.outputs['ExecuteTestBranchNameScript.FunctionAppVersion'], 'Version2+'))
 
   steps:
