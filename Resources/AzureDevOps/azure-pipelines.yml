@@ -50,7 +50,7 @@ jobs:
 
 - job: BuildDotNetFramework
   displayName: Build-DotNetFramework
-  dependsOn: TestBranchName
+  # dependsOn: TestBranchName
   condition: and(succeeded(), eq(dependencies.TestBranchName.outputs['ExecuteTestBranchNameScript.FunctionAppVersion'], 'Version1'))
 
   steps:
@@ -63,7 +63,7 @@ jobs:
 # Build the app with the dfc-dotnetcore-build template.  Runs if the output of TestBranchName is Version2+
 - job: BuildDotNetStandard
   displayName: Build-DotNetStandard
-  dependsOn: TestBranchName
+  # dependsOn: TestBranchName
   condition: and(succeeded(), eq(dependencies.TestBranchName.outputs['ExecuteTestBranchNameScript.FunctionAppVersion'], 'Version2+'))
 
   steps:
