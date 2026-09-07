@@ -26,7 +26,7 @@ namespace NCS.DSS.Outcomes.PatchOutcomesHttpTrigger.Function
         private readonly IValidate _validate;
         private readonly ILogger<PatchOutcomesHttpTrigger> _logger;
         private readonly IDynamicHelper _dynamicHelper;
-        private static readonly string[] ExceptionToExclude = { "TargetSite" };
+        private static readonly string[] ExceptionToExclude = { "TargetSite", "StackTrace" };
 
         public PatchOutcomesHttpTrigger(IResourceHelper resourceHelper,
             IHttpRequestHelper httpRequestHelper,
